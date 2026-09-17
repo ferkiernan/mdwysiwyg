@@ -297,6 +297,42 @@
   justify-content: flex-end;
 }
 
+.tablePicker {
+  align-items: center;
+  min-width: 0;
+}
+
+.tablePickerLabel {
+  font-size: 12px;
+  text-align: center;
+  min-height: 1.2em;
+}
+
+.tablePickerGrid {
+  display: grid;
+  gap: 2px;
+  padding: 2px;
+}
+
+.tablePickerGrid:focus-visible {
+  outline: 2px solid var(--mdw-accent);
+  outline-offset: 2px;
+}
+
+.tablePickerCell {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #999;
+  border-radius: 2px;
+  background: var(--mdw-bg);
+  cursor: pointer;
+}
+
+.tablePickerCell[data-selected="true"] {
+  background: #dbe4f8;
+  border-color: var(--mdw-accent);
+}
+
 .menu {
   position: absolute;
   z-index: 10;

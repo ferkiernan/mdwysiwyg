@@ -9,7 +9,7 @@ import {
 import type { Editor } from "@tiptap/core";
 import styles from "../../MarkdownEditor.module.css";
 
-export type DialogKind = "image" | "link" | "table" | "html";
+export type DialogKind = "image" | "link" | "html";
 
 interface DialogShellProps {
   title: string;
@@ -82,8 +82,6 @@ export interface InsertDialogProps {
 export function InsertDialog({ kind, editor, onClose }: InsertDialogProps) {
   const [url, setUrl] = useState("");
   const [text, setText] = useState("");
-  const [rows, setRows] = useState(3);
-  const [cols, setCols] = useState(3);
   const [html, setHtml] = useState("");
 
   const submit = () => {
@@ -102,8 +100,6 @@ export function InsertDialog({ kind, editor, onClose }: InsertDialogProps) {
       } else {
         chain.extendMarkRange("link").setLink({ href: url }).run();
       }
-    } else if (kind === "table") {
-      chain.insertTable({ rows, cols, withHeaderRow: true }).run();
     } else if (kind === "html" && html) {
       chain
         .insertContent({ type: "htmlBlock", attrs: { content: html } })
@@ -111,35 +107,6 @@ export function InsertDialog({ kind, editor, onClose }: InsertDialogProps) {
     }
     onClose();
   };
-
-  if (kind === "table") {
-    return (
-      <DialogShell title="Insertar tabla" onSubmit={submit} onClose={onClose}>
-        <Field label="Filas">
-          {(id) => (
-            <input
-              id={id}
-              type="number"
-              min={1}
-              value={rows}
-              onChange={(e) => setRows(Number(e.target.value))}
-            />
-          )}
-        </Field>
-        <Field label="Columnas">
-          {(id) => (
-            <input
-              id={id}
-              type="number"
-              min={1}
-              value={cols}
-              onChange={(e) => setCols(Number(e.target.value))}
-            />
-          )}
-        </Field>
-      </DialogShell>
-    );
-  }
 
   if (kind === "html") {
     return (

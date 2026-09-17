@@ -3,6 +3,7 @@ import type { Editor } from "@tiptap/core";
 import type { ViewMode } from "../types";
 import { ToolbarButton } from "./buttons/ToolbarButton";
 import { InsertDialog, type DialogKind } from "./buttons/InsertDialogs";
+import { TableSizePicker } from "./buttons/TableSizePicker";
 import { ExportMenu } from "./buttons/ExportMenu";
 import {
   IconCode,
@@ -43,7 +44,9 @@ export function Toolbar({
   sanitizeEmbeddedHtml,
 }: ToolbarProps) {
   const [, forceUpdate] = useReducer((count: number) => count + 1, 0);
-  const [openDialog, setOpenDialog] = useState<DialogKind | null>(null);
+  const [openDialog, setOpenDialog] = useState<DialogKind | "table" | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!editor) return;
@@ -235,7 +238,20 @@ export function Toolbar({
         <ExportMenu source={source} sanitize={sanitizeEmbeddedHtml} />
       </div>
 
-      {openDialog !== null && editor !== null && (
+      {openDialog === "table" && editor !== null && (
+        <TableSizePicker
+          onSelect={({ cols, rows }) => {
+            editor
+              .chain()
+              .focus()
+              .insertTable({ rows, cols, withHeaderRow: true })
+              .run();
+            closeDialog();
+          }}
+          onClose={closeDialog}
+        />
+      )}
+      {openDialog !== null && openDialog !== "table" && editor !== null && (
         <InsertDialog kind={openDialog} editor={editor} onClose={closeDialog} />
       )}
     </div>

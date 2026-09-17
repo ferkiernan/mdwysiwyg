@@ -53,15 +53,27 @@ describe("US3: inserción de elementos desde la barra", () => {
     expect(onChange).toHaveBeenLastCalledWith("[Sitio](https://ejemplo.com)\n");
   });
 
-  it("inserta una tabla editable con su sintaxis GFM equivalente", async () => {
-    const { onChange, pm } = await setupEditor({});
+  it("inserta una tabla del tamaño elegido en el selector visual (3 columnas × 4 filas)", async () => {
+    const { onChange, pm, view } = await setupEditor({});
     await userEvent.click(
       screen.getByRole("button", { name: "Insertar tabla" }),
     );
-    await userEvent.click(screen.getByRole("button", { name: "Insertar" }));
+
+    const { fireEvent } = await import("@testing-library/react");
+    const cell = view.container.querySelector(
+      '[data-cell="3x4"]',
+    ) as HTMLElement;
+    fireEvent.mouseEnter(cell);
+    expect(screen.getByText("3 × 4")).toBeInTheDocument();
+    fireEvent.click(cell);
 
     expect(pm.querySelector("table")).not.toBeNull();
-    expect(pm.querySelectorAll("tr")).toHaveLength(3);
+    expect(pm.querySelectorAll("tr")).toHaveLength(4);
+    expect(pm.querySelectorAll("tr")[0]?.querySelectorAll("th")).toHaveLength(
+      3,
+    );
+    // El selector se cierra tras confirmar
+    expect(screen.queryByRole("dialog")).toBeNull();
     const markdown = onChange.mock.lastCall?.[0] as string;
     expect(markdown).toContain("|");
     expect(markdown).toContain("-");

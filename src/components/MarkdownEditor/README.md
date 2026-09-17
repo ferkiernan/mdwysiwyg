@@ -47,7 +47,8 @@ Tipos exportados: `MarkdownEditorProps`.
 - **Formato**: párrafo, encabezados H1–H6, negrita, cursiva, tachado.
 - **Listas**: ordenada, con viñetas, de tareas (checklist), y sangría para anidar.
 - **Bloques**: bloque de código, línea horizontal.
-- **Insertar**: imagen (por URL), enlace, tabla, HTML embebido.
+- **Insertar**: imagen (por URL), enlace, tabla (selector visual de tamaño: cuadrícula 10×10,
+  convención columnas × filas — "3 × 4" = 3 columnas y 4 filas), HTML embebido.
 - **`</>`**: alterna entre vista renderizada y vista Markdown. Alternar nunca modifica el contenido.
 - **Export**: copia al portapapeles como Markdown o como HTML.
 
