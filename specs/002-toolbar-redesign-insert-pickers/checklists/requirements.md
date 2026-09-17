@@ -1,0 +1,38 @@
+# Specification Quality Checklist: Toolbar Redesign & Insert Pickers
+
+**Purpose**: Validate specification completeness and quality before proceeding to planning
+**Created**: 2026-09-17
+**Feature**: [spec.md](../spec.md)
+
+## Content Quality
+
+- [x] No implementation details (languages, frameworks, APIs)
+- [x] Focused on user value and business needs
+- [x] Written for non-technical stakeholders
+- [x] All mandatory sections completed
+
+## Requirement Completeness
+
+- [x] No [NEEDS CLARIFICATION] markers remain
+- [x] Requirements are testable and unambiguous
+- [x] Success criteria are measurable
+- [x] Success criteria are technology-agnostic (no implementation details)
+- [x] All acceptance scenarios are defined
+- [x] Edge cases are identified
+- [x] Scope is clearly bounded
+- [x] Dependencies and assumptions identified
+
+## Feature Readiness
+
+- [x] All functional requirements have clear acceptance criteria
+- [x] User scenarios cover primary flows
+- [x] Feature meets measurable outcomes defined in Success Criteria
+- [x] No implementation details leak into specification
+
+## Notes
+
+- Validation passed on first iteration — no spec updates required.
+- Esta spec documenta retroactivamente una feature ya implementada y validada en producción
+  (rediseño de toolbar, selectores visuales de tabla y lenguaje de código, e icono de exportar),
+  incluyendo tres correcciones de defectos de UI (Historia 5) detectadas durante el desarrollo
+  iterativo con el usuario, para dejar constancia formal de los requisitos en la carpeta de specs.
