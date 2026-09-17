@@ -92,10 +92,17 @@ export function CodeLanguagePicker({
         </div>
       )}
       <div className={styles["dialogActions"]}>
-        <button type="button" className={styles["button"]} onClick={onClose}>
+        <button
+          type="button"
+          className={`${styles["button"]} ${styles["textButton"]}`}
+          onClick={onClose}
+        >
           Cancelar
         </button>
-        <button type="submit" className={styles["button"]}>
+        <button
+          type="submit"
+          className={`${styles["button"]} ${styles["textButton"]}`}
+        >
           Aplicar
         </button>
       </div>
