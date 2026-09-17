@@ -43,6 +43,13 @@ describe("US1: formato desde la barra en vista renderizada", () => {
     expect(select).toHaveValue("h2");
   });
 
+  it("convierte un párrafo en cita (blockquote)", async () => {
+    const { onChange, pm } = await setupEditor({ initialContent: "Hola" });
+    await userEvent.click(screen.getByRole("button", { name: "Cita" }));
+    expect(pm.querySelector("blockquote")).toHaveTextContent("Hola");
+    expect(onChange).toHaveBeenLastCalledWith("> Hola\n");
+  });
+
   it("vuelve de heading a párrafo", async () => {
     const { onChange } = await setupEditor({ initialContent: "# Hola\n" });
     const select = screen.getByRole("combobox", {

@@ -34,7 +34,7 @@ export function ExportMenu({ source, sanitize }: ExportMenuProps) {
       <button
         ref={buttonRef}
         type="button"
-        className={styles["button"]}
+        className={`${styles["button"]} ${styles["textButton"]}`}
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}

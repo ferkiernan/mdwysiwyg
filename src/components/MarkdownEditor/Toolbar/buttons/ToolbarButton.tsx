@@ -10,13 +10,18 @@ export interface ToolbarButtonProps
 export function ToolbarButton({
   label,
   pressed,
+  className,
   children,
   ...rest
 }: ToolbarButtonProps) {
+  const buttonClass =
+    className === undefined
+      ? styles["button"]
+      : `${styles["button"]} ${className}`;
   return (
     <button
       type="button"
-      className={styles["button"]}
+      className={buttonClass}
       aria-label={label}
       title={label}
       {...(pressed !== undefined ? { "aria-pressed": pressed } : {})}

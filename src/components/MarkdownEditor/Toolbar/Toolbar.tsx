@@ -4,10 +4,28 @@ import type { ViewMode } from "../types";
 import { ToolbarButton } from "./buttons/ToolbarButton";
 import { InsertDialog, type DialogKind } from "./buttons/InsertDialogs";
 import { ExportMenu } from "./buttons/ExportMenu";
+import {
+  IconCode,
+  IconCodeBlock,
+  IconBullets,
+  IconNumbered,
+  IconChecklist,
+  IconIndent,
+  IconOutdent,
+  IconQuote,
+  IconTable,
+  IconLink,
+  IconImage,
+  IconHr,
+} from "./buttons/icons";
 import styles from "../MarkdownEditor.module.css";
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 const HEADING_LEVELS: readonly HeadingLevel[] = [1, 2, 3, 4, 5, 6];
+
+function Separator() {
+  return <span className={styles["separator"]} aria-hidden="true" />;
+}
 
 export interface ToolbarProps {
   editor: Editor | null;
@@ -49,162 +67,177 @@ export function Toolbar({
   const closeDialog = () => setOpenDialog(null);
 
   return (
-    <div role="toolbar" aria-label="Barra de herramientas" className={styles["toolbar"]}>
-      <div className={styles["toolbarGroup"]}>
-        <select
-          className={styles["headingSelect"]}
-          aria-label="Nivel de encabezado"
-          disabled={!canFormat}
-          value={activeHeading === null ? "p" : `h${activeHeading}`}
-          onChange={(event) => {
-            if (!editor) return;
-            const value = event.target.value;
-            if (value === "p") {
-              editor.chain().focus().setParagraph().run();
-            } else {
-              const level = Number(value.slice(1)) as HeadingLevel;
-              editor.chain().focus().setHeading({ level }).run();
-            }
-          }}
-        >
-          <option value="p">Párrafo</option>
-          {HEADING_LEVELS.map((level) => (
-            <option key={level} value={`h${level}`}>
-              Encabezado {level}
-            </option>
-          ))}
-        </select>
-        <ToolbarButton
-          label="Negrita"
-          disabled={!canFormat}
-          pressed={canFormat && editor.isActive("bold")}
-          onClick={() => editor?.chain().focus().toggleBold().run()}
-        >
-          <strong>B</strong>
-        </ToolbarButton>
-        <ToolbarButton
-          label="Cursiva"
-          disabled={!canFormat}
-          pressed={canFormat && editor.isActive("italic")}
-          onClick={() => editor?.chain().focus().toggleItalic().run()}
-        >
-          <em>I</em>
-        </ToolbarButton>
-        <ToolbarButton
-          label="Tachado"
-          disabled={!canFormat}
-          pressed={canFormat && editor.isActive("strike")}
-          onClick={() => editor?.chain().focus().toggleStrike().run()}
-        >
-          <s>S</s>
-        </ToolbarButton>
-      </div>
+    <div
+      role="toolbar"
+      aria-label="Barra de herramientas"
+      className={styles["toolbar"]}
+    >
+      <ToolbarButton
+        label="Ver código Markdown"
+        pressed={viewMode === "markdown"}
+        onClick={onToggleView}
+      >
+        <IconCode />
+      </ToolbarButton>
 
-      <div className={styles["toolbarGroup"]}>
-        <ToolbarButton
-          label="Lista ordenada"
-          disabled={!canFormat}
-          pressed={canFormat && editor.isActive("orderedList")}
-          onClick={() => editor?.chain().focus().toggleOrderedList().run()}
-        >
-          1.
-        </ToolbarButton>
-        <ToolbarButton
-          label="Lista con viñetas"
-          disabled={!canFormat}
-          pressed={canFormat && editor.isActive("bulletList")}
-          onClick={() => editor?.chain().focus().toggleBulletList().run()}
-        >
-          •
-        </ToolbarButton>
-        <ToolbarButton
-          label="Lista de tareas"
-          disabled={!canFormat}
-          pressed={canFormat && editor.isActive("taskList")}
-          onClick={() => editor?.chain().focus().toggleTaskList().run()}
-        >
-          [ ]
-        </ToolbarButton>
-        <ToolbarButton
-          label="Aumentar sangría"
-          disabled={!canFormat || !editor.can().sinkListItem(listItemType)}
-          onClick={() =>
-            editor?.chain().focus().sinkListItem(listItemType).run()
+      <select
+        className={styles["headingSelect"]}
+        aria-label="Nivel de encabezado"
+        disabled={!canFormat}
+        value={activeHeading === null ? "p" : `h${activeHeading}`}
+        onChange={(event) => {
+          if (!editor) return;
+          const value = event.target.value;
+          if (value === "p") {
+            editor.chain().focus().setParagraph().run();
+          } else {
+            const level = Number(value.slice(1)) as HeadingLevel;
+            editor.chain().focus().setHeading({ level }).run();
           }
-        >
-          ⇥
-        </ToolbarButton>
-        <ToolbarButton
-          label="Disminuir sangría"
-          disabled={!canFormat || !editor.can().liftListItem(listItemType)}
-          onClick={() =>
-            editor?.chain().focus().liftListItem(listItemType).run()
-          }
-        >
-          ⇤
-        </ToolbarButton>
-      </div>
+        }}
+      >
+        <option value="p">Párrafo</option>
+        {HEADING_LEVELS.map((level) => (
+          <option key={level} value={`h${level}`}>
+            Encabezado {level}
+          </option>
+        ))}
+      </select>
 
-      <div className={`${styles["toolbarGroup"]} ${styles["dialogAnchor"]}`}>
-        <ToolbarButton
-          label="Bloque de código"
-          disabled={!canFormat}
-          pressed={canFormat && editor.isActive("codeBlock")}
-          onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
-        >
-          {"{ }"}
-        </ToolbarButton>
-        <ToolbarButton
-          label="Línea horizontal"
-          disabled={!canFormat}
-          onClick={() => editor?.chain().focus().setHorizontalRule().run()}
-        >
-          —
-        </ToolbarButton>
-        <ToolbarButton
-          label="Insertar imagen"
-          disabled={!canFormat}
-          onClick={() => setOpenDialog("image")}
-        >
-          Img
-        </ToolbarButton>
-        <ToolbarButton
-          label="Insertar enlace"
-          disabled={!canFormat}
-          pressed={canFormat && editor.isActive("link")}
-          onClick={() => setOpenDialog("link")}
-        >
-          Enlace
-        </ToolbarButton>
-        <ToolbarButton
-          label="Insertar tabla"
-          disabled={!canFormat}
-          onClick={() => setOpenDialog("table")}
-        >
-          Tabla
-        </ToolbarButton>
-        <ToolbarButton
-          label="Insertar HTML"
-          disabled={!canFormat}
-          onClick={() => setOpenDialog("html")}
-        >
-          HTML
-        </ToolbarButton>
-        {openDialog !== null && editor !== null && (
-          <InsertDialog kind={openDialog} editor={editor} onClose={closeDialog} />
-        )}
-      </div>
+      <ToolbarButton
+        label="Negrita"
+        className={styles["boldGlyph"]}
+        disabled={!canFormat}
+        pressed={canFormat && editor.isActive("bold")}
+        onClick={() => editor?.chain().focus().toggleBold().run()}
+      >
+        B
+      </ToolbarButton>
+      <ToolbarButton
+        label="Cursiva"
+        className={styles["italicGlyph"]}
+        disabled={!canFormat}
+        pressed={canFormat && editor.isActive("italic")}
+        onClick={() => editor?.chain().focus().toggleItalic().run()}
+      >
+        i
+      </ToolbarButton>
+      <ToolbarButton
+        label="Tachado"
+        className={styles["strikeGlyph"]}
+        disabled={!canFormat}
+        pressed={canFormat && editor.isActive("strike")}
+        onClick={() => editor?.chain().focus().toggleStrike().run()}
+      >
+        S
+      </ToolbarButton>
 
-      <div className={styles["toolbarGroup"]}>
-        <ToolbarButton
-          label="Ver código Markdown"
-          pressed={viewMode === "markdown"}
-          onClick={onToggleView}
-        >
-          {"</>"}
-        </ToolbarButton>
+      <Separator />
+
+      <ToolbarButton
+        label="Lista con viñetas"
+        disabled={!canFormat}
+        pressed={canFormat && editor.isActive("bulletList")}
+        onClick={() => editor?.chain().focus().toggleBulletList().run()}
+      >
+        <IconBullets />
+      </ToolbarButton>
+      <ToolbarButton
+        label="Lista ordenada"
+        disabled={!canFormat}
+        pressed={canFormat && editor.isActive("orderedList")}
+        onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+      >
+        <IconNumbered />
+      </ToolbarButton>
+      <ToolbarButton
+        label="Lista de tareas"
+        disabled={!canFormat}
+        pressed={canFormat && editor.isActive("taskList")}
+        onClick={() => editor?.chain().focus().toggleTaskList().run()}
+      >
+        <IconChecklist />
+      </ToolbarButton>
+      <ToolbarButton
+        label="Aumentar sangría"
+        disabled={!canFormat || !editor.can().sinkListItem(listItemType)}
+        onClick={() => editor?.chain().focus().sinkListItem(listItemType).run()}
+      >
+        <IconIndent />
+      </ToolbarButton>
+      <ToolbarButton
+        label="Disminuir sangría"
+        disabled={!canFormat || !editor.can().liftListItem(listItemType)}
+        onClick={() => editor?.chain().focus().liftListItem(listItemType).run()}
+      >
+        <IconOutdent />
+      </ToolbarButton>
+
+      <Separator />
+
+      <ToolbarButton
+        label="Bloque de código"
+        disabled={!canFormat}
+        pressed={canFormat && editor.isActive("codeBlock")}
+        onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
+      >
+        <IconCodeBlock />
+      </ToolbarButton>
+      <ToolbarButton
+        label="Cita"
+        disabled={!canFormat}
+        pressed={canFormat && editor.isActive("blockquote")}
+        onClick={() => editor?.chain().focus().toggleBlockquote().run()}
+      >
+        <IconQuote />
+      </ToolbarButton>
+      <ToolbarButton
+        label="Insertar tabla"
+        disabled={!canFormat}
+        onClick={() => setOpenDialog("table")}
+      >
+        <IconTable />
+      </ToolbarButton>
+      <ToolbarButton
+        label="Línea horizontal"
+        disabled={!canFormat}
+        onClick={() => editor?.chain().focus().setHorizontalRule().run()}
+      >
+        <IconHr />
+      </ToolbarButton>
+
+      <Separator />
+
+      <ToolbarButton
+        label="Insertar enlace"
+        disabled={!canFormat}
+        pressed={canFormat && editor.isActive("link")}
+        onClick={() => setOpenDialog("link")}
+      >
+        <IconLink />
+      </ToolbarButton>
+      <ToolbarButton
+        label="Insertar imagen"
+        disabled={!canFormat}
+        onClick={() => setOpenDialog("image")}
+      >
+        <IconImage />
+      </ToolbarButton>
+      <ToolbarButton
+        label="Insertar HTML"
+        disabled={!canFormat}
+        onClick={() => setOpenDialog("html")}
+      >
+        <span className={styles["htmlIcon"]}>HTML</span>
+      </ToolbarButton>
+
+      <div className={`${styles["spacer"]} ${styles["dialogAnchor"]}`}>
         <ExportMenu source={source} sanitize={sanitizeEmbeddedHtml} />
       </div>
+
+      {openDialog !== null && editor !== null && (
+        <InsertDialog kind={openDialog} editor={editor} onClose={closeDialog} />
+      )}
     </div>
   );
 }
