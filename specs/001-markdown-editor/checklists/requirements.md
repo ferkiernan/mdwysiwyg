@@ -31,5 +31,5 @@
 
 ## Notes
 
-- Validation passed on first iteration — no spec updates required.
-- El único punto de ambigüedad real detectado (política de HTML embebido) se resolvió como asunción documentada en lugar de bloqueo, ya que existe un default razonable (confianza en el usuario del propio editor) consistente con el resto del alcance declarado por el usuario.
+- Initial validation passed on first iteration.
+- 2026-09-17: Re-validated after `/speckit-clarify` session (3 questions resolved: Markdown flavor, embedded-HTML security posture, document scale). All 16 items remain passing; no regressions. New requirements FR-021–FR-023 and SC-006 added as a result.

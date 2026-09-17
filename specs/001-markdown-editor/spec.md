@@ -8,6 +8,14 @@
 
 **Input**: User description: "Componente React para visualizar y editar contenido Markdown, con vista renderizada (WYSIWYG) y vista Markdown/texto intercambiables mediante un botón `</>`, barra de herramientas para formato (párrafos, headings, negrita, cursiva, tachado), listas (ordenada, no ordenada, anidadas, checklist), bloques de código, inserción de imagen/enlace/tabla/línea horizontal/HTML embebido, y exportación a Markdown o HTML. Ambas vistas comparten el mismo contenido subyacente (Markdown) y se mantienen sincronizadas. Tamaño por defecto 700x500px si no se especifica. Notifica cambios de contenido a la aplicación consumidora. No persiste archivos."
 
+## Clarifications
+
+### Session 2026-09-17
+
+- Q: ¿Qué dialecto/flavor de Markdown debe soportar el componente como formato subyacente? → A: GFM (GitHub Flavored Markdown) — soporta tablas, checklist y tachado de forma nativa/estándar
+- Q: ¿Qué postura de seguridad debe adoptar el componente frente al HTML embebido insertado, al renderizarlo en la vista WYSIWYG? → A: Sanitizar por defecto, pero permitir que la aplicación consumidora desactive la sanitización explícitamente
+- Q: ¿Qué escala/tamaño de documento debe soportar el componente sin degradar la experiencia? → A: Documentos de uso personal/notas típicas, sin virtualización especial (sin límite explícito, sin optimización para documentos masivos)
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Editar en vista renderizada (WYSIWYG) (Priority: P1)
@@ -107,6 +115,9 @@ Un usuario finaliza su edición y utiliza el botón `Export` para obtener el con
 - **FR-018**: El componente MUST notificar a la aplicación consumidora cada vez que el contenido ha sido modificado, incluyendo el contenido Markdown actualizado.
 - **FR-019**: El componente MUST NOT ser responsable de persistir o guardar el contenido en el sistema de archivos; esa responsabilidad corresponde a la aplicación consumidora.
 - **FR-020**: El componente MUST tratar el Markdown como la única fuente de verdad del contenido, de forma que la vista renderizada sea siempre una proyección derivada de dicho Markdown.
+- **FR-021**: El componente MUST usar GitHub Flavored Markdown (GFM) como dialecto de Markdown subyacente, soportando de forma nativa tablas, checklists y tachado.
+- **FR-022**: El componente MUST sanitizar por defecto el HTML embebido antes de renderizarlo en la vista WYSIWYG, para prevenir la ejecución de contenido potencialmente malicioso.
+- **FR-023**: El componente MUST permitir que la aplicación consumidora desactive explícitamente la sanitización del HTML embebido cuando confíe en el origen del contenido.
 
 ### Key Entities
 
@@ -123,10 +134,11 @@ Un usuario finaliza su edición y utiliza el botón `Export` para obtener el con
 - **SC-003**: El contenido exportado como Markdown y como HTML corresponde fielmente al contenido visible en el editor en el 100% de los casos de prueba de exportación.
 - **SC-004**: La aplicación consumidora recibe una notificación de cambio de contenido dentro de un tiempo imperceptible para el usuario (percibido como instantáneo) tras cada edición.
 - **SC-005**: El componente se integra y renderiza correctamente en un proyecto React externo sin contenido inicial y sin tamaño especificado, mostrando el tamaño por defecto de 700x500px.
+- **SC-006**: El componente mantiene una experiencia de edición fluida (sin retraso perceptible al escribir o alternar de vista) con documentos de tamaño típico de notas o documentación personal (hasta varios miles de palabras); no se garantiza rendimiento óptimo para documentos de escala masiva ni se requiere virtualización especial.
 
 ## Assumptions
 
-- El "HTML embebido" insertable se trata como contenido de confianza proporcionado por el propio usuario del editor (no contenido de terceros no confiable); no se asume una capa de sanitización específica más allá de las prácticas estándar de manejo seguro de HTML en aplicaciones web, ya que definir una política de sanitización es una decisión de la aplicación consumidora según su contexto de seguridad.
+- La sanitización por defecto del HTML embebido (FR-022) sigue prácticas estándar de manejo seguro de HTML en aplicaciones web (p. ej. eliminación de `<script>`, manejadores de eventos inline y otros vectores conocidos de XSS); el mecanismo exacto de desactivación (FR-023) es una decisión de diseño técnico a resolver en la fase de planificación.
 - La inserción de imágenes se realiza mediante referencia (URL), consistente con la sintaxis estándar de Markdown para imágenes; la carga/subida de archivos binarios queda fuera del alcance del componente (alineado con "Fuera de alcance": el componente no persiste archivos).
 - Los niveles de heading soportados siguen el estándar Markdown común (nivel 1 a 6).
 - El checklist se representa con la sintaxis estándar de listas de tareas de Markdown (`- [ ]` / `- [x]`).
