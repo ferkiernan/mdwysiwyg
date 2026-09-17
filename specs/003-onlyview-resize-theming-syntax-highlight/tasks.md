@@ -94,14 +94,16 @@ Single project: `src/` y `tests/` en la raíz del repo.
 ### Tests for User Story 3
 
 - [x] T012 [P] [US3] Crear `tests/MarkdownEditor/toolbar-theming.test.tsx`: renderizar el componente con una hoja de estilo de test que sobreescribe `--mdw-toolbar-fg` sobre un `className` dado, y verificar (vía `getComputedStyle`) que la variable resuelve al valor personalizado en el elemento de la toolbar; verificar que `--mdw-toolbar-gradient-from` conserva su default cuando no se sobreescribe (FR-013 a FR-016)
+- [x] T012a [P] [US3] Añadir a `tests/MarkdownEditor/toolbar-theming.test.tsx`: verificar que `--mdw-content-bg` resuelve a `var(--mdw-bg)` por defecto en el contenedor `.content`, y que un override (probado con un `linear-gradient`) se refleja correctamente (FR-016a) — tarea añadida retroactivamente tras detectar el gap
 
 ### Implementation for User Story 3
 
 - [x] T013 [US3] En `MarkdownEditor.module.css`, declarar en `.root`: `--mdw-toolbar-gradient-from: #eeeeee; --mdw-toolbar-gradient-via: #dcdcdc; --mdw-toolbar-gradient-to: #cfcfcf; --mdw-toolbar-fg: #222222; --mdw-toolbar-font-family: Arial, sans-serif;` (valores por defecto actuales, ver data-model.md)
 - [x] T014 [US3] En `.toolbar`, reemplazar el `background: linear-gradient(...)` hardcodeado por `background: linear-gradient(to bottom, var(--mdw-toolbar-gradient-from) 0%, var(--mdw-toolbar-gradient-via) 45%, var(--mdw-toolbar-gradient-to) 100%)`, y en `.button`/`.headingSelect`/glifos de texto reemplazar `color: #222`/`font-family: Arial, sans-serif` por `color: var(--mdw-toolbar-fg)` / `font-family: var(--mdw-toolbar-font-family)` (FR-013, FR-015, FR-016)
-- [x] T015 [US3] Documentar las 5 variables CSS en `src/components/MarkdownEditor/README.md` (tabla nombre/default/qué controla) como parte de la superficie de personalización pública (Principio X)
+- [x] T014a [US3] Añadir `--mdw-content-bg: var(--mdw-bg);` a `.root`; aplicar `background: var(--mdw-content-bg)` en `.content`; cambiar `.source` (textarea) de `background: var(--mdw-bg)` a `background: transparent` para que herede el fondo de `.content` en vez de taparlo (FR-016a) — tarea añadida retroactivamente tras detectar el gap
+- [x] T015 [US3] Documentar las 5 (ahora 6) variables CSS en `src/components/MarkdownEditor/README.md` (tabla nombre/default/qué controla), incluyendo `--mdw-content-bg` con ejemplos de color, degradado e imagen con transparencia, como parte de la superficie de personalización pública (Principio X)
 
-**Checkpoint**: US3 completa — toolbar completamente themeable vía CSS estándar, aspecto por defecto sin cambios
+**Checkpoint**: US3 completa — toolbar y fondo del área de contenido completamente themeables vía CSS estándar, aspecto por defecto sin cambios
 
 ---
 

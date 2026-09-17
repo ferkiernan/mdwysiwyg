@@ -12,9 +12,9 @@ Todo lo no mencionado aquí permanece sin cambios (FR-021).
 | `onlyView` | `boolean` | No | `false` | FR-001 a FR-008 |
 | `resizable` | `boolean` | No | `true` | FR-009 a FR-012 |
 
-No se añade ninguna prop de theming (FR-014): la personalización visual de la toolbar se resuelve
-íntegramente mediante CSS Custom Properties (ver [data-model.md](../data-model.md)), no forma
-parte de `MarkdownEditorProps`.
+No se añade ninguna prop de theming (FR-014): la personalización visual de la toolbar y del fondo
+del área de contenido se resuelve íntegramente mediante CSS Custom Properties (ver
+[data-model.md](../data-model.md)), no forma parte de `MarkdownEditorProps`.
 
 ## Comportamiento contractual — `onlyView`
 
@@ -38,15 +38,18 @@ parte de `MarkdownEditorProps`.
    la toolbar (FR-012); el valor exacto es un detalle de implementación, no una prop configurable
    (no se agrega ninguna prop de tamaño mínimo).
 
-## Comportamiento contractual — Theming de la toolbar
+## Comportamiento contractual — Theming de la toolbar y del área de contenido
 
 1. Sin ninguna variable CSS sobreescrita, el componente MUST mostrar el aspecto visual por defecto
-   actual (FR-015).
+   actual (FR-015), incluyendo el fondo del área de contenido (blanco, heredado de `--mdw-bg`).
 2. La aplicación consumidora MUST poder sobreescribir cualquier subconjunto de las variables listadas
    en [data-model.md](../data-model.md) mediante CSS estándar (por ejemplo, un selector que apunte
    al `className` pasado por la app, o una regla más específica), y las variables no sobreescritas
    MUST conservar su valor por defecto (FR-016).
-3. Las variables CSS MUST documentarse en el README del componente como parte de su superficie de
+3. `--mdw-content-bg` MUST aceptar cualquier valor válido del shorthand CSS `background` (color
+   sólido, degradado, o imagen con capas/transparencia combinadas), aplicándose al área de
+   contenido en ambas vistas (renderizada y Markdown), no solo a una de ellas.
+4. Las variables CSS MUST documentarse en el README del componente como parte de su superficie de
    personalización pública, aunque no formen parte de `MarkdownEditorProps`.
 
 ## Comportamiento contractual — Resaltado de sintaxis

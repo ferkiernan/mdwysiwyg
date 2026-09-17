@@ -24,6 +24,10 @@ capacidades nuevas, sin alterar el comportamiento por defecto actual del compone
   iconos) en la API pública del componente? → A: CSS Custom Properties — el componente expone
   variables CSS que la aplicación consumidora sobreescribe con CSS estándar, sin agregar props
   nuevas para cada color/fuente individual.
+- 2026-09-17 (tras implementación): se detectó que la Historia 3 original no cubría el fondo del
+  área de contenido editable (solo la toolbar), a pesar de que el mismo mecanismo de theming
+  (CSS Custom Properties) aplica igual de bien a ese caso. Se amplía US3 y se añade FR-016a para
+  cubrirlo, siguiendo la misma decisión de mecanismo ya tomada.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -94,13 +98,15 @@ arrastre y que el tamaño permanece fijo.
 
 ---
 
-### User Story 3 - Personalizar la apariencia visual de la toolbar (Priority: P2)
+### User Story 3 - Personalizar la apariencia visual de la toolbar y del área de contenido (Priority: P2)
 
 Una aplicación que integra el componente en un producto con su propia identidad visual (colores de
 marca, tipografía corporativa) ajusta el aspecto de la barra de herramientas del editor —el
-degradado de fondo, el color del texto e iconos, y la fuente tipográfica— para que combine con el
-resto de la aplicación, sin necesidad de modificar el código fuente del componente ni de esperar
-una nueva versión de la librería que agregue soporte específico para esa personalización.
+degradado de fondo, el color del texto e iconos, y la fuente tipográfica— y el fondo del área
+donde se edita el contenido (un color, un degradado, o una imagen con transparencia, por ejemplo
+para una marca de agua sutil), para que combine con el resto de la aplicación, sin necesidad de
+modificar el código fuente del componente ni de esperar una nueva versión de la librería que
+agregue soporte específico para esa personalización.
 
 **Why this priority**: Es una mejora de integración visual que no es indispensable para el
 funcionamiento del editor (el aspecto por defecto ya es utilizable), pero es importante para la
@@ -126,6 +132,10 @@ texto e iconos oscuros).
 4. **Given** una aplicación consumidora personaliza solo uno de los aspectos visuales (por ejemplo,
    solo el color de texto), **When** el componente se renderiza, **Then** el resto de los aspectos
    no personalizados (por ejemplo, el degradado) conservan su valor por defecto.
+5. **Given** una aplicación consumidora define una personalización del fondo del área de contenido
+   (un color, un degradado, o una imagen), **When** el componente se renderiza, **Then** el fondo
+   del área donde se edita el contenido —en ambas vistas— refleja esa personalización en lugar del
+   fondo blanco por defecto.
 
 ---
 
@@ -222,6 +232,10 @@ clave, cadenas de texto, comentarios).
 - **FR-016**: La aplicación consumidora MUST poder personalizar cualquier subconjunto de los
   aspectos visuales de la barra (por ejemplo, solo el color de texto) sin verse obligada a
   redefinir los demás, que MUST conservar su valor por defecto.
+- **FR-016a**: El componente MUST permitir que la aplicación consumidora personalice, mediante el
+  mismo mecanismo de variables CSS (FR-014), el fondo del área de contenido editable (ambas
+  vistas), admitiendo como valor un color sólido, un degradado, o una imagen con transparencia. Si
+  no se personaliza, el fondo MUST conservar el valor por defecto actual (blanco).
 - **FR-017**: El componente MUST aplicar resaltado de sintaxis al contenido de los bloques de
   código en la vista renderizada, reflejando el lenguaje de programación asociado a cada bloque.
 - **FR-018**: El resaltado de sintaxis MUST ser consistente con el conjunto de lenguajes ya

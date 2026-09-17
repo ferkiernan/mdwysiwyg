@@ -24,10 +24,12 @@ No es un objeto de estado propio: es una prop de solo lectura que controla dos f
 El tamaño resultante de un redimensionamiento por arrastre es estado de layout del navegador (no
 gestionado por React), efímero por diseño (fuera de alcance persistirlo, según la spec).
 
-## Personalización visual de la toolbar (CSS Custom Properties)
+## Personalización visual (CSS Custom Properties)
 
 No es un objeto de props — es un contrato de nombres de variables CSS que el componente define con
-sus valores por defecto y la aplicación consumidora puede sobreescribir.
+sus valores por defecto y la aplicación consumidora puede sobreescribir. Cubre tanto la toolbar
+(FR-013 a FR-016) como el fondo del área de contenido (extensión no numerada de la misma
+capacidad, mismo mecanismo).
 
 | Variable | Valor por defecto | Controla |
 |---|---|---|
@@ -36,11 +38,14 @@ sus valores por defecto y la aplicación consumidora puede sobreescribir.
 | `--mdw-toolbar-gradient-to` | `#cfcfcf` | Color final del degradado |
 | `--mdw-toolbar-fg` | `#222222` | Color de texto e iconos de la toolbar |
 | `--mdw-toolbar-font-family` | `Arial, sans-serif` | Fuente tipográfica de la toolbar |
+| `--mdw-content-bg` | `var(--mdw-bg)` (blanco) | Fondo del área de contenido editable (ambas vistas). Acepta cualquier valor válido del shorthand `background` (color sólido, degradado, o imagen con capas/transparencia) |
 
 Cada variable no sobreescrita conserva su valor por defecto de forma independiente (FR-016), al
 declararse en el propio CSS Module mediante `var(--mdw-toolbar-x, <default>)` o definiendo el
 default directamente en `:root`/`.root` y dejando que la app la sobreescriba en un selector más
-específico.
+específico. `--mdw-content-bg` sigue el mismo patrón: se aplica como `background: var(--mdw-content-bg)`
+sobre el contenedor de contenido (no sobre `.root`), por lo que no interfiere con el color de fondo
+general del contenedor raíz/borde.
 
 ## Lenguaje de bloque de código → esquema de resaltado
 

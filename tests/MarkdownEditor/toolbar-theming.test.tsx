@@ -67,4 +67,39 @@ describe("US3: personalización visual de la toolbar (CSS Custom Properties)", (
       cleanup();
     }
   });
+
+  it("el fondo del área de contenido hereda --mdw-bg por defecto (--mdw-content-bg: var(--mdw-bg))", () => {
+    const { container } = render(<MarkdownEditor />);
+    const root = container.firstElementChild as HTMLElement;
+    const content = root.querySelector(
+      "div > div:last-child",
+    ) as HTMLElement;
+    const contentStyle = getComputedStyle(content);
+    expect(contentStyle.getPropertyValue("--mdw-content-bg").trim()).toBe(
+      "var(--mdw-bg)",
+    );
+  });
+
+  it("permite personalizar el fondo del área de contenido (color, degradado o imagen)", () => {
+    const cleanup = injectStyle(`
+      .mdw-theme-content-bg {
+        --mdw-content-bg: linear-gradient(135deg, #fef3c7, #fde68a);
+      }
+    `);
+    try {
+      const { container } = render(
+        <MarkdownEditor className="mdw-theme-content-bg" />,
+      );
+      const root = container.firstElementChild as HTMLElement;
+      const content = root.querySelector(
+        "div > div:last-child",
+      ) as HTMLElement;
+      const style = getComputedStyle(content);
+      expect(
+        style.getPropertyValue("--mdw-content-bg").trim().replace(/\s+/g, ""),
+      ).toBe("linear-gradient(135deg,#fef3c7,#fde68a)");
+    } finally {
+      cleanup();
+    }
+  });
 });

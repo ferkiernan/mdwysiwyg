@@ -59,9 +59,9 @@ Tipos exportados: `MarkdownEditorProps`.
 La barra se mantiene en una sola fila: si el espacio disponible es insuficiente, el selector de
 encabezado se encoge (hasta 30px de ancho mínimo) antes que cualquier otro control.
 
-## Theming de la toolbar (CSS Custom Properties)
+## Theming (CSS Custom Properties)
 
-El aspecto visual de la barra (degradado de fondo, color de texto/iconos, fuente) se personaliza
+El aspecto visual de la barra de herramientas y del fondo del área de contenido se personaliza
 con CSS estándar, sin agregar props al componente. Sobreescribí cualquier subconjunto de estas
 variables en un selector que apunte al `className` que le pases:
 
@@ -72,6 +72,11 @@ variables en un selector que apunte al `className` que le pases:
 | `--mdw-toolbar-gradient-to` | `#cfcfcf` | Color final del degradado |
 | `--mdw-toolbar-fg` | `#222222` | Color de texto e iconos de la barra |
 | `--mdw-toolbar-font-family` | `Arial, sans-serif` | Fuente tipográfica de la barra |
+| `--mdw-content-bg` | `var(--mdw-bg)` (blanco) | Fondo del área de contenido (ambas vistas): admite color sólido, degradado o imagen |
+
+`--mdw-content-bg` acepta cualquier valor válido de la propiedad CSS `background` (shorthand
+completo: color, `linear-gradient(...)`, o `url(...)` con capas y transparencia combinadas), ya
+que se aplica directamente como `background: var(--mdw-content-bg)`.
 
 ```css
 .mi-editor-oscuro {
@@ -80,6 +85,13 @@ variables en un selector que apunte al `className` que le pases:
   --mdw-toolbar-gradient-to: #020617;
   --mdw-toolbar-fg: #f8fafc;
   --mdw-toolbar-font-family: "Inter", sans-serif;
+  --mdw-content-bg: #0b1220;
+}
+
+.mi-editor-con-marca-de-agua {
+  --mdw-content-bg:
+    url("/marca-de-agua.png") center / 200px no-repeat,
+    #ffffff;
 }
 ```
 

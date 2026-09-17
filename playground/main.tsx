@@ -64,7 +64,7 @@ function App() {
       </section>
 
       <section>
-        <h2>Toolbar con tema oscuro personalizado (CSS Custom Properties)</h2>
+        <h2>Toolbar y fondo de contenido personalizados (CSS Custom Properties)</h2>
         <style>{`
           .mdw-dark-theme {
             --mdw-toolbar-gradient-from: #1e293b;
@@ -72,6 +72,7 @@ function App() {
             --mdw-toolbar-gradient-to: #020617;
             --mdw-toolbar-fg: #f8fafc;
             --mdw-toolbar-font-family: "Trebuchet MS", sans-serif;
+            --mdw-content-bg: linear-gradient(135deg, #fef3c7, #fde68a);
           }
         `}</style>
         <MarkdownEditor

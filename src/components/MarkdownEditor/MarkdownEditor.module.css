@@ -9,6 +9,7 @@
   --mdw-toolbar-gradient-to: #cfcfcf;
   --mdw-toolbar-fg: #222222;
   --mdw-toolbar-font-family: Arial, sans-serif;
+  --mdw-content-bg: var(--mdw-bg);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -40,6 +41,7 @@
   overflow: auto;
   display: flex;
   flex-direction: column;
+  background: var(--mdw-content-bg);
 }
 
 .content > div {
@@ -163,7 +165,7 @@
   font-size: 13px;
   line-height: 1.5;
   color: inherit;
-  background: var(--mdw-bg);
+  background: transparent;
 }
 
 .toolbar {

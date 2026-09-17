@@ -37,3 +37,7 @@
   confirmado explícitamente por el usuario. Documentada en la sección "Clarifications" del spec.
 - Validation passed on first iteration tras incorporar esa respuesta — no se requirieron más
   ajustes al spec.
+- 2026-09-17 (post-implementación): se detectó un gap en US3 (no cubría el fondo del área de
+  contenido, solo la toolbar) y se corrigió agregando el escenario 5, FR-016a, y actualizando
+  data-model.md/contracts/quickstart/README en consecuencia. Los 16 ítems siguen pasando tras el
+  ajuste; sin regresiones.

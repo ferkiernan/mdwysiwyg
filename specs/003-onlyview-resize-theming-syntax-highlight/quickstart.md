@@ -37,7 +37,7 @@ vez de duplicarlos.
 3. En el segundo caso, no debe aparecer ningún control de arrastre, y el tamaño debe permanecer
    igual al especificado (o al default 700×500) sin importar la interacción del usuario.
 
-## Escenario 3 — Personalización visual de la toolbar (US3)
+## Escenario 3 — Personalización visual de la toolbar y del área de contenido (US3)
 
 ```css
 /* En el CSS de la aplicación consumidora */
@@ -47,20 +47,32 @@ vez de duplicarlos.
   --mdw-toolbar-gradient-to: #020617;
   --mdw-toolbar-fg: #f8fafc;
   --mdw-toolbar-font-family: "Inter", sans-serif;
+  --mdw-content-bg: #0b1220;
+}
+
+.mi-editor-con-marca-de-agua {
+  --mdw-content-bg:
+    url("/marca-de-agua.png") center / 200px no-repeat,
+    #ffffff;
 }
 ```
 
 ```tsx
 <MarkdownEditor className="mi-editor-personalizado" />
+<MarkdownEditor className="mi-editor-con-marca-de-agua" />
 ```
 
 **Pasos de validación**:
 1. La toolbar debe mostrar el degradado oscuro y texto claro definidos, en vez del degradado gris
    por defecto.
-2. Sobreescribir solo `--mdw-toolbar-fg` (sin tocar el resto) — el degradado y la fuente deben
-   seguir siendo los valores por defecto.
-3. Montar el componente sin ninguna clase personalizada — debe verse igual que en
-   `002-toolbar-redesign-insert-pickers` (degradado gris, texto oscuro).
+2. El área de contenido (ambas vistas) debe mostrar el color de fondo oscuro definido en
+   `--mdw-content-bg`, en vez del fondo blanco por defecto.
+3. El segundo editor debe mostrar la imagen de marca de agua centrada sobre fondo blanco, con
+   transparencia respetada si la imagen la tiene.
+4. Sobreescribir solo `--mdw-toolbar-fg` (sin tocar el resto) — el degradado, la fuente y el fondo
+   de contenido deben seguir siendo los valores por defecto.
+5. Montar el componente sin ninguna clase personalizada — debe verse igual que en
+   `002-toolbar-redesign-insert-pickers` (degradado gris, texto oscuro, fondo de contenido blanco).
 
 ## Escenario 4 — Resaltado de sintaxis (US4)
 
