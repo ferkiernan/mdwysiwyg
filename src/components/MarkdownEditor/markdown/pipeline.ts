@@ -7,11 +7,33 @@ import rehypeStringify from "rehype-stringify";
 import rehypeParse from "rehype-parse";
 import rehypeRaw from "rehype-raw";
 import rehypeRemark from "rehype-remark";
-import rehypeSanitize from "rehype-sanitize";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import rehypeHighlight from "rehype-highlight";
 import { visit } from "unist-util-visit";
 import type { Root as MdastRoot, RootContent } from "mdast";
 import type { Root as HastRoot, Element, ElementContent } from "hast";
 import type { State } from "hast-util-to-mdast";
+import json from "highlight.js/lib/languages/json";
+import sql from "highlight.js/lib/languages/sql";
+import typescript from "highlight.js/lib/languages/typescript";
+import javascript from "highlight.js/lib/languages/javascript";
+import java from "highlight.js/lib/languages/java";
+
+const HIGHLIGHT_LANGUAGES = { json, sql, typescript, javascript, java };
+
+/**
+ * `rehype-sanitize`'s default (GFM) schema strips `class` from `code`/`span`,
+ * which would silently discard the `hljs-*` classes rehype-highlight just
+ * added. Extend it explicitly so exported HTML keeps the highlighting.
+ */
+const sanitizeSchemaWithHighlight = {
+  ...defaultSchema,
+  attributes: {
+    ...defaultSchema.attributes,
+    code: [...(defaultSchema.attributes?.code ?? []), "className"],
+    span: [...(defaultSchema.attributes?.span ?? []), "className"],
+  },
+};
 
 export interface PipelineOptions {
   sanitize: boolean;
@@ -181,7 +203,7 @@ export function editorHtmlToMarkdown(html: string): string {
   return String(file);
 }
 
-/** Markdown (GFM) → HTML completo para exportación (FR-013). */
+/** Markdown (GFM) → HTML completo para exportación (FR-013, FR-017). */
 export function markdownToHtml(
   markdown: string,
   options: PipelineOptions,
@@ -190,9 +212,13 @@ export function markdownToHtml(
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkRehype, { allowDangerousHtml: true })
-    .use(rehypeRaw);
+    .use(rehypeRaw)
+    .use(rehypeHighlight, {
+      languages: HIGHLIGHT_LANGUAGES,
+      ignoreMissing: true,
+    });
   const withSanitize = options.sanitize
-    ? processor.use(rehypeSanitize)
+    ? processor.use(rehypeSanitize, sanitizeSchemaWithHighlight)
     : processor;
   const file = withSanitize.use(rehypeStringify).processSync(markdown);
   return String(file);

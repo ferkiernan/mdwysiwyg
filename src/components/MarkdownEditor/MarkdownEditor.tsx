@@ -22,9 +22,12 @@ export function MarkdownEditor({
   height = 500,
   sanitizeEmbeddedHtml = true,
   className,
+  onlyView = false,
+  resizable = true,
 }: MarkdownEditorProps) {
   const [source, setSource] = useState(initialContent);
   const [viewMode, setViewMode] = useState<ViewMode>("wysiwyg");
+  const effectiveViewMode: ViewMode = onlyView ? "wysiwyg" : viewMode;
 
   // Refs keep the editor's onUpdate closure valid across renders without
   // recreating the editor when onChange or source change.
@@ -42,6 +45,7 @@ export function MarkdownEditor({
     {
       extensions,
       content: markdownToEditorContent(sourceRef.current),
+      editable: !onlyView,
       editorProps: {
         attributes: {
           role: "textbox",
@@ -56,7 +60,7 @@ export function MarkdownEditor({
         onChangeRef.current?.(markdown);
       },
     },
-    [sanitizeEmbeddedHtml],
+    [sanitizeEmbeddedHtml, onlyView],
   );
 
   const toggleView = () => {
@@ -78,10 +82,13 @@ export function MarkdownEditor({
     onChangeRef.current?.(value);
   };
 
-  const rootClassName =
-    className === undefined
-      ? styles["root"]
-      : `${styles["root"]} ${className}`;
+  const rootClassName = [
+    styles["root"],
+    resizable ? styles["resizable"] : undefined,
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div
@@ -90,16 +97,21 @@ export function MarkdownEditor({
     >
       <Toolbar
         editor={editor}
-        viewMode={viewMode}
+        viewMode={effectiveViewMode}
         onToggleView={toggleView}
         source={source}
         sanitizeEmbeddedHtml={sanitizeEmbeddedHtml}
+        onlyView={onlyView}
       />
       <div className={styles["content"]}>
-        {viewMode === "wysiwyg" ? (
+        {effectiveViewMode === "wysiwyg" ? (
           <RenderedView editor={editor} />
         ) : (
-          <MarkdownSourceView value={source} onChange={handleSourceChange} />
+          <MarkdownSourceView
+            value={source}
+            onChange={handleSourceChange}
+            readOnly={onlyView}
+          />
         )}
       </div>
     </div>

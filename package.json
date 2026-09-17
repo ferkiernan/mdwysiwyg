@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@tiptap/core": "^2.27.3",
+    "@tiptap/extension-code-block-lowlight": "^2.27.3",
     "@tiptap/extension-image": "^2.27.3",
     "@tiptap/extension-link": "^2.27.3",
     "@tiptap/extension-table": "^2.27.3",
@@ -55,6 +56,8 @@
     "@tiptap/pm": "^2.27.3",
     "@tiptap/react": "^2.27.3",
     "@tiptap/starter-kit": "^2.27.3",
+    "lowlight": "^3.3.0",
+    "rehype-highlight": "^7.0.2",
     "rehype-parse": "^9.0.1",
     "rehype-raw": "^7.0.0",
     "rehype-remark": "^10.0.1",

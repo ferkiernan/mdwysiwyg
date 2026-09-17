@@ -36,6 +36,7 @@ export interface ToolbarProps {
   onToggleView: () => void;
   source: string;
   sanitizeEmbeddedHtml: boolean;
+  onlyView?: boolean;
 }
 
 export function Toolbar({
@@ -44,6 +45,7 @@ export function Toolbar({
   onToggleView,
   source,
   sanitizeEmbeddedHtml,
+  onlyView = false,
 }: ToolbarProps) {
   const [, forceUpdate] = useReducer((count: number) => count + 1, 0);
   const [openDialog, setOpenDialog] = useState<
@@ -66,6 +68,21 @@ export function Toolbar({
       editor.off("transaction", forceUpdate);
     };
   }, [editor]);
+
+  if (onlyView) {
+    return (
+      <div
+        role="toolbar"
+        aria-label="Barra de herramientas"
+        className={styles["toolbar"]}
+      >
+        <span className={styles["readOnlyNotice"]}>Edición desactivada</span>
+        <div className={styles["spacer"]}>
+          <ExportMenu source={source} sanitize={sanitizeEmbeddedHtml} />
+        </div>
+      </div>
+    );
+  }
 
   const canFormat = viewMode === "wysiwyg" && editor !== null;
 

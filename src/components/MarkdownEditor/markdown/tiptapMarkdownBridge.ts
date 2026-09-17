@@ -8,11 +8,26 @@ import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { createLowlight } from "lowlight";
+import json from "highlight.js/lib/languages/json";
+import sql from "highlight.js/lib/languages/sql";
+import typescript from "highlight.js/lib/languages/typescript";
+import javascript from "highlight.js/lib/languages/javascript";
+import java from "highlight.js/lib/languages/java";
 import {
   editorHtmlToMarkdown,
   markdownToEditorHtml,
   sanitizeHtmlFragment,
 } from "./pipeline";
+
+/**
+ * Registro selectivo: solo los 5 lenguajes ya ofrecidos por el selector de
+ * lenguaje de bloque de código, en vez de `createLowlight(all)` (~190
+ * gramáticas), para mantener el bundle acotado (Principio VIII).
+ */
+export const lowlight = createLowlight();
+lowlight.register({ json, sql, typescript, javascript, java });
 
 export interface HtmlBlockOptions {
   sanitize: boolean;
@@ -73,7 +88,8 @@ export function createEditorExtensions(
   options: EditorExtensionOptions,
 ): Extensions {
   return [
-    StarterKit,
+    StarterKit.configure({ codeBlock: false }),
+    CodeBlockLowlight.configure({ lowlight }),
     Table.configure({ resizable: false }),
     TableRow,
     TableHeader,

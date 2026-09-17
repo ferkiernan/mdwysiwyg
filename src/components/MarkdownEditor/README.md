@@ -39,6 +39,8 @@ Sin `initialContent` el editor comienza vacío. Sin `width`/`height` usa 700×50
 | `height` | `number \| string` | `500` | Alto (número = px, string = CSS). |
 | `sanitizeEmbeddedHtml` | `boolean` | `true` | Sanitiza el HTML embebido antes de renderizarlo en la vista WYSIWYG (elimina `<script>`, handlers inline y demás vectores XSS). Desactivar solo con contenido de confianza. |
 | `className` | `string` | — | Clase adicional para el contenedor raíz. |
+| `onlyView` | `boolean` | `false` | Arranca en modo de solo lectura: ninguna vista es editable, la barra muestra "Edición desactivada" y conserva solo el control de exportar. |
+| `resizable` | `boolean` | `true` | Permite redimensionar el componente arrastrando su esquina inferior derecha (como un `<textarea>` nativo). Con `false`, el tamaño queda fijo. |
 
 Tipos exportados: `MarkdownEditorProps`.
 
@@ -46,8 +48,8 @@ Tipos exportados: `MarkdownEditorProps`.
 
 - **Formato**: párrafo, encabezados H1–H6, negrita, cursiva, tachado.
 - **Listas**: ordenada, con viñetas, de tareas (checklist), y sangría para anidar.
-- **Bloques**: bloque de código (con selector de lenguaje: JSON, SQL, TypeScript, JavaScript, Java
-  u "Otro…" para especificar cualquier otro), cita, línea horizontal.
+- **Bloques**: bloque de código con resaltado de sintaxis y selector de lenguaje (JSON, SQL,
+  TypeScript, JavaScript, Java u "Otro…" para especificar cualquier otro), cita, línea horizontal.
 - **Insertar**: imagen (por URL), enlace, tabla (selector visual de tamaño: cuadrícula 10×10,
   convención columnas × filas — "3 × 4" = 3 columnas y 4 filas), HTML embebido.
 - **`</>`**: alterna entre vista renderizada y vista Markdown. Alternar nunca modifica el contenido.
@@ -56,6 +58,36 @@ Tipos exportados: `MarkdownEditorProps`.
 
 La barra se mantiene en una sola fila: si el espacio disponible es insuficiente, el selector de
 encabezado se encoge (hasta 30px de ancho mínimo) antes que cualquier otro control.
+
+## Theming de la toolbar (CSS Custom Properties)
+
+El aspecto visual de la barra (degradado de fondo, color de texto/iconos, fuente) se personaliza
+con CSS estándar, sin agregar props al componente. Sobreescribí cualquier subconjunto de estas
+variables en un selector que apunte al `className` que le pases:
+
+| Variable | Default | Controla |
+| --- | --- | --- |
+| `--mdw-toolbar-gradient-from` | `#eeeeee` | Color inicial del degradado de la barra |
+| `--mdw-toolbar-gradient-via` | `#dcdcdc` | Color intermedio del degradado |
+| `--mdw-toolbar-gradient-to` | `#cfcfcf` | Color final del degradado |
+| `--mdw-toolbar-fg` | `#222222` | Color de texto e iconos de la barra |
+| `--mdw-toolbar-font-family` | `Arial, sans-serif` | Fuente tipográfica de la barra |
+
+```css
+.mi-editor-oscuro {
+  --mdw-toolbar-gradient-from: #1e293b;
+  --mdw-toolbar-gradient-via: #0f172a;
+  --mdw-toolbar-gradient-to: #020617;
+  --mdw-toolbar-fg: #f8fafc;
+  --mdw-toolbar-font-family: "Inter", sans-serif;
+}
+```
+
+```tsx
+<MarkdownEditor className="mi-editor-oscuro" />
+```
+
+Cualquier variable que no sobreescribas conserva su valor por defecto.
 
 ## Ejemplos
 
@@ -67,6 +99,13 @@ encabezado se encoge (hasta 30px de ancho mínimo) antes que cualquier otro cont
 <MarkdownEditor
   initialContent={'<div class="widget">…</div>'}
   sanitizeEmbeddedHtml={false}
+/>
+
+// Visor de solo lectura, sin control de redimensionamiento
+<MarkdownEditor
+  onlyView
+  resizable={false}
+  initialContent={documentoExistente}
 />
 ```
 
@@ -87,3 +126,9 @@ encabezado se encoge (hasta 30px de ancho mínimo) antes que cualquier otro cont
 - **Escala**: pensado para documentos de tamaño típico de notas/documentación personal; no hay
   virtualización para documentos masivos.
 - **Persistencia**: fuera del alcance del componente — usa `onChange` para guardar donde decidas.
+- **Resaltado de sintaxis**: aplica a los 5 lenguajes del selector (JSON, SQL, TypeScript,
+  JavaScript, Java); un lenguaje personalizado no reconocido se muestra en texto plano legible,
+  sin error. Es puramente visual — nunca modifica el Markdown fuente ni el fence info string.
+- **Redimensionamiento**: el tamaño resultante de arrastrar la esquina es efímero (no se persiste
+  entre sesiones); si tu app necesita recordarlo, escuchá el resize por tu cuenta (por ejemplo con
+  un `ResizeObserver` externo) y volvé a pasar `width`/`height` en el próximo montaje.

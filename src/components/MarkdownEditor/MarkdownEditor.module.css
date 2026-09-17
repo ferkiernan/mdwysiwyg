@@ -4,6 +4,11 @@
   --mdw-fg: #1f2328;
   --mdw-muted: #f6f7f9;
   --mdw-accent: #3d6fd8;
+  --mdw-toolbar-gradient-from: #eeeeee;
+  --mdw-toolbar-gradient-via: #dcdcdc;
+  --mdw-toolbar-gradient-to: #cfcfcf;
+  --mdw-toolbar-fg: #222222;
+  --mdw-toolbar-font-family: Arial, sans-serif;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -14,6 +19,13 @@
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: 14px;
   overflow: hidden;
+}
+
+.resizable {
+  resize: both;
+  overflow: auto;
+  min-width: 320px;
+  min-height: 200px;
 }
 
 .root *,
@@ -56,6 +68,34 @@
   font-family: ui-monospace, Consolas, monospace;
   font-size: 13px;
   overflow-x: auto;
+}
+
+.content :global(.hljs-keyword),
+.content :global(.hljs-selector-tag),
+.content :global(.hljs-literal) {
+  color: #a626a4;
+}
+
+.content :global(.hljs-string),
+.content :global(.hljs-attr) {
+  color: #50a14f;
+}
+
+.content :global(.hljs-comment),
+.content :global(.hljs-quote) {
+  color: #a0a1a7;
+  font-style: italic;
+}
+
+.content :global(.hljs-number),
+.content :global(.hljs-built_in) {
+  color: #986801;
+}
+
+.content :global(.hljs-title),
+.content :global(.hljs-title.function_),
+.content :global(.hljs-title.class_) {
+  color: #4078f2;
 }
 
 .content :global(.ProseMirror table) {
@@ -134,13 +174,28 @@
   min-height: 36px;
   padding: 2px 3px;
   gap: 2px;
-  background: linear-gradient(to bottom, #eeeeee 0%, #dcdcdc 45%, #cfcfcf 100%);
+  background: linear-gradient(
+    to bottom,
+    var(--mdw-toolbar-gradient-from) 0%,
+    var(--mdw-toolbar-gradient-via) 45%,
+    var(--mdw-toolbar-gradient-to) 100%
+  );
+  color: var(--mdw-toolbar-fg);
+  font-family: var(--mdw-toolbar-font-family);
   border-bottom: 1px solid #999;
   box-shadow:
     inset 0 1px 0 #fff,
     0 1px 2px rgba(0, 0, 0, 0.15);
   overflow-x: auto;
   overflow-y: visible;
+}
+
+.readOnlyNotice {
+  padding: 0 8px;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--mdw-toolbar-fg);
+  font-family: var(--mdw-toolbar-font-family);
 }
 
 .toolbar > .button,
@@ -171,8 +226,8 @@
   border: 1px solid transparent;
   border-radius: 2px;
   background: transparent;
-  color: #222;
-  font-family: Arial, sans-serif;
+  color: var(--mdw-toolbar-fg);
+  font-family: var(--mdw-toolbar-font-family);
   font-size: 15px;
   cursor: pointer;
 }
@@ -254,7 +309,8 @@
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23222' stroke-width='1.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 8px center;
-  color: #222;
+  color: var(--mdw-toolbar-fg);
+  font-family: var(--mdw-toolbar-font-family);
   font-size: 13px;
   cursor: pointer;
   box-shadow: inset 0 1px 0 #fff;

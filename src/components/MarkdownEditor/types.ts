@@ -11,6 +11,10 @@ export interface MarkdownEditorProps {
   sanitizeEmbeddedHtml?: boolean;
   /** Clase CSS adicional para el contenedor raíz. */
   className?: string;
+  /** Arranca en modo de solo lectura (sin edición, toolbar reducida). Default: false. */
+  onlyView?: boolean;
+  /** Permite redimensionar el componente arrastrando su esquina inferior derecha. Default: true. */
+  resizable?: boolean;
 }
 
 export type ViewMode = "wysiwyg" | "markdown";

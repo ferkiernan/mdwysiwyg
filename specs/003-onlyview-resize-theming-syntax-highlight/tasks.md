@@ -28,7 +28,7 @@ Single project: `src/` y `tests/` en la raíz del repo.
 
 **Purpose**: Instalar las 3 dependencias nuevas de resaltado de sintaxis (research.md)
 
-- [ ] T001 Instalar dependencias de runtime: `@tiptap/extension-code-block-lowlight`, `lowlight`, `rehype-highlight` (versiones compatibles con Tiptap v2 y con la cadena `unified`/`rehype` ya instalada)
+- [x] T001 Instalar dependencias de runtime: `@tiptap/extension-code-block-lowlight`, `lowlight`, `rehype-highlight` (versiones compatibles con Tiptap v2 y con la cadena `unified`/`rehype` ya instalada)
 
 **Checkpoint**: dependencias disponibles para US4
 
@@ -38,7 +38,7 @@ Single project: `src/` y `tests/` en la raíz del repo.
 
 **Purpose**: Extender `MarkdownEditorProps` con las 2 props nuevas — bloquea US1 y US2 (US3 y US4 no dependen de esto)
 
-- [ ] T002 Añadir `onlyView?: boolean` y `resizable?: boolean` a `MarkdownEditorProps` en `src/components/MarkdownEditor/types.ts`, con comentario de su default (FR-001, FR-009; contrato en `contracts/MarkdownEditor.md`)
+- [x] T002 Añadir `onlyView?: boolean` y `resizable?: boolean` a `MarkdownEditorProps` en `src/components/MarkdownEditor/types.ts`, con comentario de su default (FR-001, FR-009; contrato en `contracts/MarkdownEditor.md`)
 
 **Checkpoint**: props tipadas — US1 y US2 pueden implementarse
 
@@ -52,15 +52,15 @@ Single project: `src/` y `tests/` en la raíz del repo.
 
 ### Tests for User Story 1
 
-- [ ] T003 [P] [US1] Crear `tests/MarkdownEditor/only-view.test.tsx`: con `onlyView`, verificar que el editor Tiptap no acepta entrada de teclado (contenido no cambia tras `userEvent.type`), que la toolbar muestra el texto "Edición desactivada", que el botón `</>` no está presente, que el botón "Export" sigue presente y funcional (mock de `navigator.clipboard`), y que sin `onlyView` (o `onlyView={false}`) el editor permanece editable y la toolbar completa (FR-001 a FR-008)
-- [ ] T004 [P] [US1] Añadir caso a `tests/MarkdownEditor/accessibility.test.tsx`: en modo `onlyView`, el aviso "Edición desactivada" se expone de forma perceptible (no solo visual) — por ejemplo como texto real en el DOM, no solo un ícono (Principio VI)
+- [x] T003 [P] [US1] Crear `tests/MarkdownEditor/only-view.test.tsx`: con `onlyView`, verificar que el editor Tiptap no acepta entrada de teclado (contenido no cambia tras `userEvent.type`), que la toolbar muestra el texto "Edición desactivada", que el botón `</>` no está presente, que el botón "Export" sigue presente y funcional (mock de `navigator.clipboard`), y que sin `onlyView` (o `onlyView={false}`) el editor permanece editable y la toolbar completa (FR-001 a FR-008)
+- [x] T004 [P] [US1] Añadir caso a `tests/MarkdownEditor/accessibility.test.tsx`: en modo `onlyView`, el aviso "Edición desactivada" se expone de forma perceptible (no solo visual) — por ejemplo como texto real en el DOM, no solo un ícono (Principio VI)
 
 ### Implementation for User Story 1
 
-- [ ] T005 [US1] En `src/components/MarkdownEditor/MarkdownEditor.tsx`: aceptar `onlyView = false`; pasar `editable: !onlyView` a `useEditor` (y a las `[deps]` del hook para que se reevalúe si cambia); pasar `readOnly={onlyView}` a `MarkdownSourceView`; forzar `viewMode` a `"wysiwyg"` cuando `onlyView` está activo (FR-002, FR-003, FR-006)
-- [ ] T006 [US1] Añadir prop `readOnly?: boolean` a `MarkdownSourceViewProps` en `src/components/MarkdownEditor/views/MarkdownSourceView.tsx` y aplicarla al `<textarea>` nativo (FR-003)
-- [ ] T007 [US1] En `src/components/MarkdownEditor/Toolbar/Toolbar.tsx`: aceptar prop `onlyView`; cuando es `true`, renderizar únicamente un `<span>`/`<div>` con el texto "Edición desactivada" seguido del `ExportMenu` (mismo `.spacer` a la derecha), omitiendo el resto de los grupos de controles y el botón `</>` (FR-004, FR-005, FR-006, FR-007)
-- [ ] T008 [US1] Añadir estilo `.readOnlyNotice` en `MarkdownEditor.module.css` para el texto "Edición desactivada" (tipografía consistente con el resto de la toolbar) y pasar `onlyView` desde `MarkdownEditor.tsx` a `<Toolbar>`
+- [x] T005 [US1] En `src/components/MarkdownEditor/MarkdownEditor.tsx`: aceptar `onlyView = false`; pasar `editable: !onlyView` a `useEditor` (y a las `[deps]` del hook para que se reevalúe si cambia); pasar `readOnly={onlyView}` a `MarkdownSourceView`; forzar `viewMode` a `"wysiwyg"` cuando `onlyView` está activo (FR-002, FR-003, FR-006)
+- [x] T006 [US1] Añadir prop `readOnly?: boolean` a `MarkdownSourceViewProps` en `src/components/MarkdownEditor/views/MarkdownSourceView.tsx` y aplicarla al `<textarea>` nativo (FR-003)
+- [x] T007 [US1] En `src/components/MarkdownEditor/Toolbar/Toolbar.tsx`: aceptar prop `onlyView`; cuando es `true`, renderizar únicamente un `<span>`/`<div>` con el texto "Edición desactivada" seguido del `ExportMenu` (mismo `.spacer` a la derecha), omitiendo el resto de los grupos de controles y el botón `</>` (FR-004, FR-005, FR-006, FR-007)
+- [x] T008 [US1] Añadir estilo `.readOnlyNotice` en `MarkdownEditor.module.css` para el texto "Edición desactivada" (tipografía consistente con el resto de la toolbar) y pasar `onlyView` desde `MarkdownEditor.tsx` a `<Toolbar>`
 
 **Checkpoint**: US1 completa — modo de solo lectura funcional, tests en verde
 
@@ -74,12 +74,12 @@ Single project: `src/` y `tests/` en la raíz del repo.
 
 ### Tests for User Story 2
 
-- [ ] T009 [P] [US2] Crear `tests/MarkdownEditor/resizable.test.tsx`: por default (`resizable` no especificado), el contenedor raíz tiene `resize: both` computado; con `resizable={false}`, tiene `resize: none`; verificar que `min-width`/`min-height` están definidos en ambos casos (FR-009 a FR-012)
+- [x] T009 [P] [US2] Crear `tests/MarkdownEditor/resizable.test.tsx`: por default (`resizable` no especificado), el contenedor raíz tiene `resize: both` computado; con `resizable={false}`, tiene `resize: none`; verificar que `min-width`/`min-height` están definidos en ambos casos (FR-009 a FR-012)
 
 ### Implementation for User Story 2
 
-- [ ] T010 [US2] En `src/components/MarkdownEditor/MarkdownEditor.tsx`: aceptar `resizable = true`; aplicar clase condicional (`styles.resizable` cuando `true`) al contenedor raíz además de `rootClassName` (FR-009, FR-011)
-- [ ] T011 [US2] En `MarkdownEditor.module.css`: añadir `.resizable { resize: both; overflow: auto; min-width: <valor razonable, p. ej. 320px>; min-height: <valor razonable, p. ej. 200px>; }`; asegurar que `.root` sin esa clase mantiene `resize: none` implícito (default de la plataforma) (FR-010, FR-012)
+- [x] T010 [US2] En `src/components/MarkdownEditor/MarkdownEditor.tsx`: aceptar `resizable = true`; aplicar clase condicional (`styles.resizable` cuando `true`) al contenedor raíz además de `rootClassName` (FR-009, FR-011)
+- [x] T011 [US2] En `MarkdownEditor.module.css`: añadir `.resizable { resize: both; overflow: auto; min-width: <valor razonable, p. ej. 320px>; min-height: <valor razonable, p. ej. 200px>; }`; asegurar que `.root` sin esa clase mantiene `resize: none` implícito (default de la plataforma) (FR-010, FR-012)
 
 **Checkpoint**: US2 completa — redimensionamiento nativo funcional, tamaño mínimo protegido
 
@@ -93,13 +93,13 @@ Single project: `src/` y `tests/` en la raíz del repo.
 
 ### Tests for User Story 3
 
-- [ ] T012 [P] [US3] Crear `tests/MarkdownEditor/toolbar-theming.test.tsx`: renderizar el componente con una hoja de estilo de test que sobreescribe `--mdw-toolbar-fg` sobre un `className` dado, y verificar (vía `getComputedStyle`) que la variable resuelve al valor personalizado en el elemento de la toolbar; verificar que `--mdw-toolbar-gradient-from` conserva su default cuando no se sobreescribe (FR-013 a FR-016)
+- [x] T012 [P] [US3] Crear `tests/MarkdownEditor/toolbar-theming.test.tsx`: renderizar el componente con una hoja de estilo de test que sobreescribe `--mdw-toolbar-fg` sobre un `className` dado, y verificar (vía `getComputedStyle`) que la variable resuelve al valor personalizado en el elemento de la toolbar; verificar que `--mdw-toolbar-gradient-from` conserva su default cuando no se sobreescribe (FR-013 a FR-016)
 
 ### Implementation for User Story 3
 
-- [ ] T013 [US3] En `MarkdownEditor.module.css`, declarar en `.root`: `--mdw-toolbar-gradient-from: #eeeeee; --mdw-toolbar-gradient-via: #dcdcdc; --mdw-toolbar-gradient-to: #cfcfcf; --mdw-toolbar-fg: #222222; --mdw-toolbar-font-family: Arial, sans-serif;` (valores por defecto actuales, ver data-model.md)
-- [ ] T014 [US3] En `.toolbar`, reemplazar el `background: linear-gradient(...)` hardcodeado por `background: linear-gradient(to bottom, var(--mdw-toolbar-gradient-from) 0%, var(--mdw-toolbar-gradient-via) 45%, var(--mdw-toolbar-gradient-to) 100%)`, y en `.button`/`.headingSelect`/glifos de texto reemplazar `color: #222`/`font-family: Arial, sans-serif` por `color: var(--mdw-toolbar-fg)` / `font-family: var(--mdw-toolbar-font-family)` (FR-013, FR-015, FR-016)
-- [ ] T015 [US3] Documentar las 5 variables CSS en `src/components/MarkdownEditor/README.md` (tabla nombre/default/qué controla) como parte de la superficie de personalización pública (Principio X)
+- [x] T013 [US3] En `MarkdownEditor.module.css`, declarar en `.root`: `--mdw-toolbar-gradient-from: #eeeeee; --mdw-toolbar-gradient-via: #dcdcdc; --mdw-toolbar-gradient-to: #cfcfcf; --mdw-toolbar-fg: #222222; --mdw-toolbar-font-family: Arial, sans-serif;` (valores por defecto actuales, ver data-model.md)
+- [x] T014 [US3] En `.toolbar`, reemplazar el `background: linear-gradient(...)` hardcodeado por `background: linear-gradient(to bottom, var(--mdw-toolbar-gradient-from) 0%, var(--mdw-toolbar-gradient-via) 45%, var(--mdw-toolbar-gradient-to) 100%)`, y en `.button`/`.headingSelect`/glifos de texto reemplazar `color: #222`/`font-family: Arial, sans-serif` por `color: var(--mdw-toolbar-fg)` / `font-family: var(--mdw-toolbar-font-family)` (FR-013, FR-015, FR-016)
+- [x] T015 [US3] Documentar las 5 variables CSS en `src/components/MarkdownEditor/README.md` (tabla nombre/default/qué controla) como parte de la superficie de personalización pública (Principio X)
 
 **Checkpoint**: US3 completa — toolbar completamente themeable vía CSS estándar, aspecto por defecto sin cambios
 
@@ -113,15 +113,15 @@ Single project: `src/` y `tests/` en la raíz del repo.
 
 ### Tests for User Story 4
 
-- [ ] T016 [P] [US4] Crear `tests/MarkdownEditor/syntax-highlight.test.tsx`: con `language: "javascript"`, verificar que el bloque renderizado contiene múltiples `<span class="hljs-...">` con contenido distinto (al menos 2 tokens de clase diferente); con un lenguaje personalizado no registrado, verificar que el bloque se renderiza sin excepción y con el texto completo visible; con un bloque sin `language`, verificar ausencia de clases `hljs-*` (comportamiento idéntico a antes); verificar que alternar a vista Markdown y volver preserva el Markdown fuente exacto (FR-017 a FR-020)
-- [ ] T017 [P] [US4] Actualizar `tests/MarkdownEditor/markdown-roundtrip.test.ts` si `markdownToHtml` cambia su salida para bloques de código (verificar que el HTML exportado incluye clases `hljs-*` para lenguajes reconocidos) (FR-020, quickstart escenario 4 paso 5)
+- [x] T016 [P] [US4] Crear `tests/MarkdownEditor/syntax-highlight.test.tsx`: con `language: "javascript"`, verificar que el bloque renderizado contiene múltiples `<span class="hljs-...">` con contenido distinto (al menos 2 tokens de clase diferente); con un lenguaje personalizado no registrado, verificar que el bloque se renderiza sin excepción y con el texto completo visible; con un bloque sin `language`, verificar ausencia de clases `hljs-*` (comportamiento idéntico a antes); verificar que alternar a vista Markdown y volver preserva el Markdown fuente exacto (FR-017 a FR-020)
+- [x] T017 [P] [US4] Actualizar `tests/MarkdownEditor/markdown-roundtrip.test.ts` si `markdownToHtml` cambia su salida para bloques de código (verificar que el HTML exportado incluye clases `hljs-*` para lenguajes reconocidos) (FR-020, quickstart escenario 4 paso 5)
 
 ### Implementation for User Story 4
 
-- [ ] T018 [US4] En `src/components/MarkdownEditor/markdown/tiptapMarkdownBridge.ts`: crear `createLowlight()` registrando únicamente `json`, `sql`, `typescript`, `javascript`, `java` (importados individualmente desde `highlight.js/lib/languages/*` vía `lowlight`), y reemplazar la `CodeBlock` de `StarterKit` por `CodeBlockLowlight.configure({ lowlight })` en `createEditorExtensions` (deshabilitando `codeBlock` en `StarterKit.configure({ codeBlock: false })`) (FR-017, research.md §4)
-- [ ] T019 [US4] En `src/components/MarkdownEditor/markdown/pipeline.ts`: añadir `rehype-highlight` (configurado con los mismos 5 lenguajes y `{ ignoreMissing: true }`) al pipeline de `markdownToHtml`, insertado entre `rehypeRaw` y el paso de sanitización condicional (FR-017, FR-018)
-- [ ] T020 [US4] Extender el schema de sanitización (`rehypeSanitize`) en `pipeline.ts` para permitir explícitamente el atributo `class` en las etiquetas `code` y `span` (por defecto el schema GFM lo elimina), de forma que el HTML exportado con sanitización activa conserve las clases `hljs-*` (research.md, nota de implementación)
-- [ ] T021 [US4] Verificar/ajustar el manejo de bloques de código en `editorHtmlToMarkdown` (`pipeline.ts`) para que las clases `hljs-*` inyectadas por `CodeBlockLowlight`/`rehype-highlight` en el HTML del editor NO se filtren al Markdown serializado (el fence info string debe seguir siendo solo el `language`, sin metadatos de resaltado) (FR-020)
+- [x] T018 [US4] En `src/components/MarkdownEditor/markdown/tiptapMarkdownBridge.ts`: crear `createLowlight()` registrando únicamente `json`, `sql`, `typescript`, `javascript`, `java` (importados individualmente desde `highlight.js/lib/languages/*` vía `lowlight`), y reemplazar la `CodeBlock` de `StarterKit` por `CodeBlockLowlight.configure({ lowlight })` en `createEditorExtensions` (deshabilitando `codeBlock` en `StarterKit.configure({ codeBlock: false })`) (FR-017, research.md §4)
+- [x] T019 [US4] En `src/components/MarkdownEditor/markdown/pipeline.ts`: añadir `rehype-highlight` (configurado con los mismos 5 lenguajes y `{ ignoreMissing: true }`) al pipeline de `markdownToHtml`, insertado entre `rehypeRaw` y el paso de sanitización condicional (FR-017, FR-018)
+- [x] T020 [US4] Extender el schema de sanitización (`rehypeSanitize`) en `pipeline.ts` para permitir explícitamente el atributo `class` en las etiquetas `code` y `span` (por defecto el schema GFM lo elimina), de forma que el HTML exportado con sanitización activa conserve las clases `hljs-*` (research.md, nota de implementación)
+- [x] T021 [US4] Verificar/ajustar el manejo de bloques de código en `editorHtmlToMarkdown` (`pipeline.ts`) para que las clases `hljs-*` inyectadas por `CodeBlockLowlight`/`rehype-highlight` en el HTML del editor NO se filtren al Markdown serializado (el fence info string debe seguir siendo solo el `language`, sin metadatos de resaltado) (FR-020)
 
 **Checkpoint**: US4 completa — resaltado consistente entre editor y export, sin afectar el Markdown fuente
 
@@ -129,10 +129,10 @@ Single project: `src/` y `tests/` en la raíz del repo.
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T022 [P] Actualizar `src/components/MarkdownEditor/README.md`: documentar `onlyView` y `resizable` en la tabla de props (propósito, default, ejemplos), añadir un ejemplo de uso combinado (`onlyView` + tema personalizado)
-- [ ] T023 Verificar tipado estricto: `npm run typecheck` sin errores y sin `any` no justificado en los archivos tocados (Principio II)
-- [ ] T024 Ejecutar `npm run build` y verificar que `dist/` sigue generando ESM + CJS + `.d.ts` + CSS sin errores, y que el tamaño de bundle no crece de forma desproporcionada por los lenguajes de `lowlight` registrados (Principios VIII, XIII)
-- [ ] T025 Validar manualmente los 4 escenarios de `specs/003-onlyview-resize-theming-syntax-highlight/quickstart.md` en el playground local (`npm run dev`), incluyendo el caso de personalización de tema con CSS externo
+- [x] T022 [P] Actualizar `src/components/MarkdownEditor/README.md`: documentar `onlyView` y `resizable` en la tabla de props (propósito, default, ejemplos), añadir un ejemplo de uso combinado (`onlyView` + tema personalizado)
+- [x] T023 Verificar tipado estricto: `npm run typecheck` sin errores y sin `any` no justificado en los archivos tocados (Principio II)
+- [x] T024 Ejecutar `npm run build` y verificar que `dist/` sigue generando ESM + CJS + `.d.ts` + CSS sin errores, y que el tamaño de bundle no crece de forma desproporcionada por los lenguajes de `lowlight` registrados (Principios VIII, XIII)
+- [x] T025 Validar manualmente los 4 escenarios de `specs/003-onlyview-resize-theming-syntax-highlight/quickstart.md` en el playground local (`npm run dev`), incluyendo el caso de personalización de tema con CSS externo
 
 ---
 
