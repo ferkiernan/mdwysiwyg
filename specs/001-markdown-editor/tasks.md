@@ -29,13 +29,13 @@ Single project (librería): `src/` y `tests/` en la raíz del repo, según plan.
 
 **Purpose**: Inicialización del paquete npm y tooling
 
-- [ ] T001 Inicializar package.json como librería: nombre `mdwysiwyg`, `type: module`, `peerDependencies` react/react-dom >=18, `sideEffects: ["**/*.css"]`, campos `exports`/`main`/`module`/`types` apuntando a `dist/`
-- [ ] T002 Instalar dependencias de runtime: `@tiptap/react`, `@tiptap/core`, `@tiptap/starter-kit`, `@tiptap/extension-table`, `@tiptap/extension-table-row`, `@tiptap/extension-table-cell`, `@tiptap/extension-table-header`, `@tiptap/extension-task-list`, `@tiptap/extension-task-item`, `@tiptap/extension-link`, `@tiptap/extension-image`, `unified`, `remark-parse`, `remark-gfm`, `remark-rehype`, `rehype-stringify`, `rehype-sanitize`, `remark-stringify`, `rehype-remark` (o `hast-util-*` equivalente para HTML→MD si se necesita)
-- [ ] T003 Instalar devDependencies: `typescript`, `vitest`, `@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom`, `jsdom`, `tsup` (build ESM+CJS+d.ts), `react`, `react-dom`, `@types/react`, `@types/react-dom`
-- [ ] T004 [P] Crear tsconfig.json con `strict: true`, `jsx: react-jsx`, `moduleResolution: bundler`, incluyendo `src/` y `tests/`
-- [ ] T005 [P] Configurar vitest.config.ts con entorno `jsdom`, setup file `tests/setup.ts` (jest-dom) y soporte CSS Modules
-- [ ] T006 [P] Configurar tsup.config.ts: entry `src/index.ts` + `src/components/MarkdownEditor/index.ts`, formatos `esm`+`cjs`, `dts: true`, CSS inyectado o emitido como asset consumible estándar
-- [ ] T007 [P] Añadir scripts npm en package.json: `build` (tsup), `test` (vitest run), `test:watch`, `typecheck` (tsc --noEmit)
+- [x] T001 Inicializar package.json como librería: nombre `mdwysiwyg`, `type: module`, `peerDependencies` react/react-dom >=18, `sideEffects: ["**/*.css"]`, campos `exports`/`main`/`module`/`types` apuntando a `dist/`
+- [x] T002 Instalar dependencias de runtime: `@tiptap/react`, `@tiptap/core`, `@tiptap/starter-kit`, `@tiptap/extension-table`, `@tiptap/extension-table-row`, `@tiptap/extension-table-cell`, `@tiptap/extension-table-header`, `@tiptap/extension-task-list`, `@tiptap/extension-task-item`, `@tiptap/extension-link`, `@tiptap/extension-image`, `unified`, `remark-parse`, `remark-gfm`, `remark-rehype`, `rehype-stringify`, `rehype-sanitize`, `remark-stringify`, `rehype-remark` (o `hast-util-*` equivalente para HTML→MD si se necesita)
+- [x] T003 Instalar devDependencies: `typescript`, `vitest`, `@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom`, `jsdom`, `tsup` (build ESM+CJS+d.ts), `react`, `react-dom`, `@types/react`, `@types/react-dom`
+- [x] T004 [P] Crear tsconfig.json con `strict: true`, `jsx: react-jsx`, `moduleResolution: bundler`, incluyendo `src/` y `tests/`
+- [x] T005 [P] Configurar vitest.config.ts con entorno `jsdom`, setup file `tests/setup.ts` (jest-dom) y soporte CSS Modules
+- [x] T006 [P] Configurar tsup.config.ts: entry `src/index.ts` + `src/components/MarkdownEditor/index.ts`, formatos `esm`+`cjs`, `dts: true`, CSS inyectado o emitido como asset consumible estándar
+- [x] T007 [P] Añadir scripts npm en package.json: `build` (tsup), `test` (vitest run), `test:watch`, `typecheck` (tsc --noEmit)
 
 **Checkpoint**: `npm run typecheck` y `npm run test` corren (aún sin tests ni código)
 
@@ -47,13 +47,13 @@ Single project (librería): `src/` y `tests/` en la raíz del repo, según plan.
 
 **⚠️ CRITICAL**: Ninguna historia puede empezar hasta completar esta fase
 
-- [ ] T008 [P] Crear tipos públicos en src/components/MarkdownEditor/types.ts: `MarkdownEditorProps` (initialContent?, onChange?, width?, height?, sanitizeEmbeddedHtml?, className?) según contracts/MarkdownEditor.md, y tipo interno `ViewMode = "wysiwyg" | "markdown"`
-- [ ] T009 [P] Implementar pipeline unified en src/components/MarkdownEditor/markdown/pipeline.ts: `markdownToHtml(md, {sanitize})` (remark-parse + remark-gfm + remark-rehype con `allowDangerousHtml` + rehype-sanitize condicional + rehype-stringify) y `markdownToHast`/helpers para GFM (FR-021, FR-022, FR-023)
-- [ ] T010 Implementar puente Tiptap↔Markdown en src/components/MarkdownEditor/markdown/tiptapMarkdownBridge.ts: `markdownToTiptapDoc(md)` y `tiptapDocToMarkdown(doc)` con soporte GFM completo (tablas, task lists, tachado, HTML embebido como nodo raw) — Markdown como fuente de verdad (FR-020); depende de T009
-- [ ] T011 [P] Crear estilos base encapsulados en src/components/MarkdownEditor/MarkdownEditor.module.css: contenedor con tamaño por props (default 700×500px vía CSS custom properties), layout toolbar arriba + área de edición (FR-002, FR-016)
-- [ ] T012 Crear shell del componente en src/components/MarkdownEditor/MarkdownEditor.tsx: estado `source` (string) + `viewMode`, render condicional de vistas (placeholders), aplicación de width/height con defaults 700/500, invocación de `onChange` en cada cambio de `source` (FR-014–FR-018); depende de T008, T011
-- [ ] T013 [P] Crear exports: src/components/MarkdownEditor/index.ts (export nombrado `MarkdownEditor` + `MarkdownEditorProps`) y src/index.ts (entry point del paquete reexportando el componente) — Principio XII
-- [ ] T014 [P] Crear tests/setup.ts (import jest-dom) y test humo tests/MarkdownEditor/smoke.test.tsx: monta `<MarkdownEditor />` vacío sin errores, tamaño default aplicado (FR-015, FR-016, SC-005)
+- [x] T008 [P] Crear tipos públicos en src/components/MarkdownEditor/types.ts: `MarkdownEditorProps` (initialContent?, onChange?, width?, height?, sanitizeEmbeddedHtml?, className?) según contracts/MarkdownEditor.md, y tipo interno `ViewMode = "wysiwyg" | "markdown"`
+- [x] T009 [P] Implementar pipeline unified en src/components/MarkdownEditor/markdown/pipeline.ts: `markdownToHtml(md, {sanitize})` (remark-parse + remark-gfm + remark-rehype con `allowDangerousHtml` + rehype-sanitize condicional + rehype-stringify) y `markdownToHast`/helpers para GFM (FR-021, FR-022, FR-023)
+- [x] T010 Implementar puente Tiptap↔Markdown en src/components/MarkdownEditor/markdown/tiptapMarkdownBridge.ts: `markdownToTiptapDoc(md)` y `tiptapDocToMarkdown(doc)` con soporte GFM completo (tablas, task lists, tachado, HTML embebido como nodo raw) — Markdown como fuente de verdad (FR-020); depende de T009
+- [x] T011 [P] Crear estilos base encapsulados en src/components/MarkdownEditor/MarkdownEditor.module.css: contenedor con tamaño por props (default 700×500px vía CSS custom properties), layout toolbar arriba + área de edición (FR-002, FR-016)
+- [x] T012 Crear shell del componente en src/components/MarkdownEditor/MarkdownEditor.tsx: estado `source` (string) + `viewMode`, render condicional de vistas (placeholders), aplicación de width/height con defaults 700/500, invocación de `onChange` en cada cambio de `source` (FR-014–FR-018); depende de T008, T011
+- [x] T013 [P] Crear exports: src/components/MarkdownEditor/index.ts (export nombrado `MarkdownEditor` + `MarkdownEditorProps`) y src/index.ts (entry point del paquete reexportando el componente) — Principio XII
+- [x] T014 [P] Crear tests/setup.ts (import jest-dom) y test humo tests/MarkdownEditor/smoke.test.tsx: monta `<MarkdownEditor />` vacío sin errores, tamaño default aplicado (FR-015, FR-016, SC-005)
 
 **Checkpoint**: componente montable, pipeline MD↔HTML funcionando aislado — historias pueden comenzar
 
@@ -69,15 +69,15 @@ Single project (librería): `src/` y `tests/` en la raíz del repo, según plan.
 
 > Escribir primero, verificar que fallan antes de implementar
 
-- [ ] T015 [P] [US1] Test de comportamiento en tests/MarkdownEditor/wysiwyg-formatting.test.tsx: escribir texto y aplicar negrita/cursiva/tachado/heading desde toolbar → contenido visible con formato y `onChange` recibe el GFM correcto (escenarios 1 y 3 de US1)
-- [ ] T016 [P] [US1] Test de listas en tests/MarkdownEditor/wysiwyg-lists.test.tsx: crear lista ordenada, no ordenada, checklist e indentar ítem a lista anidada desde toolbar → estructura correcta en render y en Markdown (escenario 2 de US1, FR-009)
+- [x] T015 [P] [US1] Test de comportamiento en tests/MarkdownEditor/wysiwyg-formatting.test.tsx: escribir texto y aplicar negrita/cursiva/tachado/heading desde toolbar → contenido visible con formato y `onChange` recibe el GFM correcto (escenarios 1 y 3 de US1)
+- [x] T016 [P] [US1] Test de listas en tests/MarkdownEditor/wysiwyg-lists.test.tsx: crear lista ordenada, no ordenada, checklist e indentar ítem a lista anidada desde toolbar → estructura correcta en render y en Markdown (escenario 2 de US1, FR-009)
 
 ### Implementation for User Story 1
 
-- [ ] T017 [US1] Implementar vista WYSIWYG en src/components/MarkdownEditor/views/RenderedView.tsx: `useEditor` de @tiptap/react con StarterKit (strike habilitado) + TaskList/TaskItem + extensiones de tabla/link/image, contenido inicial desde `source` vía bridge (T010), emisión de Markdown en `onUpdate` (FR-001, FR-005, FR-006)
-- [ ] T018 [P] [US1] Crear componente de botón de toolbar accesible en src/components/MarkdownEditor/Toolbar/buttons/ToolbarButton.tsx: `<button type="button">` con `aria-label`, `aria-pressed` para estados activos, y estilos en Toolbar.module.css (Principio VI)
-- [ ] T019 [US1] Implementar Toolbar en src/components/MarkdownEditor/Toolbar/Toolbar.tsx con grupo de formato: párrafo, headings H1–H6 (select o botones), negrita, cursiva, tachado, lista ordenada, lista no ordenada, checklist, indent/outdent de ítems (FR-008, FR-009); depende de T018
-- [ ] T020 [US1] Integrar RenderedView + Toolbar en MarkdownEditor.tsx: pasar instancia del editor a la toolbar, sincronizar `source` ↔ editor, `onChange` con Markdown actualizado (FR-006, FR-018); depende de T017, T019
+- [x] T017 [US1] Implementar vista WYSIWYG en src/components/MarkdownEditor/views/RenderedView.tsx: `useEditor` de @tiptap/react con StarterKit (strike habilitado) + TaskList/TaskItem + extensiones de tabla/link/image, contenido inicial desde `source` vía bridge (T010), emisión de Markdown en `onUpdate` (FR-001, FR-005, FR-006)
+- [x] T018 [P] [US1] Crear componente de botón de toolbar accesible en src/components/MarkdownEditor/Toolbar/buttons/ToolbarButton.tsx: `<button type="button">` con `aria-label`, `aria-pressed` para estados activos, y estilos en Toolbar.module.css (Principio VI)
+- [x] T019 [US1] Implementar Toolbar en src/components/MarkdownEditor/Toolbar/Toolbar.tsx con grupo de formato: párrafo, headings H1–H6 (select o botones), negrita, cursiva, tachado, lista ordenada, lista no ordenada, checklist, indent/outdent de ítems (FR-008, FR-009); depende de T018
+- [x] T020 [US1] Integrar RenderedView + Toolbar en MarkdownEditor.tsx: pasar instancia del editor a la toolbar, sincronizar `source` ↔ editor, `onChange` con Markdown actualizado (FR-006, FR-018); depende de T017, T019
 
 **Checkpoint**: US1 completa — editor WYSIWYG funcional con formato y listas, tests T015/T016 en verde
 
@@ -91,13 +91,13 @@ Single project (librería): `src/` y `tests/` en la raíz del repo, según plan.
 
 ### Tests for User Story 2
 
-- [ ] T021 [P] [US2] Test de alternancia en tests/MarkdownEditor/view-toggle.test.tsx: toggle muestra Markdown idéntico, edición en textarea se refleja al volver a WYSIWYG, alternancia repetida sin editar preserva contenido bit a bit, `onChange` NO se dispara por mero cambio de vista (FR-003, FR-004, FR-007, SC-002; contrato punto 3)
+- [x] T021 [P] [US2] Test de alternancia en tests/MarkdownEditor/view-toggle.test.tsx: toggle muestra Markdown idéntico, edición en textarea se refleja al volver a WYSIWYG, alternancia repetida sin editar preserva contenido bit a bit, `onChange` NO se dispara por mero cambio de vista (FR-003, FR-004, FR-007, SC-002; contrato punto 3)
 
 ### Implementation for User Story 2
 
-- [ ] T022 [P] [US2] Implementar vista de texto en src/components/MarkdownEditor/views/MarkdownSourceView.tsx: `<textarea>` controlado con `aria-label`, estilos monoespaciados en MarkdownEditor.module.css, actualiza `source` en cada cambio (FR-005, FR-007)
-- [ ] T023 [US2] Añadir botón toggle `</>` a Toolbar.tsx con `aria-pressed` según vista activa; deshabilitar/ocultar controles de formato no aplicables en vista Markdown (FR-003)
-- [ ] T024 [US2] Cablear alternancia en MarkdownEditor.tsx: al salir de WYSIWYG serializar doc→`source`; al entrar reconstruir doc desde `source` vía bridge; garantizar cero pérdida (FR-004, FR-020); depende de T022, T023
+- [x] T022 [P] [US2] Implementar vista de texto en src/components/MarkdownEditor/views/MarkdownSourceView.tsx: `<textarea>` controlado con `aria-label`, estilos monoespaciados en MarkdownEditor.module.css, actualiza `source` en cada cambio (FR-005, FR-007)
+- [x] T023 [US2] Añadir botón toggle `</>` a Toolbar.tsx con `aria-pressed` según vista activa; deshabilitar/ocultar controles de formato no aplicables en vista Markdown (FR-003)
+- [x] T024 [US2] Cablear alternancia en MarkdownEditor.tsx: al salir de WYSIWYG serializar doc→`source`; al entrar reconstruir doc desde `source` vía bridge; garantizar cero pérdida (FR-004, FR-020); depende de T022, T023
 
 **Checkpoint**: US1 + US2 funcionan — doble vista sincronizada, tests T021 en verde
 
@@ -111,14 +111,14 @@ Single project (librería): `src/` y `tests/` en la raíz del repo, según plan.
 
 ### Tests for User Story 3
 
-- [ ] T025 [P] [US3] Test de inserciones en tests/MarkdownEditor/insert-elements.test.tsx: bloque de código, imagen por URL, enlace sobre selección, tabla, línea horizontal → elemento presente en vista renderizada y sintaxis GFM correcta en `onChange` (escenarios 1–5 de US3, FR-010, FR-011)
-- [ ] T026 [P] [US3] Test de sanitización en tests/MarkdownEditor/sanitize-html.test.tsx: con default, `<script>` embebido no se renderiza ejecutable; con `sanitizeEmbeddedHtml={false}`, HTML de confianza se renderiza intacto (FR-022, FR-023; quickstart escenario 5)
+- [x] T025 [P] [US3] Test de inserciones en tests/MarkdownEditor/insert-elements.test.tsx: bloque de código, imagen por URL, enlace sobre selección, tabla, línea horizontal → elemento presente en vista renderizada y sintaxis GFM correcta en `onChange` (escenarios 1–5 de US3, FR-010, FR-011)
+- [x] T026 [P] [US3] Test de sanitización en tests/MarkdownEditor/sanitize-html.test.tsx: con default, `<script>` embebido no se renderiza ejecutable; con `sanitizeEmbeddedHtml={false}`, HTML de confianza se renderiza intacto (FR-022, FR-023; quickstart escenario 5)
 
 ### Implementation for User Story 3
 
-- [ ] T027 [P] [US3] Crear diálogos/prompts accesibles de inserción en src/components/MarkdownEditor/Toolbar/buttons/InsertDialogs.tsx: formularios mínimos para URL de imagen, URL+texto de enlace, dimensiones de tabla y bloque HTML (labels asociados, manejo de foco y Escape — Principio VI)
-- [ ] T028 [US3] Añadir grupo de inserción a Toolbar.tsx: bloque de código, imagen, enlace, tabla, línea horizontal, HTML embebido, conectados a comandos Tiptap (FR-010, FR-011); depende de T027
-- [ ] T029 [US3] Soportar nodo de HTML embebido en el bridge (tiptapMarkdownBridge.ts) y aplicar sanitización del pipeline según prop `sanitizeEmbeddedHtml` en RenderedView (FR-022, FR-023); depende de T009, T010
+- [x] T027 [P] [US3] Crear diálogos/prompts accesibles de inserción en src/components/MarkdownEditor/Toolbar/buttons/InsertDialogs.tsx: formularios mínimos para URL de imagen, URL+texto de enlace, dimensiones de tabla y bloque HTML (labels asociados, manejo de foco y Escape — Principio VI)
+- [x] T028 [US3] Añadir grupo de inserción a Toolbar.tsx: bloque de código, imagen, enlace, tabla, línea horizontal, HTML embebido, conectados a comandos Tiptap (FR-010, FR-011); depende de T027
+- [x] T029 [US3] Soportar nodo de HTML embebido en el bridge (tiptapMarkdownBridge.ts) y aplicar sanitización del pipeline según prop `sanitizeEmbeddedHtml` en RenderedView (FR-022, FR-023); depende de T009, T010
 
 **Checkpoint**: todas las inserciones operativas en ambas vistas, tests T025/T026 en verde
 
@@ -132,12 +132,12 @@ Single project (librería): `src/` y `tests/` en la raíz del repo, según plan.
 
 ### Tests for User Story 4
 
-- [ ] T030 [P] [US4] Test de export en tests/MarkdownEditor/export.test.tsx: mock de `navigator.clipboard`, "copiar como Markdown" copia el `source` exacto y "copiar como HTML" copia el HTML del pipeline (FR-012, FR-013, SC-003)
+- [x] T030 [P] [US4] Test de export en tests/MarkdownEditor/export.test.tsx: mock de `navigator.clipboard`, "copiar como Markdown" copia el `source` exacto y "copiar como HTML" copia el HTML del pipeline (FR-012, FR-013, SC-003)
 
 ### Implementation for User Story 4
 
-- [ ] T031 [US4] Implementar menú Export en src/components/MarkdownEditor/Toolbar/buttons/ExportMenu.tsx: botón `Export` con dos acciones (Markdown/HTML) usando `navigator.clipboard.writeText`, HTML generado con `markdownToHtml` de T009; menú accesible por teclado (Principio VI)
-- [ ] T032 [US4] Integrar ExportMenu en Toolbar.tsx (FR-012, FR-013); depende de T031
+- [x] T031 [US4] Implementar menú Export en src/components/MarkdownEditor/Toolbar/buttons/ExportMenu.tsx: botón `Export` con dos acciones (Markdown/HTML) usando `navigator.clipboard.writeText`, HTML generado con `markdownToHtml` de T009; menú accesible por teclado (Principio VI)
+- [x] T032 [US4] Integrar ExportMenu en Toolbar.tsx (FR-012, FR-013); depende de T031
 
 **Checkpoint**: las 4 historias completas e independientes
 
@@ -147,10 +147,10 @@ Single project (librería): `src/` y `tests/` en la raíz del repo, según plan.
 
 **Purpose**: gates de la Definition of Done (constitución) y validación final
 
-- [ ] T033 [P] Test de accesibilidad en tests/MarkdownEditor/accessibility.test.tsx: todos los botones de toolbar con `aria-label`, estados `aria-pressed` correctos, navegación por teclado del toggle y menú Export, textarea con label asociado (Principio VI)
-- [ ] T034 [P] Escribir documentación pública en src/components/MarkdownEditor/README.md: propósito, API/props, ejemplos de uso (los 5 escenarios de quickstart.md), casos relevantes y edge cases (Principio X)
-- [ ] T035 [P] Verificar tipado estricto: `npm run typecheck` sin errores y sin `any` no justificado en src/ (Principio II)
-- [ ] T036 Ejecutar `npm run build` y verificar dist/: ESM + CJS + `.d.ts` presentes, import individual `mdwysiwyg` funciona en un proyecto de prueba mínimo (Principios XI, XII, XIII; SC-005)
+- [x] T033 [P] Test de accesibilidad en tests/MarkdownEditor/accessibility.test.tsx: todos los botones de toolbar con `aria-label`, estados `aria-pressed` correctos, navegación por teclado del toggle y menú Export, textarea con label asociado (Principio VI)
+- [x] T034 [P] Escribir documentación pública en src/components/MarkdownEditor/README.md: propósito, API/props, ejemplos de uso (los 5 escenarios de quickstart.md), casos relevantes y edge cases (Principio X)
+- [x] T035 [P] Verificar tipado estricto: `npm run typecheck` sin errores y sin `any` no justificado en src/ (Principio II)
+- [x] T036 Ejecutar `npm run build` y verificar dist/: ESM + CJS + `.d.ts` presentes, import individual `mdwysiwyg` funciona en un proyecto de prueba mínimo (Principios XI, XII, XIII; SC-005)
 - [ ] T037 Validar manualmente los 5 escenarios de specs/001-markdown-editor/quickstart.md en un playground local (vite o similar temporal) incluyendo edge cases de la spec (Markdown inválido pegado, `**` sin cerrar, URL de imagen rota)
 
 ---

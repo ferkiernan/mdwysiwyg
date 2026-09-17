@@ -1,0 +1,270 @@
+.root {
+  --mdw-border: #d0d4da;
+  --mdw-bg: #ffffff;
+  --mdw-fg: #1f2328;
+  --mdw-muted: #f6f7f9;
+  --mdw-accent: #3d6fd8;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--mdw-border);
+  border-radius: 6px;
+  background: var(--mdw-bg);
+  color: var(--mdw-fg);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 14px;
+  overflow: hidden;
+}
+
+.root *,
+.root *::before,
+.root *::after {
+  box-sizing: inherit;
+}
+
+.content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.content > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.content :global(.ProseMirror) {
+  flex: 1;
+  padding: 12px 16px;
+  outline: none;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.content :global(.ProseMirror p) {
+  margin: 0 0 0.6em;
+}
+
+.content :global(.ProseMirror pre) {
+  background: var(--mdw-muted);
+  border: 1px solid var(--mdw-border);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 13px;
+  overflow-x: auto;
+}
+
+.content :global(.ProseMirror table) {
+  border-collapse: collapse;
+  margin: 0.6em 0;
+}
+
+.content :global(.ProseMirror th),
+.content :global(.ProseMirror td) {
+  border: 1px solid var(--mdw-border);
+  padding: 4px 8px;
+  min-width: 3em;
+}
+
+.content :global(.ProseMirror th) {
+  background: var(--mdw-muted);
+}
+
+.content :global(.ProseMirror hr) {
+  border: none;
+  border-top: 2px solid var(--mdw-border);
+  margin: 1em 0;
+}
+
+.content :global(.ProseMirror img) {
+  max-width: 100%;
+}
+
+.content :global(.ProseMirror blockquote) {
+  border-left: 3px solid var(--mdw-border);
+  margin: 0.6em 0;
+  padding-left: 12px;
+  color: #57606a;
+}
+
+.content :global(.ProseMirror ul[data-type="taskList"]) {
+  list-style: none;
+  padding-left: 0.25em;
+}
+
+.content :global(.ProseMirror ul[data-type="taskList"] li) {
+  display: flex;
+  gap: 0.5em;
+}
+
+.content :global(.ProseMirror ul[data-type="taskList"] li > div) {
+  flex: 1;
+}
+
+.content :global(.ProseMirror div[data-html-block]) {
+  border: 1px dashed var(--mdw-border);
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin: 0.6em 0;
+}
+
+.source {
+  flex: 1;
+  width: 100%;
+  border: none;
+  resize: none;
+  outline: none;
+  padding: 12px 16px;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: inherit;
+  background: var(--mdw-bg);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--mdw-border);
+  background: var(--mdw-muted);
+}
+
+.toolbarGroup {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 4px;
+  border-right: 1px solid var(--mdw-border);
+}
+
+.toolbarGroup:last-child {
+  border-right: none;
+  margin-left: auto;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.button:hover:not(:disabled) {
+  background: #e4e7eb;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--mdw-accent);
+  outline-offset: 1px;
+}
+
+.button[aria-pressed="true"] {
+  background: #dbe4f8;
+  border-color: var(--mdw-accent);
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.headingSelect {
+  height: 28px;
+  border: 1px solid var(--mdw-border);
+  border-radius: 4px;
+  background: var(--mdw-bg);
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+}
+
+.dialog {
+  position: absolute;
+  z-index: 10;
+  top: 100%;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 240px;
+  padding: 10px 12px;
+  border: 1px solid var(--mdw-border);
+  border-radius: 6px;
+  background: var(--mdw-bg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.dialogAnchor {
+  position: relative;
+}
+
+.dialogField {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+}
+
+.dialogField input,
+.dialogField textarea {
+  border: 1px solid var(--mdw-border);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font: inherit;
+  font-size: 13px;
+}
+
+.dialogActions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.menu {
+  position: absolute;
+  z-index: 10;
+  top: 100%;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 190px;
+  padding: 4px;
+  border: 1px solid var(--mdw-border);
+  border-radius: 6px;
+  background: var(--mdw-bg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.menuItem {
+  text-align: left;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.menuItem:hover,
+.menuItem:focus-visible {
+  background: #e4e7eb;
+  outline: none;
+}
