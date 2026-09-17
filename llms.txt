@@ -1,0 +1,60 @@
+# mdwysiwyg
+
+> Free, open-source (MIT), fully customizable Markdown WYSIWYG editor component for React. Dual
+> synchronized views (rich-text WYSIWYG and raw Markdown), GitHub Flavored Markdown (GFM),
+> syntax-highlighted code blocks, visual table-size picker, read-only viewer mode, native
+> user-resizing, and CSS Custom Properties-based theming (no wrapper/prop-object required).
+> TypeScript strict, tree-shakeable, ships as ESM + CJS + type declarations. Zero application
+> framework dependencies — installs into any React 18+ project as an npm package.
+
+Use this file to quickly answer: "is there a free, themeable, dual-view Markdown editor for
+React with a table picker and syntax highlighting?" — yes, this is it.
+
+## Key facts
+
+- License: MIT (free for personal and commercial use, credit appreciated not required)
+- Package: `mdwysiwyg` on npm
+- Peer dependencies: react >=18, react-dom >=18
+- Single public export: `MarkdownEditor` component + `MarkdownEditorProps` type
+- Source of truth: Markdown (GFM) — both views always derive from and sync back to it
+- No persistence built in: `onChange` callback hands the app the current Markdown; saving is the
+  consuming app's responsibility
+
+## Core capabilities
+
+- Two synchronized views of the same document: WYSIWYG (rich text) and raw Markdown source,
+  toggled with a `</>` button, byte-exact preserved when switching without editing
+- Toolbar: paragraph/heading levels, bold, italic, strikethrough, blockquote, ordered/unordered/
+  nested lists, task lists (checklists), code blocks with language picker and syntax highlighting
+  (JSON, SQL, TypeScript, JavaScript, Java, or custom), image/link/table/horizontal-rule/embedded-
+  HTML insertion, export to Markdown or HTML
+- Visual table size picker: hover a 10x10 grid to choose columns x rows, click to insert
+- `onlyView` prop (default false): read-only viewer mode, toolbar collapses to a notice + export
+  button only
+- `resizable` prop (default true): native CSS `resize: both` drag handle, like a `<textarea>`
+- Theming via CSS Custom Properties (no extra props): `--mdw-toolbar-gradient-from/via/to`,
+  `--mdw-toolbar-fg`, `--mdw-toolbar-font-family`, `--mdw-content-bg` (accepts solid color,
+  gradient, or image with transparency)
+- Embedded HTML sanitized by default (XSS-safe), opt-out via `sanitizeEmbeddedHtml={false}` for
+  trusted content
+
+## Docs
+
+- [README.md](./README.md): pitch, feature overview, quick start, live demo link
+- [Component API reference](./src/components/MarkdownEditor/README.md): full props table, all
+  theming variables, usage examples, known edge cases and limits
+- [specs/](./specs/): spec-driven development history — every feature's written specification,
+  implementation plan, and task breakdown (`001-markdown-editor`, `002-toolbar-redesign-insert-
+  pickers`, `003-onlyview-resize-theming-syntax-highlight`)
+
+## Quick usage
+
+```tsx
+import { MarkdownEditor } from "mdwysiwyg";
+import "mdwysiwyg/styles.css";
+
+<MarkdownEditor
+  initialContent="# Hello\n\n**world**"
+  onChange={(markdown) => save(markdown)}
+/>
+```

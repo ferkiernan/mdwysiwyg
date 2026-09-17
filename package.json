@@ -1,9 +1,25 @@
 {
   "name": "mdwysiwyg",
   "version": "0.1.0",
-  "description": "Reusable React Markdown editor component with dual WYSIWYG/source views (GFM)",
+  "description": "Free, open-source, fully customizable Markdown WYSIWYG editor for React with dual synced views (rich-text + raw Markdown), GFM, syntax highlighting, and CSS theming.",
+  "keywords": [
+    "markdown",
+    "wysiwyg",
+    "editor",
+    "react",
+    "react-component",
+    "rich-text-editor",
+    "gfm",
+    "tiptap",
+    "markdown-editor",
+    "syntax-highlighting"
+  ],
   "license": "MIT",
   "author": "FerK <ferkiernan@gmail.com>",
+  "homepage": "https://github.com/ferkiernan/mdwysiwyg#readme",
+  "bugs": {
+    "url": "https://github.com/ferkiernan/mdwysiwyg/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ferkiernan/mdwysiwyg.git"
@@ -34,6 +50,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "vite playground",
+    "build:demo": "vite build playground",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
