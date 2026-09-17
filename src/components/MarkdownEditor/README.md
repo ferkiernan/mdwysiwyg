@@ -53,6 +53,17 @@ Tipos exportados: `MarkdownEditorProps`.
 - **Insertar**: imagen (por URL), enlace, tabla (selector visual de tamaño: cuadrícula 10×10,
   convención columnas × filas — "3 × 4" = 3 columnas y 4 filas), HTML embebido.
 - **`</>`**: alterna entre vista renderizada y vista Markdown. Alternar nunca modifica el contenido.
+
+### Enlaces
+
+Si hay texto seleccionado al presionar "Insertar enlace", el diálogo pide solo la URL y la aplica
+sobre ese texto sin modificarlo. Sin selección, pide URL y texto (como cualquier inserción).
+Cualquier URL sin protocolo (sin `"://"`) recibe automáticamente el prefijo `http://` — tanto al
+insertar como al editar un enlace ya existente.
+
+Hacer clic sobre un enlace en la vista renderizada abre un panel con **Ir a la url**, **Copiar
+url**, y **Editar url** (que muestra un campo con la URL actual, **Eliminar link**, y **Guardar**).
+En modo `onlyView` el panel solo ofrece "Ir a la url" y "Copiar url" — sin edición.
 - **Export** (icono de descarga, alineado al extremo derecho de la barra): copia al portapapeles
   como Markdown o como HTML.
 
@@ -133,6 +144,9 @@ Cualquier variable que no sobreescribas conserva su valor por defecto.
 - **HTML embebido**: los bloques HTML (línea propia, separados por líneas en blanco) se preservan
   byte a byte y se muestran sanitizados por defecto. El HTML *inline* dentro de un párrafo se
   degrada a texto visible (no se ejecuta) y puede quedar escapado si se edita en WYSIWYG.
+- **Enlaces**: el popover de edición solo está disponible en la vista renderizada; en la vista
+  Markdown, un enlace es texto plano y se edita directamente como tal. El autocompletado de
+  protocolo (`http://`) no valida que la URL exista ni sea alcanzable, solo su formato.
 - **Imágenes**: por referencia (URL). Si la URL no carga, el navegador muestra el `alt`; la
   referencia se conserva en el Markdown.
 - **Escala**: pensado para documentos de tamaño típico de notas/documentación personal; no hay

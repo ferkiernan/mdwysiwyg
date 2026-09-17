@@ -7,6 +7,7 @@ import { TableSizePicker } from "./buttons/TableSizePicker";
 import { CodeLanguagePicker } from "./buttons/CodeLanguagePicker";
 import { FloatingPanel } from "./buttons/FloatingPanel";
 import { ExportMenu } from "./buttons/ExportMenu";
+import { Separator } from "./buttons/Separator";
 import {
   IconCode,
   IconCodeBlock,
@@ -25,10 +26,6 @@ import styles from "../MarkdownEditor.module.css";
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 const HEADING_LEVELS: readonly HeadingLevel[] = [1, 2, 3, 4, 5, 6];
-
-function Separator() {
-  return <span className={styles["separator"]} aria-hidden="true" />;
-}
 
 export interface ToolbarProps {
   editor: Editor | null;

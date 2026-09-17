@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import type { Editor } from "@tiptap/core";
+import { ensureProtocol } from "../../markdown/links";
 import styles from "../../MarkdownEditor.module.css";
 
 export type DialogKind = "image" | "link" | "html";
@@ -90,22 +91,30 @@ export function InsertDialog({ kind, editor, onClose }: InsertDialogProps) {
   const [url, setUrl] = useState("");
   const [text, setText] = useState("");
   const [html, setHtml] = useState("");
+  // Leído una sola vez al montar: si hay selección activa, el enlace se
+  // aplica sobre ese texto y no se pide un campo de texto adicional (FR-001,
+  // FR-003). No reactivo a propósito — el diálogo no debe cambiar de forma
+  // mientras está abierto si la selección cambiara por otra causa.
+  const [hasSelectionForLink] = useState(
+    () => kind === "link" && !editor.state.selection.empty,
+  );
 
   const submit = () => {
     const chain = editor.chain().focus();
     if (kind === "image" && url) {
       chain.setImage({ src: url, alt: text }).run();
     } else if (kind === "link" && url) {
-      if (editor.state.selection.empty && text) {
+      const href = ensureProtocol(url);
+      if (hasSelectionForLink) {
+        chain.extendMarkRange("link").setLink({ href }).run();
+      } else if (text) {
         chain
           .insertContent({
             type: "text",
             text,
-            marks: [{ type: "link", attrs: { href: url } }],
+            marks: [{ type: "link", attrs: { href } }],
           })
           .run();
-      } else {
-        chain.extendMarkRange("link").setLink({ href: url }).run();
       }
     } else if (kind === "html" && html) {
       chain
@@ -147,23 +156,25 @@ export function InsertDialog({ kind, editor, onClose }: InsertDialogProps) {
         {(id) => (
           <input
             id={id}
-            type="url"
+            type={isImage ? "url" : "text"}
             required
             value={url}
             onChange={(e) => setUrl(e.target.value)}
           />
         )}
       </Field>
-      <Field label={isImage ? "Texto alternativo" : "Texto del enlace"}>
-        {(id) => (
-          <input
-            id={id}
-            type="text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-          />
-        )}
-      </Field>
+      {!(kind === "link" && hasSelectionForLink) && (
+        <Field label={isImage ? "Texto alternativo" : "Texto del enlace"}>
+          {(id) => (
+            <input
+              id={id}
+              type="text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+            />
+          )}
+        </Field>
+      )}
     </DialogShell>
   );
 }

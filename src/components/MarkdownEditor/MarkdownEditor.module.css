@@ -440,3 +440,28 @@
   background: #e4e7eb;
   outline: none;
 }
+
+.menuSeparator {
+  height: 1px;
+  margin: 4px 2px;
+  background: var(--mdw-border);
+  border: none;
+}
+
+.dangerLink {
+  align-self: flex-start;
+  border: none;
+  background: transparent;
+  color: #b42318;
+  font: inherit;
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.dangerLink:hover,
+.dangerLink:focus-visible {
+  color: #8c1c11;
+  outline: none;
+}

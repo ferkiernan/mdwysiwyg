@@ -68,6 +68,38 @@ describe("Principio VI: accesibilidad de los elementos interactivos", () => {
     expect(screen.queryByRole("dialog")).toBeNull();
   });
 
+  it("el popover de enlace enfoca el primer elemento al abrirse en cada modo", async () => {
+    const { pm } = await setupEditor({
+      initialContent: "Visitá [sitio](https://ejemplo.com)\n",
+    });
+    const link = pm.querySelector("a") as HTMLElement;
+    await userEvent.click(link);
+
+    const firstMenuItem = screen.getByRole("menuitem", {
+      name: "Ir a la url",
+    });
+    expect(firstMenuItem).toHaveFocus();
+
+    await userEvent.click(
+      screen.getByRole("menuitem", { name: "Editar url" }),
+    );
+    expect(screen.getByLabelText("URL del enlace")).toHaveFocus();
+  });
+
+  it("'Eliminar link' es un botón nativo, accesible por teclado", async () => {
+    const { pm } = await setupEditor({
+      initialContent: "Visitá [sitio](https://ejemplo.com)\n",
+    });
+    await userEvent.click(pm.querySelector("a") as HTMLElement);
+    await userEvent.click(
+      screen.getByRole("menuitem", { name: "Editar url" }),
+    );
+
+    const removeButton = screen.getByRole("button", { name: "Eliminar link" });
+    expect(removeButton.tagName).toBe("BUTTON");
+    expect(removeButton).not.toHaveAttribute("tabindex", "-1");
+  });
+
   it("los controles de formato quedan deshabilitados en vista Markdown", async () => {
     await setupEditor({});
     await userEvent.click(

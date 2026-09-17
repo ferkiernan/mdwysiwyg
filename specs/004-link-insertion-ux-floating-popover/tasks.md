@@ -37,8 +37,8 @@ Single project: `src/` y `tests/` en la raíz del repo.
 **Purpose**: Función compartida de autocompletado de protocolo — bloquea US1 (diálogo) y US3
 (popover), ambos la consumen.
 
-- [ ] T001 [P] Crear `src/components/MarkdownEditor/markdown/links.ts`: función pura `ensureProtocol(url: string): string` que antepone `"http://"` cuando el valor no contiene `"://"`, sin modificar valores que ya lo tienen (FR-004, FR-005, FR-006)
-- [ ] T002 [P] Crear `tests/MarkdownEditor/links.test.ts`: casos `ensureProtocol("www.ejemplo.com")` → `"http://www.ejemplo.com"`, `ensureProtocol("ejemplo.com")` → `"http://ejemplo.com"`, `ensureProtocol("https://ejemplo.com")` → sin cambios, `ensureProtocol("ftp://x")` → sin cambios
+- [x] T001 [P] Crear `src/components/MarkdownEditor/markdown/links.ts`: función pura `ensureProtocol(url: string): string` que antepone `"http://"` cuando el valor no contiene `"://"`, sin modificar valores que ya lo tienen (FR-004, FR-005, FR-006)
+- [x] T002 [P] Crear `tests/MarkdownEditor/links.test.ts`: casos `ensureProtocol("www.ejemplo.com")` → `"http://www.ejemplo.com"`, `ensureProtocol("ejemplo.com")` → `"http://ejemplo.com"`, `ensureProtocol("https://ejemplo.com")` → sin cambios, `ensureProtocol("ftp://x")` → sin cambios
 
 **Checkpoint**: `ensureProtocol` disponible y testeada — US1 y US3 pueden consumirla
 
@@ -54,13 +54,13 @@ y verificar que el texto seleccionado quedó convertido en enlace sin cambios te
 
 ### Tests for User Story 1
 
-- [ ] T003 [P] [US1] Crear `tests/MarkdownEditor/link-insertion.test.tsx`: con texto seleccionado, abrir el diálogo de enlace y verificar que NO existe el campo "Texto del enlace" (solo "URL del enlace"); confirmar con una URL y verificar que el texto originalmente seleccionado queda envuelto en un `<a>` con ese href, sin alterar su contenido textual (FR-001, FR-002)
-- [ ] T004 [P] [US1] Añadir a `link-insertion.test.tsx`: sin texto seleccionado, abrir el diálogo de enlace y verificar que SÍ existen ambos campos ("URL del enlace" y "Texto del enlace"), igual que el comportamiento ya cubierto por `insert-elements.test.tsx` de `002-toolbar-redesign-insert-pickers` (FR-003, regresión)
+- [x] T003 [P] [US1] Crear `tests/MarkdownEditor/link-insertion.test.tsx`: con texto seleccionado, abrir el diálogo de enlace y verificar que NO existe el campo "Texto del enlace" (solo "URL del enlace"); confirmar con una URL y verificar que el texto originalmente seleccionado queda envuelto en un `<a>` con ese href, sin alterar su contenido textual (FR-001, FR-002)
+- [x] T004 [P] [US1] Añadir a `link-insertion.test.tsx`: sin texto seleccionado, abrir el diálogo de enlace y verificar que SÍ existen ambos campos ("URL del enlace" y "Texto del enlace"), igual que el comportamiento ya cubierto por `insert-elements.test.tsx` de `002-toolbar-redesign-insert-pickers` (FR-003, regresión)
 
 ### Implementation for User Story 1
 
-- [ ] T005 [US1] En `src/components/MarkdownEditor/Toolbar/buttons/InsertDialogs.tsx`: en `InsertDialog`, leer `const hasSelection = kind === "link" && !editor.state.selection.empty` una vez al montar (no reactivo); cuando `hasSelection` es `true`, renderizar el `DialogShell` del caso "link" con solo el campo de URL (omitir el campo "Texto del enlace"); cuando es `false`, mantener el comportamiento actual con ambos campos (FR-001, FR-003)
-- [ ] T006 [US1] En el mismo archivo, ajustar `submit()` para que el caso `kind === "link"` con `hasSelection === true` no dependa de la presencia de `text` (que ya no existe en ese modo) para decidir la rama de `chain()`; debe ir siempre por `extendMarkRange('link').setLink(...)` cuando hay selección (FR-002)
+- [x] T005 [US1] En `src/components/MarkdownEditor/Toolbar/buttons/InsertDialogs.tsx`: en `InsertDialog`, leer `const hasSelection = kind === "link" && !editor.state.selection.empty` una vez al montar (no reactivo); cuando `hasSelection` es `true`, renderizar el `DialogShell` del caso "link" con solo el campo de URL (omitir el campo "Texto del enlace"); cuando es `false`, mantener el comportamiento actual con ambos campos (FR-001, FR-003)
+- [x] T006 [US1] En el mismo archivo, ajustar `submit()` para que el caso `kind === "link"` con `hasSelection === true` no dependa de la presencia de `text` (que ya no existe en ese modo) para decidir la rama de `chain()`; debe ir siempre por `extendMarkRange('link').setLink(...)` cuando hay selección (FR-002)
 
 **Checkpoint**: US1 completa — diálogo condicional funcional, tests T003/T004 en verde
 
@@ -76,11 +76,11 @@ enlace resultante siempre incluye uno
 
 ### Tests for User Story 2
 
-- [ ] T007 [P] [US2] Añadir a `link-insertion.test.tsx`: insertar un enlace con URL `"www.ejemplo.com"` y verificar que el href resultante es `"http://www.ejemplo.com"`; con `"ejemplo.com"` verificar `"http://ejemplo.com"`; con `"https://ejemplo.com"` verificar que se conserva sin cambios (FR-004, FR-005, FR-006)
+- [x] T007 [P] [US2] Añadir a `link-insertion.test.tsx`: insertar un enlace con URL `"www.ejemplo.com"` y verificar que el href resultante es `"http://www.ejemplo.com"`; con `"ejemplo.com"` verificar `"http://ejemplo.com"`; con `"https://ejemplo.com"` verificar que se conserva sin cambios (FR-004, FR-005, FR-006)
 
 ### Implementation for User Story 2
 
-- [ ] T008 [US2] En `InsertDialogs.tsx`, importar `ensureProtocol` de `../../markdown/links` y aplicarlo al valor de `url` antes de pasarlo a `setLink`/`insertContent` en la rama `kind === "link"` de `submit()` (FR-004, FR-005, FR-006)
+- [x] T008 [US2] En `InsertDialogs.tsx`, importar `ensureProtocol` de `../../markdown/links` y aplicarlo al valor de `url` antes de pasarlo a `setLink`/`insertContent` en la rama `kind === "link"` de `submit()` (FR-004, FR-005, FR-006)
 
 **Checkpoint**: US2 completa — autocompletado de protocolo funcional en el diálogo de inserción
 
@@ -96,23 +96,23 @@ separador, y cada acción produce el efecto esperado
 
 ### Tests for User Story 3
 
-- [ ] T009 [P] [US3] Crear `tests/MarkdownEditor/link-popover.test.tsx`: hacer clic sobre un enlace renderizado y verificar que aparece un panel con "Ir a la url", "Copiar url", un separador, y "Editar url", en ese orden (FR-007)
-- [ ] T010 [P] [US3] Añadir a `link-popover.test.tsx`: mock de `window.open`, seleccionar "Ir a la url" y verificar que se llama con la URL del enlace y `"_blank", "noopener,noreferrer"` (FR-008)
-- [ ] T011 [P] [US3] Añadir a `link-popover.test.tsx`: mock de `navigator.clipboard.writeText`, seleccionar "Copiar url" y verificar que se llama con la URL exacta del enlace (FR-009)
-- [ ] T012 [P] [US3] Añadir a `link-popover.test.tsx`: seleccionar "Editar url" y verificar que el panel muestra un input con el valor actual del href, un texto/enlace "Eliminar link", y un botón "Guardar" (FR-010)
-- [ ] T013 [P] [US3] Añadir a `link-popover.test.tsx`: en modo edición, cambiar el input a una URL sin protocolo y presionar "Guardar"; verificar que el enlace se actualiza con `http://` antepuesto y que el panel se cierra (FR-012, reutiliza FR-004 vía `ensureProtocol`)
-- [ ] T014 [P] [US3] Añadir a `link-popover.test.tsx`: en modo edición, vaciar el input y presionar "Guardar"; verificar que el enlace conserva su URL original (sin cambios) (FR-013)
-- [ ] T015 [P] [US3] Añadir a `link-popover.test.tsx`: en modo edición, seleccionar "Eliminar link"; verificar que el texto permanece pero ya no tiene marca de enlace, y que el panel se cierra (FR-011)
-- [ ] T016 [P] [US3] Añadir a `link-popover.test.tsx`: abrir el popover, presionar Escape (y por separado, hacer clic fuera); verificar en ambos casos que el enlace no cambia y el panel se cierra (FR-014)
-- [ ] T017 [P] [US3] Añadir a `link-popover.test.tsx`: con el editor montado en modo `onlyView`, hacer clic sobre un enlace y verificar que el panel muestra solo "Ir a la url" y "Copiar url", sin "Editar url" (FR-015)
+- [x] T009 [P] [US3] Crear `tests/MarkdownEditor/link-popover.test.tsx`: hacer clic sobre un enlace renderizado y verificar que aparece un panel con "Ir a la url", "Copiar url", un separador, y "Editar url", en ese orden (FR-007)
+- [x] T010 [P] [US3] Añadir a `link-popover.test.tsx`: mock de `window.open`, seleccionar "Ir a la url" y verificar que se llama con la URL del enlace y `"_blank", "noopener,noreferrer"` (FR-008)
+- [x] T011 [P] [US3] Añadir a `link-popover.test.tsx`: mock de `navigator.clipboard.writeText`, seleccionar "Copiar url" y verificar que se llama con la URL exacta del enlace (FR-009)
+- [x] T012 [P] [US3] Añadir a `link-popover.test.tsx`: seleccionar "Editar url" y verificar que el panel muestra un input con el valor actual del href, un texto/enlace "Eliminar link", y un botón "Guardar" (FR-010)
+- [x] T013 [P] [US3] Añadir a `link-popover.test.tsx`: en modo edición, cambiar el input a una URL sin protocolo y presionar "Guardar"; verificar que el enlace se actualiza con `http://` antepuesto y que el panel se cierra (FR-012, reutiliza FR-004 vía `ensureProtocol`)
+- [x] T014 [P] [US3] Añadir a `link-popover.test.tsx`: en modo edición, vaciar el input y presionar "Guardar"; verificar que el enlace conserva su URL original (sin cambios) (FR-013)
+- [x] T015 [P] [US3] Añadir a `link-popover.test.tsx`: en modo edición, seleccionar "Eliminar link"; verificar que el texto permanece pero ya no tiene marca de enlace, y que el panel se cierra (FR-011)
+- [x] T016 [P] [US3] Añadir a `link-popover.test.tsx`: abrir el popover, presionar Escape (y por separado, hacer clic fuera); verificar en ambos casos que el enlace no cambia y el panel se cierra (FR-014)
+- [x] T017 [P] [US3] Añadir a `link-popover.test.tsx`: con el editor montado en modo `onlyView`, hacer clic sobre un enlace y verificar que el panel muestra solo "Ir a la url" y "Copiar url", sin "Editar url" (FR-015)
 
 ### Implementation for User Story 3
 
-- [ ] T018 [US3] Crear `src/components/MarkdownEditor/Toolbar/buttons/LinkPopover.tsx`: componente con dos modos internos (`"menu" | "edit"`), reutilizando `FloatingPanel` para el posicionamiento y clases ya existentes (`.menu`/`.menuItem`/`.separator` para el modo menú, `.dialog`/`.dialogField`/`.textButton` para el modo edición); recibe `url`, `anchorRect` (o elemento sintético), `onlyView`, `onNavigate`, `onCopy`, `onSave(newUrl)`, `onRemove`, `onClose` como props (FR-007, FR-010, FR-015; Principio IV, componente desacoplado de la lógica de Tiptap)
-- [ ] T019 [US3] En `LinkPopover.tsx`, implementar el modo `"menu"`: "Ir a la url" invoca `onNavigate` (que a su vez llama `window.open(url, "_blank", "noopener,noreferrer")`); "Copiar url" invoca `onCopy` (`navigator.clipboard.writeText(url)`); separador visual (`Separator`, ya usado en `Toolbar.tsx`); "Editar url" cambia el modo interno a `"edit"`; en `onlyView`, omitir el botón "Editar url" y el separador (FR-007, FR-008, FR-009, FR-015)
-- [ ] T020 [US3] En `LinkPopover.tsx`, implementar el modo `"edit"`: input controlado inicializado con `url`, texto/enlace "Eliminar link" que invoca `onRemove`, botón "Guardar" que invoca `onSave(ensureProtocol(inputValue))` solo si `inputValue` no está vacío (FR-010, FR-011, FR-012, FR-013)
-- [ ] T021 [US3] En `src/components/MarkdownEditor/views/RenderedView.tsx`: aceptar props nuevas (`onLinkClick: (attrs: {href: string}, rect: DOMRect, range: {from: number; to: number}) => void`) y configurar `editorProps.handleClickOn` en el `useEditor` de `MarkdownEditor.tsx` (o pasar la opción a través de `RenderedView` si allí se centraliza) para detectar clic sobre un nodo con marca `link`, obtener el rango vía `getMarkRange`, y invocar el callback con el `href`, el `DOMRect` del elemento clicado, y el rango (research.md §3)
-- [ ] T022 [US3] En `src/components/MarkdownEditor/MarkdownEditor.tsx`: estado `linkPopover: {url, range, anchorRect} | null`; pasar el handler de clic a `useEditor`; renderizar `<LinkPopover>` cuando `linkPopover !== null`, cableando `onSave`/`onRemove` a `editor.chain().focus().setTextSelection(range).extendMarkRange('link').setLink({href: ensureProtocol(newUrl)})` / `.unsetLink()` respectivamente, y `onClose` a `setLinkPopover(null)` (FR-011, FR-012, data-model.md)
+- [x] T018 [US3] Crear `src/components/MarkdownEditor/Toolbar/buttons/LinkPopover.tsx`: componente con dos modos internos (`"menu" | "edit"`), reutilizando `FloatingPanel` para el posicionamiento y clases ya existentes (`.menu`/`.menuItem`/`.separator` para el modo menú, `.dialog`/`.dialogField`/`.textButton` para el modo edición); recibe `url`, `anchorRect` (o elemento sintético), `onlyView`, `onNavigate`, `onCopy`, `onSave(newUrl)`, `onRemove`, `onClose` como props (FR-007, FR-010, FR-015; Principio IV, componente desacoplado de la lógica de Tiptap)
+- [x] T019 [US3] En `LinkPopover.tsx`, implementar el modo `"menu"`: "Ir a la url" invoca `onNavigate` (que a su vez llama `window.open(url, "_blank", "noopener,noreferrer")`); "Copiar url" invoca `onCopy` (`navigator.clipboard.writeText(url)`); separador visual (`Separator`, ya usado en `Toolbar.tsx`); "Editar url" cambia el modo interno a `"edit"`; en `onlyView`, omitir el botón "Editar url" y el separador (FR-007, FR-008, FR-009, FR-015)
+- [x] T020 [US3] En `LinkPopover.tsx`, implementar el modo `"edit"`: input controlado inicializado con `url`, texto/enlace "Eliminar link" que invoca `onRemove`, botón "Guardar" que invoca `onSave(ensureProtocol(inputValue))` solo si `inputValue` no está vacío (FR-010, FR-011, FR-012, FR-013)
+- [x] T021 [US3] En `src/components/MarkdownEditor/views/RenderedView.tsx`: aceptar props nuevas (`onLinkClick: (attrs: {href: string}, rect: DOMRect, range: {from: number; to: number}) => void`) y configurar `editorProps.handleClickOn` en el `useEditor` de `MarkdownEditor.tsx` (o pasar la opción a través de `RenderedView` si allí se centraliza) para detectar clic sobre un nodo con marca `link`, obtener el rango vía `getMarkRange`, y invocar el callback con el `href`, el `DOMRect` del elemento clicado, y el rango (research.md §3)
+- [x] T022 [US3] En `src/components/MarkdownEditor/MarkdownEditor.tsx`: estado `linkPopover: {url, range, anchorRect} | null`; pasar el handler de clic a `useEditor`; renderizar `<LinkPopover>` cuando `linkPopover !== null`, cableando `onSave`/`onRemove` a `editor.chain().focus().setTextSelection(range).extendMarkRange('link').setLink({href: ensureProtocol(newUrl)})` / `.unsetLink()` respectivamente, y `onClose` a `setLinkPopover(null)` (FR-011, FR-012, data-model.md)
 
 **Checkpoint**: US3 completa — popover funcional en ambos modos, incluyendo el caso `onlyView`
 
@@ -120,11 +120,11 @@ separador, y cada acción produce el efecto esperado
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [ ] T023 [P] Test de accesibilidad en `tests/MarkdownEditor/accessibility.test.tsx` (o `link-popover.test.tsx`): verificar `role` apropiado del popover en cada modo, que el primer elemento interactivo recibe foco al abrirse (reutilizando `autoFocus` de `FloatingPanel`), y que "Eliminar link" es accesible por teclado (Principio VI)
-- [ ] T024 [P] Actualizar `src/components/MarkdownEditor/README.md`: documentar el comportamiento condicional del diálogo de enlace, el autocompletado de protocolo, y el popover de acciones sobre enlaces existentes (incluyendo el caso `onlyView`)
-- [ ] T025 Verificar tipado estricto: `npm run typecheck` sin errores y sin `any` no justificado en los archivos tocados (Principio II)
-- [ ] T026 Ejecutar `npm run build` y verificar que `dist/` sigue generando ESM + CJS + `.d.ts` + CSS sin errores
-- [ ] T027 Validar manualmente los 6 escenarios de `specs/004-link-insertion-ux-floating-popover/quickstart.md` en el playground local (`npm run dev`)
+- [x] T023 [P] Test de accesibilidad en `tests/MarkdownEditor/accessibility.test.tsx` (o `link-popover.test.tsx`): verificar `role` apropiado del popover en cada modo, que el primer elemento interactivo recibe foco al abrirse (reutilizando `autoFocus` de `FloatingPanel`), y que "Eliminar link" es accesible por teclado (Principio VI)
+- [x] T024 [P] Actualizar `src/components/MarkdownEditor/README.md`: documentar el comportamiento condicional del diálogo de enlace, el autocompletado de protocolo, y el popover de acciones sobre enlaces existentes (incluyendo el caso `onlyView`)
+- [x] T025 Verificar tipado estricto: `npm run typecheck` sin errores y sin `any` no justificado en los archivos tocados (Principio II)
+- [x] T026 Ejecutar `npm run build` y verificar que `dist/` sigue generando ESM + CJS + `.d.ts` + CSS sin errores
+- [x] T027 Validar manualmente los 6 escenarios de `specs/004-link-insertion-ux-floating-popover/quickstart.md` en el playground local (`npm run dev`)
 
 ---
 
