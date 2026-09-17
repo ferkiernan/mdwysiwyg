@@ -3,15 +3,38 @@ import userEvent from "@testing-library/user-event";
 import { setupEditor, selectAll } from "./helpers";
 
 describe("US3: inserción de elementos desde la barra", () => {
-  it("inserta un bloque de código diferenciado", async () => {
+  it("inserta un bloque de código diferenciado, eligiendo el lenguaje", async () => {
     const { onChange, pm } = await setupEditor({
       initialContent: "const x = 1;",
     });
     await userEvent.click(
       screen.getByRole("button", { name: "Bloque de código" }),
     );
+    await userEvent.selectOptions(
+      screen.getByLabelText("Lenguaje"),
+      "javascript",
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Aplicar" }));
+
     expect(pm.querySelector("pre code")).toHaveTextContent("const x = 1;");
-    expect(onChange.mock.lastCall?.[0]).toContain("```");
+    expect(pm.querySelector("pre code")).toHaveClass("language-javascript");
+    expect(onChange.mock.lastCall?.[0]).toContain("```javascript");
+  });
+
+  it("permite especificar un lenguaje personalizado vía 'Otro…'", async () => {
+    const { onChange, pm } = await setupEditor({ initialContent: "SELECT 1" });
+    await userEvent.click(
+      screen.getByRole("button", { name: "Bloque de código" }),
+    );
+    await userEvent.selectOptions(screen.getByLabelText("Lenguaje"), "other");
+    await userEvent.type(
+      screen.getByLabelText("Especificar lenguaje"),
+      "graphql",
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Aplicar" }));
+
+    expect(pm.querySelector("pre code")).toHaveClass("language-graphql");
+    expect(onChange.mock.lastCall?.[0]).toContain("```graphql");
   });
 
   it("inserta una imagen por URL visible en ambas representaciones", async () => {

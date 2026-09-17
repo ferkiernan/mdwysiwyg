@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { markdownToHtml } from "../../markdown/pipeline";
+import { IconDownload } from "./icons";
 import styles from "../../MarkdownEditor.module.css";
 
 export interface ExportMenuProps {
@@ -34,12 +35,14 @@ export function ExportMenu({ source, sanitize }: ExportMenuProps) {
       <button
         ref={buttonRef}
         type="button"
-        className={`${styles["button"]} ${styles["textButton"]}`}
+        className={styles["button"]}
+        aria-label="Export"
+        title="Export"
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
-        Export
+        <IconDownload />
       </button>
       {open && (
         <div role="menu" aria-label="Exportar contenido" className={styles["menu"]}>

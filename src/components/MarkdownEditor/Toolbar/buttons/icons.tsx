@@ -133,3 +133,13 @@ export function IconHr(props: IconProps) {
     </svg>
   );
 }
+
+export function IconDownload(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 3V15" />
+      <path d="M7 10L12 15L17 10" />
+      <path d="M4 19H20" />
+    </svg>
+  );
+}

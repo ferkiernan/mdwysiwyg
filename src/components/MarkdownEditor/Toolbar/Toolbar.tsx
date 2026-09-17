@@ -4,6 +4,7 @@ import type { ViewMode } from "../types";
 import { ToolbarButton } from "./buttons/ToolbarButton";
 import { InsertDialog, type DialogKind } from "./buttons/InsertDialogs";
 import { TableSizePicker } from "./buttons/TableSizePicker";
+import { CodeLanguagePicker } from "./buttons/CodeLanguagePicker";
 import { ExportMenu } from "./buttons/ExportMenu";
 import {
   IconCode,
@@ -44,9 +45,9 @@ export function Toolbar({
   sanitizeEmbeddedHtml,
 }: ToolbarProps) {
   const [, forceUpdate] = useReducer((count: number) => count + 1, 0);
-  const [openDialog, setOpenDialog] = useState<DialogKind | "table" | null>(
-    null,
-  );
+  const [openDialog, setOpenDialog] = useState<
+    DialogKind | "table" | "codeLanguage" | null
+  >(null);
 
   useEffect(() => {
     if (!editor) return;
@@ -182,7 +183,7 @@ export function Toolbar({
         label="Bloque de código"
         disabled={!canFormat}
         pressed={canFormat && editor.isActive("codeBlock")}
-        onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
+        onClick={() => setOpenDialog("codeLanguage")}
       >
         <IconCodeBlock />
       </ToolbarButton>
@@ -251,9 +252,34 @@ export function Toolbar({
           onClose={closeDialog}
         />
       )}
-      {openDialog !== null && openDialog !== "table" && editor !== null && (
-        <InsertDialog kind={openDialog} editor={editor} onClose={closeDialog} />
+      {openDialog === "codeLanguage" && editor !== null && (
+        <CodeLanguagePicker
+          currentLanguage={
+            (editor.getAttributes("codeBlock")["language"] as
+              | string
+              | undefined) ?? null
+          }
+          onSelect={(language) => {
+            if (editor.isActive("codeBlock")) {
+              editor
+                .chain()
+                .focus()
+                .updateAttributes("codeBlock", { language })
+                .run();
+            } else {
+              editor.chain().focus().toggleCodeBlock({ language }).run();
+            }
+            closeDialog();
+          }}
+          onClose={closeDialog}
+        />
       )}
+      {openDialog !== null &&
+        openDialog !== "table" &&
+        openDialog !== "codeLanguage" &&
+        editor !== null && (
+          <InsertDialog kind={openDialog} editor={editor} onClose={closeDialog} />
+        )}
     </div>
   );
 }
