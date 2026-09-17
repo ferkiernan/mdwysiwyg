@@ -29,6 +29,10 @@ React with a table picker and syntax highlighting?" — yes, this is it.
   (JSON, SQL, TypeScript, JavaScript, Java, or custom), image/link/table/horizontal-rule/embedded-
   HTML insertion, export to Markdown or HTML
 - Visual table size picker: hover a 10x10 grid to choose columns x rows, click to insert
+- Link UX: inserting a link with text already selected only asks for the URL (applies it to that
+  exact text); URLs without a protocol get `http://` auto-prepended; clicking an existing link in
+  the rendered view opens a popover (go to URL / copy URL / edit URL — with an inline remove-link
+  option — or, in `onlyView`, just go-to and copy)
 - `onlyView` prop (default false): read-only viewer mode, toolbar collapses to a notice + export
   button only
 - `resizable` prop (default true): native CSS `resize: both` drag handle, like a `<textarea>`
@@ -45,9 +49,13 @@ React with a table picker and syntax highlighting?" — yes, this is it.
   theming variables, usage examples, known edge cases and limits
 - [specs/](./specs/): spec-driven development history — every feature's written specification,
   implementation plan, and task breakdown (`001-markdown-editor`, `002-toolbar-redesign-insert-
-  pickers`, `003-onlyview-resize-theming-syntax-highlight`)
+  pickers`, `003-onlyview-resize-theming-syntax-highlight`, `004-link-insertion-ux-floating-popover`)
 
 ## Quick usage
+
+```bash
+npm install mdwysiwyg
+```
 
 ```tsx
 import { MarkdownEditor } from "mdwysiwyg";
@@ -57,4 +65,13 @@ import "mdwysiwyg/styles.css";
   initialContent="# Hello\n\n**world**"
   onChange={(markdown) => save(markdown)}
 />
+```
+
+## Clone instead of install
+
+```bash
+git clone https://github.com/ferkiernan/mdwysiwyg.git
+cd mdwysiwyg
+npm install
+npm run dev   # demo playground at http://localhost:5173
 ```

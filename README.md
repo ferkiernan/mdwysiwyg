@@ -51,11 +51,20 @@ personal and commercial use under the MIT license.
 - ⌨️ **Accessible** — semantic HTML, ARIA labels/states on every toolbar control, full keyboard
   support on custom pickers.
 
-## Quick Start
+## Installation
+
+Install it as a dependency in any React 18+ project with your package manager of choice:
 
 ```bash
 npm install mdwysiwyg
+# or
+pnpm add mdwysiwyg
+# or
+yarn add mdwysiwyg
 ```
+
+`react` and `react-dom` are peer dependencies — the package doesn't ship its own copy of React,
+it uses whatever version your project already has (18 or newer).
 
 ```tsx
 import { MarkdownEditor } from "mdwysiwyg";
@@ -74,6 +83,22 @@ export default function App() {
 That's it — no configuration required. Full API reference, all props, theming variables, and
 usage examples live in the [component documentation](./src/components/MarkdownEditor/README.md).
 
+### Cloning the repository instead
+
+If you want to contribute, run the test suite, or try the demo playground locally instead of
+just consuming the published package:
+
+```bash
+git clone https://github.com/ferkiernan/mdwysiwyg.git
+cd mdwysiwyg
+npm install
+npm run dev        # opens the demo playground at http://localhost:5173
+npm test            # runs the test suite
+npm run build        # builds the distributable package into dist/
+```
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full development guide.
+
 ## Live Demo
 
 Try it in your browser, no install required: **[ferkiernan.github.io/mdwysiwyg](https://ferkiernan.github.io/mdwysiwyg/)**
@@ -84,7 +109,8 @@ Try it in your browser, no install required: **[ferkiernan.github.io/mdwysiwyg](
 | --- | --- |
 | Formatting | Paragraphs, headings (H1–H6), bold, italic, strikethrough, blockquote |
 | Lists | Ordered, unordered, nested, task lists (checklists) |
-| Insert | Images (by URL), links, tables (visual size picker), horizontal rules, embedded HTML |
+| Insert | Images (by URL), links (URL-only dialog when text is already selected, auto `http://` prefix), tables (visual size picker), horizontal rules, embedded HTML |
+| Links | Click an existing link to open a quick popover: go to URL, copy URL, or edit/remove it inline |
 | Code | Fenced code blocks with a language picker (JSON/SQL/TypeScript/JavaScript/Java/custom) and syntax highlighting |
 | Export | Copy as Markdown or as HTML, one click |
 | Modes | Full editor (default) or read-only viewer (`onlyView`) |
