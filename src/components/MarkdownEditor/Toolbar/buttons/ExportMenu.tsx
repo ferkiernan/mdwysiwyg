@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { markdownToHtml } from "../../markdown/pipeline";
 import { IconDownload } from "./icons";
+import { FloatingPanel } from "./FloatingPanel";
 import styles from "../../MarkdownEditor.module.css";
 
 export interface ExportMenuProps {
@@ -23,15 +24,7 @@ export function ExportMenu({ source, sanitize }: ExportMenuProps) {
   };
 
   return (
-    <div
-      className={styles["dialogAnchor"]}
-      onKeyDown={(event) => {
-        if (event.key === "Escape" && open) {
-          event.stopPropagation();
-          close();
-        }
-      }}
-    >
+    <>
       <button
         ref={buttonRef}
         type="button"
@@ -45,25 +38,37 @@ export function ExportMenu({ source, sanitize }: ExportMenuProps) {
         <IconDownload />
       </button>
       {open && (
-        <div role="menu" aria-label="Exportar contenido" className={styles["menu"]}>
-          <button
-            type="button"
-            role="menuitem"
-            className={styles["menuItem"]}
-            onClick={() => copy(source)}
+        <FloatingPanel anchor={buttonRef.current} align="end" autoFocus>
+          <div
+            role="menu"
+            aria-label="Exportar contenido"
+            className={styles["menu"]}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                event.stopPropagation();
+                close();
+              }
+            }}
           >
-            Copiar como Markdown
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            className={styles["menuItem"]}
-            onClick={() => copy(markdownToHtml(source, { sanitize }))}
-          >
-            Copiar como HTML
-          </button>
-        </div>
+            <button
+              type="button"
+              role="menuitem"
+              className={styles["menuItem"]}
+              onClick={() => copy(source)}
+            >
+              Copiar como Markdown
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              className={styles["menuItem"]}
+              onClick={() => copy(markdownToHtml(source, { sanitize }))}
+            >
+              Copiar como HTML
+            </button>
+          </div>
+        </FloatingPanel>
       )}
-    </div>
+    </>
   );
 }

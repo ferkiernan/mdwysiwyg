@@ -77,13 +77,13 @@ describe("US3: inserción de elementos desde la barra", () => {
   });
 
   it("inserta una tabla del tamaño elegido en el selector visual (3 columnas × 4 filas)", async () => {
-    const { onChange, pm, view } = await setupEditor({});
+    const { onChange, pm } = await setupEditor({});
     await userEvent.click(
       screen.getByRole("button", { name: "Insertar tabla" }),
     );
 
     const { fireEvent } = await import("@testing-library/react");
-    const cell = view.container.querySelector(
+    const cell = document.querySelector(
       '[data-cell="3x4"]',
     ) as HTMLElement;
     fireEvent.mouseEnter(cell);

@@ -1,10 +1,11 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState, type MouseEvent } from "react";
 import type { Editor } from "@tiptap/core";
 import type { ViewMode } from "../types";
 import { ToolbarButton } from "./buttons/ToolbarButton";
 import { InsertDialog, type DialogKind } from "./buttons/InsertDialogs";
 import { TableSizePicker } from "./buttons/TableSizePicker";
 import { CodeLanguagePicker } from "./buttons/CodeLanguagePicker";
+import { FloatingPanel } from "./buttons/FloatingPanel";
 import { ExportMenu } from "./buttons/ExportMenu";
 import {
   IconCode,
@@ -48,6 +49,15 @@ export function Toolbar({
   const [openDialog, setOpenDialog] = useState<
     DialogKind | "table" | "codeLanguage" | null
   >(null);
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+
+  const openDialogAt = (
+    kind: DialogKind | "table" | "codeLanguage",
+    event: MouseEvent<HTMLElement>,
+  ) => {
+    setAnchor(event.currentTarget);
+    setOpenDialog(kind);
+  };
 
   useEffect(() => {
     if (!editor) return;
@@ -183,7 +193,7 @@ export function Toolbar({
         label="Bloque de código"
         disabled={!canFormat}
         pressed={canFormat && editor.isActive("codeBlock")}
-        onClick={() => setOpenDialog("codeLanguage")}
+        onClick={(event) => openDialogAt("codeLanguage", event)}
       >
         <IconCodeBlock />
       </ToolbarButton>
@@ -198,7 +208,7 @@ export function Toolbar({
       <ToolbarButton
         label="Insertar tabla"
         disabled={!canFormat}
-        onClick={() => setOpenDialog("table")}
+        onClick={(event) => openDialogAt("table", event)}
       >
         <IconTable />
       </ToolbarButton>
@@ -216,69 +226,79 @@ export function Toolbar({
         label="Insertar enlace"
         disabled={!canFormat}
         pressed={canFormat && editor.isActive("link")}
-        onClick={() => setOpenDialog("link")}
+        onClick={(event) => openDialogAt("link", event)}
       >
         <IconLink />
       </ToolbarButton>
       <ToolbarButton
         label="Insertar imagen"
         disabled={!canFormat}
-        onClick={() => setOpenDialog("image")}
+        onClick={(event) => openDialogAt("image", event)}
       >
         <IconImage />
       </ToolbarButton>
       <ToolbarButton
         label="Insertar HTML"
         disabled={!canFormat}
-        onClick={() => setOpenDialog("html")}
+        onClick={(event) => openDialogAt("html", event)}
       >
         <span className={styles["htmlIcon"]}>HTML</span>
       </ToolbarButton>
 
-      <div className={`${styles["spacer"]} ${styles["dialogAnchor"]}`}>
+      <div className={styles["spacer"]}>
         <ExportMenu source={source} sanitize={sanitizeEmbeddedHtml} />
       </div>
 
       {openDialog === "table" && editor !== null && (
-        <TableSizePicker
-          onSelect={({ cols, rows }) => {
-            editor
-              .chain()
-              .focus()
-              .insertTable({ rows, cols, withHeaderRow: true })
-              .run();
-            closeDialog();
-          }}
-          onClose={closeDialog}
-        />
-      )}
-      {openDialog === "codeLanguage" && editor !== null && (
-        <CodeLanguagePicker
-          currentLanguage={
-            (editor.getAttributes("codeBlock")["language"] as
-              | string
-              | undefined) ?? null
-          }
-          onSelect={(language) => {
-            if (editor.isActive("codeBlock")) {
+        <FloatingPanel anchor={anchor}>
+          <TableSizePicker
+            onSelect={({ cols, rows }) => {
               editor
                 .chain()
                 .focus()
-                .updateAttributes("codeBlock", { language })
+                .insertTable({ rows, cols, withHeaderRow: true })
                 .run();
-            } else {
-              editor.chain().focus().toggleCodeBlock({ language }).run();
+              closeDialog();
+            }}
+            onClose={closeDialog}
+          />
+        </FloatingPanel>
+      )}
+      {openDialog === "codeLanguage" && editor !== null && (
+        <FloatingPanel anchor={anchor}>
+          <CodeLanguagePicker
+            currentLanguage={
+              (editor.getAttributes("codeBlock")["language"] as
+                | string
+                | undefined) ?? null
             }
-            closeDialog();
-          }}
-          onClose={closeDialog}
-        />
+            onSelect={(language) => {
+              if (editor.isActive("codeBlock")) {
+                editor
+                  .chain()
+                  .focus()
+                  .updateAttributes("codeBlock", { language })
+                  .run();
+              } else {
+                editor.chain().focus().toggleCodeBlock({ language }).run();
+              }
+              closeDialog();
+            }}
+            onClose={closeDialog}
+          />
+        </FloatingPanel>
       )}
       {openDialog !== null &&
         openDialog !== "table" &&
         openDialog !== "codeLanguage" &&
         editor !== null && (
-          <InsertDialog kind={openDialog} editor={editor} onClose={closeDialog} />
+          <FloatingPanel anchor={anchor}>
+            <InsertDialog
+              kind={openDialog}
+              editor={editor}
+              onClose={closeDialog}
+            />
+          </FloatingPanel>
         )}
     </div>
   );
