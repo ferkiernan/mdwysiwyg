@@ -31,7 +31,8 @@ React with a table picker and syntax highlighting?" — yes, this is it.
 - Visual table size picker: hover a 10x10 grid to choose columns x rows, click to insert
 - Table context menus: clicking an already-focused cell a second time opens a menu — column
   actions (add right/left, move right/left, delete) on header cells, row actions (add above/below,
-  move up/down, delete) on data cells
+  move up/down, delete) on data cells. A click while a text selection is active never opens the
+  menu, so dragging to select cell text isn't interrupted
 - Mermaid diagrams: a ```mermaid code block renders as a live diagram in the WYSIWYG view; pasting
   Mermaid syntax through "insert HTML" is auto-detected and inserted as a mermaid code block
   instead. The library is lazy-loaded (no bundle cost if unused) and runs with
@@ -69,6 +70,7 @@ React with a table picker and syntax highlighting?" — yes, this is it.
   implementation plan, and task breakdown (`001-markdown-editor`, `002-toolbar-redesign-insert-
   pickers`, `003-onlyview-resize-theming-syntax-highlight`, `004-link-insertion-ux-floating-popover`,
   `005-table-context-menus-mermaid-imperative-api`)
+- [CHANGELOG.md](./CHANGELOG.md): version-by-version summary of what shipped
 
 ## Quick usage
 

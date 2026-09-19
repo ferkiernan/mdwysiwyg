@@ -1,6 +1,6 @@
 {
   "name": "mdwysiwyg",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Free, open-source, fully customizable Markdown WYSIWYG editor for React with dual synced views (rich-text + raw Markdown), GFM, syntax highlighting, and CSS theming.",
   "keywords": [
     "markdown",

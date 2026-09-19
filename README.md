@@ -137,7 +137,8 @@ TypeScript strict, tested with Vitest + React Testing Library.
 
 This project is developed spec-first: every feature has a written specification, implementation
 plan, and task breakdown under [`specs/`](./specs/) before being built. See
-[`specs/`](./specs/) for the full history of what's implemented and why.
+[`specs/`](./specs/) for the full history of what's implemented and why. See
+[CHANGELOG.md](./CHANGELOG.md) for a version-by-version summary of what shipped.
 
 ## Contributing
 
