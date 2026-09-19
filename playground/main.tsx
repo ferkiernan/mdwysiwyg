@@ -203,10 +203,15 @@ const THEME_PRESETS: ThemePreset[] = [
   },
 ];
 
-/** Arma el bloque CSS `.mi-clase { --var: valor; ... }` para copiar. */
-function buildCssBlock(vars: ThemeVars, selector: string): string {
+/** Arma el bloque CSS `.mi-clase { --var: valor; ... }`. */
+function buildCssBlock(
+  vars: ThemeVars,
+  selector: string,
+  options: { important?: boolean } = {},
+): string {
+  const suffix = options.important === true ? " !important" : "";
   const lines = Object.entries(vars).map(
-    ([name, value]) => `  ${name}: ${value};`,
+    ([name, value]) => `  ${name}: ${value}${suffix};`,
   );
   return `${selector} {\n${lines.join("\n")}\n}`;
 }
@@ -316,10 +321,14 @@ function App() {
     setCustomVars((prev) => ({ ...prev, [name]: value }));
   };
 
-  // React no acepta custom properties tipadas en `CSSProperties`; el cast es
-  // la forma estándar de pasarlas vía `style` inline.
-  const editorStyle = useMemo(
-    () => customVars as unknown as React.CSSProperties,
+  // El propio `.root` del componente ya define un valor concreto para cada
+  // --mdw-*, así que esas variables NUNCA se heredan de un ancestro (la
+  // cascada solo hereda una propiedad si el elemento no la redefine). Por
+  // eso hace falta una regla de mayor especificidad aplicada directamente
+  // sobre la clase del componente, no un `style` en un `<div>` padre.
+  const liveThemeCss = useMemo(
+    () =>
+      buildCssBlock(customVars, ".mdw-live-theme", { important: true }),
     [customVars],
   );
 
@@ -412,10 +421,14 @@ function App() {
             </button>
           ))}
         </div>
+        <style>{liveThemeCss}</style>
         <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-          <div style={editorStyle}>
-            <MarkdownEditor initialContent={DEMO} width={500} height={300} />
-          </div>
+          <MarkdownEditor
+            className="mdw-live-theme"
+            initialContent={DEMO}
+            width={500}
+            height={300}
+          />
           <ThemeEditor vars={customVars} onChange={updateVar} />
         </div>
       </section>
