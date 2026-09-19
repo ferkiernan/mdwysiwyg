@@ -109,6 +109,13 @@ export const MarkdownEditor = forwardRef<
             // --- Tabla: segundo clic sobre la celda ya enfocada abre el menú
             const cellEl = target.closest("th, td");
             if (cellEl !== null && view.dom.contains(cellEl)) {
+              // Un arrastre para seleccionar texto también dispara "click":
+              // con una selección no vacía, el usuario está seleccionando
+              // contenido, no pidiendo el menú contextual.
+              if (!view.state.selection.empty) {
+                lastFocusedCellPosRef.current = null;
+                return false;
+              }
               const cellPos = view.posAtDOM(cellEl, 0);
               if (lastFocusedCellPosRef.current === cellPos) {
                 event.preventDefault();

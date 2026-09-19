@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { setupEditor } from "./helpers";
+import { setupEditor, selectAll } from "./helpers";
 
 const TABLE_MD = [
   "| A | B | C |",
@@ -93,6 +93,16 @@ describe("US2: menú de columna (celda de encabezado)", () => {
       (cell) => cell.textContent,
     );
     expect(headers).toEqual(["A", "B", "C"]);
+  });
+
+  it("con contenido seleccionado (arrastre) el segundo clic no abre el menú", async () => {
+    const { pm } = await setupEditor({ initialContent: TABLE_MD });
+    const th = pm.querySelectorAll("th")[0] as HTMLElement;
+    await userEvent.click(th);
+    selectAll(pm);
+    await userEvent.click(th);
+
+    expect(screen.queryByRole("menu", MENU)).toBeNull();
   });
 
   it("clic en otra parte entre ambos clics cuenta como primer clic nuevo", async () => {

@@ -104,7 +104,8 @@ un menú de acciones estructurales:
 
 El primer clic solo posiciona el cursor. Si entre ambos clics se hace clic en otra parte, el
 siguiente vuelve a contar como "primer clic". Mover una columna/fila más allá del borde de la
-tabla no tiene efecto.
+tabla no tiene efecto. Si hay contenido seleccionado (por ejemplo, arrastrando el mouse sobre
+texto de la celda) el clic no abre el menú, para no interrumpir la selección.
 
 ### Diagramas Mermaid
 

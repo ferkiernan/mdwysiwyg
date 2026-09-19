@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { setupEditor } from "./helpers";
+import { setupEditor, selectAll } from "./helpers";
 
 const TABLE_MD = [
   "| A | B |",
@@ -43,6 +43,16 @@ describe("US2: menú de fila (celda de datos)", () => {
       "Bajar esta fila",
       "Eliminar esta fila",
     ]);
+  });
+
+  it("con contenido seleccionado (arrastre) el segundo clic no abre el menú", async () => {
+    const { pm } = await setupEditor({ initialContent: TABLE_MD });
+    const cell = dataCell(pm, 0);
+    await userEvent.click(cell);
+    selectAll(pm);
+    await userEvent.click(cell);
+
+    expect(screen.queryByRole("menu", MENU)).toBeNull();
   });
 
   it("'Añadir fila abajo' inserta una fila nueva", async () => {
