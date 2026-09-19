@@ -77,7 +77,9 @@ function Editor() {
 ## Barra de herramientas
 
 - **Formato**: párrafo, encabezados H1–H6, negrita, cursiva, tachado.
-- **Listas**: ordenada, con viñetas, de tareas (checklist), y sangría para anidar.
+- **Listas**: ordenada, con viñetas, de tareas (checklist), y sangría para anidar. Los botones
+  de aumentar/disminuir sangría se ocultan (no solo se deshabilitan) cuando la acción no está
+  disponible para la posición actual del cursor.
 - **Bloques**: bloque de código con resaltado de sintaxis y selector de lenguaje (JSON, SQL,
   TypeScript, JavaScript, Java u "Otro…" para especificar cualquier otro), cita, línea horizontal.
 - **Insertar**: imagen (por URL), enlace, tabla (selector visual de tamaño: cuadrícula 10×10,
@@ -165,6 +167,13 @@ variables en un selector que apunte al `className` que le pases:
 | `--mdw-content-markdown-fg` | `var(--mdw-fg)` | Color de texto de la vista Markdown |
 | `--mdw-content-markdown-font-family` | `ui-monospace, Consolas, monospace` | Fuente de la vista Markdown |
 
+**Tablas y código:**
+
+| Variable | Default | Controla |
+| --- | --- | --- |
+| `--mdw-table-header-bg` | `var(--mdw-muted)` | Fondo de los encabezados (`th`) de tablas en la vista renderizada |
+| `--mdw-code-block-bg` | `var(--mdw-muted)` | Fondo de los bloques de código en la vista renderizada |
+
 **Scroll:**
 
 | Variable | Default | Controla |
@@ -173,7 +182,9 @@ variables en un selector que apunte al `className` que le pases:
 | `--mdw-scrollbar-track` | `transparent` | Color del riel de la barra de scroll |
 
 Los colores de scroll se aplican donde el navegador lo permite (`scrollbar-color` y los
-pseudo-elementos `::-webkit-scrollbar-*`); en navegadores sin soporte se ignoran silenciosamente.
+pseudo-elementos `::-webkit-scrollbar-*`), incluyendo el scroll horizontal que aparece
+automáticamente en la barra de herramientas cuando es más ancha que el contenedor; en
+navegadores sin soporte se ignoran silenciosamente.
 
 `--mdw-content-bg` acepta cualquier valor válido de la propiedad CSS `background` (shorthand
 completo: color, `linear-gradient(...)`, o `url(...)` con capas y transparencia combinadas), ya

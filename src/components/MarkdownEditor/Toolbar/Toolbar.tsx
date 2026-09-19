@@ -188,20 +188,26 @@ export function Toolbar({
       >
         <IconChecklist />
       </ToolbarButton>
-      <ToolbarButton
-        label="Aumentar sangría"
-        disabled={!canFormat || !editor.can().sinkListItem(listItemType)}
-        onClick={() => editor?.chain().focus().sinkListItem(listItemType).run()}
-      >
-        <IconIndent />
-      </ToolbarButton>
-      <ToolbarButton
-        label="Disminuir sangría"
-        disabled={!canFormat || !editor.can().liftListItem(listItemType)}
-        onClick={() => editor?.chain().focus().liftListItem(listItemType).run()}
-      >
-        <IconOutdent />
-      </ToolbarButton>
+      {canFormat && editor.can().sinkListItem(listItemType) && (
+        <ToolbarButton
+          label="Aumentar sangría"
+          onClick={() =>
+            editor?.chain().focus().sinkListItem(listItemType).run()
+          }
+        >
+          <IconIndent />
+        </ToolbarButton>
+      )}
+      {canFormat && editor.can().liftListItem(listItemType) && (
+        <ToolbarButton
+          label="Disminuir sangría"
+          onClick={() =>
+            editor?.chain().focus().liftListItem(listItemType).run()
+          }
+        >
+          <IconOutdent />
+        </ToolbarButton>
+      )}
 
       <Separator />
 

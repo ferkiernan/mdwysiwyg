@@ -77,6 +77,10 @@ const THEME_VAR_ORDER: Array<{ group: string; vars: string[] }> = [
     group: "Scroll",
     vars: ["--mdw-scrollbar-thumb", "--mdw-scrollbar-track"],
   },
+  {
+    group: "Tablas y código",
+    vars: ["--mdw-table-header-bg", "--mdw-code-block-bg"],
+  },
 ];
 
 /** `true` si el valor es un color hex simple, editable con `<input type="color">`. */
@@ -111,6 +115,8 @@ const THEME_PRESETS: ThemePreset[] = [
       "--mdw-content-markdown-font-family": "ui-monospace, Consolas, monospace",
       "--mdw-scrollbar-thumb": "#c1c1c1",
       "--mdw-scrollbar-track": "transparent",
+      "--mdw-table-header-bg": "#f6f7f9",
+      "--mdw-code-block-bg": "#f6f7f9",
     },
   },
   {
@@ -133,6 +139,8 @@ const THEME_PRESETS: ThemePreset[] = [
       "--mdw-content-markdown-font-family": "ui-monospace, Consolas, monospace",
       "--mdw-scrollbar-thumb": "#475569",
       "--mdw-scrollbar-track": "#0b1220",
+      "--mdw-table-header-bg": "#1e293b",
+      "--mdw-code-block-bg": "#1e293b",
     },
   },
   {
@@ -155,6 +163,8 @@ const THEME_PRESETS: ThemePreset[] = [
       "--mdw-content-markdown-font-family": "ui-monospace, Consolas, monospace",
       "--mdw-scrollbar-thumb": "#d97706",
       "--mdw-scrollbar-track": "transparent",
+      "--mdw-table-header-bg": "#fef3c7",
+      "--mdw-code-block-bg": "#fef3c7",
     },
   },
   {
@@ -177,6 +187,8 @@ const THEME_PRESETS: ThemePreset[] = [
       "--mdw-content-markdown-font-family": "ui-monospace, Consolas, monospace",
       "--mdw-scrollbar-thumb": "#166534",
       "--mdw-scrollbar-track": "#000000",
+      "--mdw-table-header-bg": "#052e16",
+      "--mdw-code-block-bg": "#052e16",
     },
   },
   {
@@ -199,6 +211,8 @@ const THEME_PRESETS: ThemePreset[] = [
       "--mdw-content-markdown-font-family": "ui-monospace, Consolas, monospace",
       "--mdw-scrollbar-thumb": "#ffff00",
       "--mdw-scrollbar-track": "#000000",
+      "--mdw-table-header-bg": "#000000",
+      "--mdw-code-block-bg": "#000000",
     },
   },
 ];
@@ -359,7 +373,6 @@ function App() {
           onlyView
           onlyViewNotice="demo-readme.md"
           initialContent={DEMO}
-          width={500}
           height={300}
         />
       </section>
@@ -389,7 +402,6 @@ function App() {
           initialContent="# Original\n\nProbá editar esto."
           documentId="demo-1"
           fileName="demo-readme.md"
-          width={500}
           height={220}
         />
       </section>
@@ -407,27 +419,27 @@ function App() {
       <section>
         <h2>Theming: 5 estilos + edición en vivo (CSS Custom Properties)</h2>
         <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-          {THEME_PRESETS.map((theme) => (
-            <button
-              key={theme.id}
-              type="button"
-              onClick={() => selectPreset(theme.id)}
-              style={{
-                fontWeight: theme.id === themeId ? "bold" : "normal",
-                outline: theme.id === themeId ? "2px solid #3d6fd8" : "none",
-              }}
+          <label>
+            Estilo:{" "}
+            <select
+              value={themeId}
+              onChange={(event) => selectPreset(event.target.value)}
             >
-              {theme.label}
-            </button>
-          ))}
+              {THEME_PRESETS.map((theme) => (
+                <option key={theme.id} value={theme.id}>
+                  {theme.label}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
         <style>{liveThemeCss}</style>
         <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
           <MarkdownEditor
             className="mdw-live-theme"
             initialContent={DEMO}
-            width={500}
-            height={300}
+            width={700}
+            height={600}
           />
           <ThemeEditor vars={customVars} onChange={updateVar} />
         </div>

@@ -1,7 +1,8 @@
-import { screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Editor } from "@tiptap/core";
 import { setupEditor } from "./helpers";
+import { Toolbar } from "../../src/components/MarkdownEditor/Toolbar/Toolbar";
 import {
   createEditorExtensions,
   markdownToEditorContent,
@@ -59,13 +60,34 @@ describe("US1: listas desde la barra de herramientas", () => {
     editor.destroy();
   });
 
-  it("expone botones de sangría en la barra", async () => {
-    await setupEditor({ initialContent: "- uno\n- dos\n" });
+  it("expone el botón de aumentar sangría cuando la acción está disponible", () => {
+    const editor = new Editor({
+      extensions: createEditorExtensions({ sanitizeEmbeddedHtml: true }),
+      content: markdownToEditorContent("- uno\n- dos\n"),
+    });
+    editor.commands.setTextSelection(editor.state.doc.content.size - 3);
+    render(
+      <Toolbar
+        editor={editor}
+        viewMode="wysiwyg"
+        onToggleView={() => {}}
+        source=""
+        sanitizeEmbeddedHtml
+      />,
+    );
     expect(
       screen.getByRole("button", { name: "Aumentar sangría" }),
     ).toBeInTheDocument();
+    editor.destroy();
+  });
+
+  it("oculta los botones de sangría cuando no hay ninguna acción posible", async () => {
+    await setupEditor({ initialContent: "uno" });
     expect(
-      screen.getByRole("button", { name: "Disminuir sangría" }),
-    ).toBeInTheDocument();
+      screen.queryByRole("button", { name: "Aumentar sangría" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Disminuir sangría" }),
+    ).not.toBeInTheDocument();
   });
 });

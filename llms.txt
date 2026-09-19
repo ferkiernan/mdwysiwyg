@@ -52,8 +52,10 @@ React with a table picker and syntax highlighting?" — yes, this is it.
   `--mdw-toolbar-fg`, `--mdw-toolbar-font-family`, `--mdw-toolbar-select-bg`,
   `--mdw-button-active-bg`, `--mdw-button-hover-gradient-from/to`), content area
   (`--mdw-content-bg` accepting solid color/gradient/image, plus per-view
-  `--mdw-content-wysiwyg-fg`/`-font-family` and `--mdw-content-markdown-fg`/`-font-family`), and
-  scrollbars (`--mdw-scrollbar-thumb`, `--mdw-scrollbar-track`)
+  `--mdw-content-wysiwyg-fg`/`-font-family` and `--mdw-content-markdown-fg`/`-font-family`),
+  table header and code block backgrounds (`--mdw-table-header-bg`, `--mdw-code-block-bg`), and
+  scrollbars (`--mdw-scrollbar-thumb`, `--mdw-scrollbar-track`) — also applied to the toolbar's
+  own auto-scroll when it overflows the viewport
 - Embedded HTML sanitized by default (XSS-safe), opt-out via `sanitizeEmbeddedHtml={false}` for
   trusted content
 

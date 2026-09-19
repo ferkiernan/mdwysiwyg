@@ -26,6 +26,8 @@ const NEW_VARIABLES: Array<[string, string]> = [
   ["--mdw-button-active-bg", "#c8c8c8"],
   ["--mdw-button-hover-gradient-from", "#ffffff"],
   ["--mdw-button-hover-gradient-to", "#d8d8d8"],
+  ["--mdw-table-header-bg", "var(--mdw-muted)"],
+  ["--mdw-code-block-bg", "var(--mdw-muted)"],
 ];
 
 describe("US5: theming extendido (CSS Custom Properties)", () => {
@@ -74,6 +76,29 @@ describe("US5: theming extendido (CSS Custom Properties)", () => {
       // La vista renderizada conserva su propio default, independiente.
       expect(style.getPropertyValue("--mdw-content-wysiwyg-fg").trim()).toBe(
         "var(--mdw-fg)",
+      );
+    } finally {
+      cleanup();
+    }
+  });
+
+  it("permite personalizar el fondo de encabezados de tabla y de bloques de código", () => {
+    const cleanup = injectStyle(`
+      .mdw-table-code-theme {
+        --mdw-table-header-bg: #dbeafe;
+        --mdw-code-block-bg: #111827;
+      }
+    `);
+    try {
+      const { container } = render(
+        <MarkdownEditor className="mdw-table-code-theme" />,
+      );
+      const style = getComputedStyle(rootOf(container));
+      expect(style.getPropertyValue("--mdw-table-header-bg").trim()).toBe(
+        "#dbeafe",
+      );
+      expect(style.getPropertyValue("--mdw-code-block-bg").trim()).toBe(
+        "#111827",
       );
     } finally {
       cleanup();

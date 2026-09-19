@@ -20,6 +20,8 @@
   --mdw-content-wysiwyg-font-family: inherit;
   --mdw-scrollbar-thumb: #c1c1c1;
   --mdw-scrollbar-track: transparent;
+  --mdw-table-header-bg: var(--mdw-muted);
+  --mdw-code-block-bg: var(--mdw-muted);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -89,7 +91,7 @@
 }
 
 .content :global(.ProseMirror pre) {
-  background: var(--mdw-muted);
+  background: var(--mdw-code-block-bg);
   border: 1px solid var(--mdw-border);
   border-radius: 4px;
   padding: 8px 12px;
@@ -139,7 +141,7 @@
 }
 
 .content :global(.ProseMirror th) {
-  background: var(--mdw-muted);
+  background: var(--mdw-table-header-bg);
 }
 
 .content :global(.ProseMirror hr) {
@@ -217,6 +219,7 @@
     0 1px 2px rgba(0, 0, 0, 0.15);
   overflow-x: auto;
   overflow-y: visible;
+  scrollbar-color: var(--mdw-scrollbar-thumb) var(--mdw-scrollbar-track);
 }
 
 .readOnlyNotice {
