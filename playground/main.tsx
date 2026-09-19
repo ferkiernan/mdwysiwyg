@@ -1,4 +1,4 @@
-import { StrictMode, useRef, useState } from "react";
+import { StrictMode, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { MarkdownEditor } from "../src";
 import type { MarkdownEditorHandle } from "../src";
@@ -45,123 +45,284 @@ const DEMO = [
   "",
 ].join("\n");
 
+/** Todas las CSS Custom Properties de theming que expone el componente. */
+type ThemeVars = Record<string, string>;
+
+const THEME_VAR_ORDER: Array<{ group: string; vars: string[] }> = [
+  {
+    group: "Barra de herramientas",
+    vars: [
+      "--mdw-toolbar-gradient-from",
+      "--mdw-toolbar-gradient-via",
+      "--mdw-toolbar-gradient-to",
+      "--mdw-toolbar-fg",
+      "--mdw-toolbar-font-family",
+      "--mdw-toolbar-select-bg",
+      "--mdw-button-active-bg",
+      "--mdw-button-hover-gradient-from",
+      "--mdw-button-hover-gradient-to",
+    ],
+  },
+  {
+    group: "Área de contenido",
+    vars: [
+      "--mdw-content-bg",
+      "--mdw-content-wysiwyg-fg",
+      "--mdw-content-wysiwyg-font-family",
+      "--mdw-content-markdown-fg",
+      "--mdw-content-markdown-font-family",
+    ],
+  },
+  {
+    group: "Scroll",
+    vars: ["--mdw-scrollbar-thumb", "--mdw-scrollbar-track"],
+  },
+];
+
+/** `true` si el valor es un color hex simple, editable con `<input type="color">`. */
+function isHexColor(value: string): boolean {
+  return /^#[0-9a-fA-F]{6}$/.test(value.trim());
+}
+
 interface ThemePreset {
   id: string;
   label: string;
-  className: string;
-  css: string;
+  vars: ThemeVars;
 }
 
 const THEME_PRESETS: ThemePreset[] = [
   {
     id: "default",
     label: "Default",
-    className: "",
-    css: "",
+    vars: {
+      "--mdw-toolbar-gradient-from": "#eeeeee",
+      "--mdw-toolbar-gradient-via": "#dcdcdc",
+      "--mdw-toolbar-gradient-to": "#cfcfcf",
+      "--mdw-toolbar-fg": "#222222",
+      "--mdw-toolbar-font-family": "Arial, sans-serif",
+      "--mdw-toolbar-select-bg": "#e9e9e9",
+      "--mdw-button-active-bg": "#c8c8c8",
+      "--mdw-button-hover-gradient-from": "#ffffff",
+      "--mdw-button-hover-gradient-to": "#d8d8d8",
+      "--mdw-content-bg": "#ffffff",
+      "--mdw-content-wysiwyg-fg": "#1f2328",
+      "--mdw-content-wysiwyg-font-family": "inherit",
+      "--mdw-content-markdown-fg": "#1f2328",
+      "--mdw-content-markdown-font-family": "ui-monospace, Consolas, monospace",
+      "--mdw-scrollbar-thumb": "#c1c1c1",
+      "--mdw-scrollbar-track": "transparent",
+    },
   },
   {
     id: "dark",
     label: "Oscuro",
-    className: "mdw-theme-dark",
-    css: `
-      .mdw-theme-dark {
-        --mdw-toolbar-gradient-from: #1e293b;
-        --mdw-toolbar-gradient-via: #0f172a;
-        --mdw-toolbar-gradient-to: #020617;
-        --mdw-toolbar-fg: #f8fafc;
-        --mdw-toolbar-font-family: "Trebuchet MS", sans-serif;
-        --mdw-toolbar-select-bg: #1e293b;
-        --mdw-button-active-bg: #334155;
-        --mdw-button-hover-gradient-from: #334155;
-        --mdw-button-hover-gradient-to: #1e293b;
-        --mdw-content-bg: #0b1220;
-        --mdw-content-wysiwyg-fg: #e2e8f0;
-        --mdw-content-markdown-fg: #94a3b8;
-        --mdw-scrollbar-thumb: #475569;
-        --mdw-scrollbar-track: #0b1220;
-      }
-    `,
+    vars: {
+      "--mdw-toolbar-gradient-from": "#1e293b",
+      "--mdw-toolbar-gradient-via": "#0f172a",
+      "--mdw-toolbar-gradient-to": "#020617",
+      "--mdw-toolbar-fg": "#f8fafc",
+      "--mdw-toolbar-font-family": '"Trebuchet MS", sans-serif',
+      "--mdw-toolbar-select-bg": "#1e293b",
+      "--mdw-button-active-bg": "#334155",
+      "--mdw-button-hover-gradient-from": "#334155",
+      "--mdw-button-hover-gradient-to": "#1e293b",
+      "--mdw-content-bg": "#0b1220",
+      "--mdw-content-wysiwyg-fg": "#e2e8f0",
+      "--mdw-content-wysiwyg-font-family": "inherit",
+      "--mdw-content-markdown-fg": "#94a3b8",
+      "--mdw-content-markdown-font-family": "ui-monospace, Consolas, monospace",
+      "--mdw-scrollbar-thumb": "#475569",
+      "--mdw-scrollbar-track": "#0b1220",
+    },
   },
   {
     id: "notebook",
     label: "Notebook (pastel)",
-    className: "mdw-theme-notebook",
-    css: `
-      .mdw-theme-notebook {
-        --mdw-toolbar-gradient-from: #fde68a;
-        --mdw-toolbar-gradient-via: #fbbf24;
-        --mdw-toolbar-gradient-to: #f59e0b;
-        --mdw-toolbar-fg: #78350f;
-        --mdw-toolbar-font-family: Georgia, serif;
-        --mdw-toolbar-select-bg: #fef3c7;
-        --mdw-button-active-bg: #f59e0b;
-        --mdw-button-hover-gradient-from: #fef3c7;
-        --mdw-button-hover-gradient-to: #fde68a;
-        --mdw-content-bg: linear-gradient(135deg, #fffbeb, #fef3c7);
-        --mdw-content-wysiwyg-fg: #451a03;
-        --mdw-content-wysiwyg-font-family: Georgia, serif;
-        --mdw-content-markdown-fg: #78350f;
-        --mdw-scrollbar-thumb: #d97706;
-      }
-    `,
+    vars: {
+      "--mdw-toolbar-gradient-from": "#fde68a",
+      "--mdw-toolbar-gradient-via": "#fbbf24",
+      "--mdw-toolbar-gradient-to": "#f59e0b",
+      "--mdw-toolbar-fg": "#78350f",
+      "--mdw-toolbar-font-family": "Georgia, serif",
+      "--mdw-toolbar-select-bg": "#fef3c7",
+      "--mdw-button-active-bg": "#f59e0b",
+      "--mdw-button-hover-gradient-from": "#fef3c7",
+      "--mdw-button-hover-gradient-to": "#fde68a",
+      "--mdw-content-bg": "linear-gradient(135deg, #fffbeb, #fef3c7)",
+      "--mdw-content-wysiwyg-fg": "#451a03",
+      "--mdw-content-wysiwyg-font-family": "Georgia, serif",
+      "--mdw-content-markdown-fg": "#78350f",
+      "--mdw-content-markdown-font-family": "ui-monospace, Consolas, monospace",
+      "--mdw-scrollbar-thumb": "#d97706",
+      "--mdw-scrollbar-track": "transparent",
+    },
   },
   {
     id: "terminal",
     label: "Terminal",
-    className: "mdw-theme-terminal",
-    css: `
-      .mdw-theme-terminal {
-        --mdw-toolbar-gradient-from: #052e16;
-        --mdw-toolbar-gradient-via: #14532d;
-        --mdw-toolbar-gradient-to: #052e16;
-        --mdw-toolbar-fg: #4ade80;
-        --mdw-toolbar-font-family: ui-monospace, Consolas, monospace;
-        --mdw-toolbar-select-bg: #052e16;
-        --mdw-button-active-bg: #166534;
-        --mdw-button-hover-gradient-from: #166534;
-        --mdw-button-hover-gradient-to: #052e16;
-        --mdw-content-bg: #000000;
-        --mdw-content-wysiwyg-fg: #4ade80;
-        --mdw-content-wysiwyg-font-family: ui-monospace, Consolas, monospace;
-        --mdw-content-markdown-fg: #22c55e;
-        --mdw-content-markdown-font-family: ui-monospace, Consolas, monospace;
-        --mdw-scrollbar-thumb: #166534;
-        --mdw-scrollbar-track: #000000;
-      }
-    `,
+    vars: {
+      "--mdw-toolbar-gradient-from": "#052e16",
+      "--mdw-toolbar-gradient-via": "#14532d",
+      "--mdw-toolbar-gradient-to": "#052e16",
+      "--mdw-toolbar-fg": "#4ade80",
+      "--mdw-toolbar-font-family": "ui-monospace, Consolas, monospace",
+      "--mdw-toolbar-select-bg": "#052e16",
+      "--mdw-button-active-bg": "#166534",
+      "--mdw-button-hover-gradient-from": "#166534",
+      "--mdw-button-hover-gradient-to": "#052e16",
+      "--mdw-content-bg": "#000000",
+      "--mdw-content-wysiwyg-fg": "#4ade80",
+      "--mdw-content-wysiwyg-font-family": "ui-monospace, Consolas, monospace",
+      "--mdw-content-markdown-fg": "#22c55e",
+      "--mdw-content-markdown-font-family": "ui-monospace, Consolas, monospace",
+      "--mdw-scrollbar-thumb": "#166534",
+      "--mdw-scrollbar-track": "#000000",
+    },
   },
   {
     id: "high-contrast",
     label: "Alto contraste",
-    className: "mdw-theme-hc",
-    css: `
-      .mdw-theme-hc {
-        --mdw-toolbar-gradient-from: #000000;
-        --mdw-toolbar-gradient-via: #000000;
-        --mdw-toolbar-gradient-to: #000000;
-        --mdw-toolbar-fg: #ffff00;
-        --mdw-toolbar-font-family: Arial, sans-serif;
-        --mdw-toolbar-select-bg: #000000;
-        --mdw-button-active-bg: #ffff00;
-        --mdw-button-hover-gradient-from: #333333;
-        --mdw-button-hover-gradient-to: #000000;
-        --mdw-content-bg: #000000;
-        --mdw-content-wysiwyg-fg: #ffffff;
-        --mdw-content-markdown-fg: #ffff00;
-        --mdw-scrollbar-thumb: #ffff00;
-        --mdw-scrollbar-track: #000000;
-      }
-    `,
+    vars: {
+      "--mdw-toolbar-gradient-from": "#000000",
+      "--mdw-toolbar-gradient-via": "#000000",
+      "--mdw-toolbar-gradient-to": "#000000",
+      "--mdw-toolbar-fg": "#ffff00",
+      "--mdw-toolbar-font-family": "Arial, sans-serif",
+      "--mdw-toolbar-select-bg": "#000000",
+      "--mdw-button-active-bg": "#ffff00",
+      "--mdw-button-hover-gradient-from": "#333333",
+      "--mdw-button-hover-gradient-to": "#000000",
+      "--mdw-content-bg": "#000000",
+      "--mdw-content-wysiwyg-fg": "#ffffff",
+      "--mdw-content-wysiwyg-font-family": "inherit",
+      "--mdw-content-markdown-fg": "#ffff00",
+      "--mdw-content-markdown-font-family": "ui-monospace, Consolas, monospace",
+      "--mdw-scrollbar-thumb": "#ffff00",
+      "--mdw-scrollbar-track": "#000000",
+    },
   },
 ];
+
+/** Arma el bloque CSS `.mi-clase { --var: valor; ... }` para copiar. */
+function buildCssBlock(vars: ThemeVars, selector: string): string {
+  const lines = Object.entries(vars).map(
+    ([name, value]) => `  ${name}: ${value};`,
+  );
+  return `${selector} {\n${lines.join("\n")}\n}`;
+}
+
+function ThemeEditor({
+  vars,
+  onChange,
+}: {
+  vars: ThemeVars;
+  onChange: (name: string, value: string) => void;
+}) {
+  const [copied, setCopied] = useState(false);
+
+  const copyCss = () => {
+    const css = buildCssBlock(vars, ".mi-editor-personalizado");
+    void navigator.clipboard.writeText(css).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  };
+
+  return (
+    <div
+      style={{
+        width: 280,
+        flexShrink: 0,
+        border: "1px solid #d0d4da",
+        borderRadius: 6,
+        padding: 12,
+        fontSize: 12,
+        maxHeight: 500,
+        overflow: "auto",
+      }}
+    >
+      <h3 style={{ marginTop: 0, fontSize: 13 }}>Parámetros en tiempo real</h3>
+      {THEME_VAR_ORDER.map(({ group, vars: groupVars }) => (
+        <div key={group} style={{ marginBottom: 12 }}>
+          <div style={{ fontWeight: "bold", marginBottom: 4 }}>{group}</div>
+          {groupVars.map((name) => {
+            const value = vars[name] ?? "";
+            const hex = isHexColor(value);
+            return (
+              <label
+                key={name}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  marginBottom: 4,
+                }}
+              >
+                <span
+                  style={{
+                    flex: 1,
+                    fontFamily: "ui-monospace, Consolas, monospace",
+                    fontSize: 10,
+                    wordBreak: "break-all",
+                  }}
+                >
+                  {name.replace("--mdw-", "")}
+                </span>
+                {hex && (
+                  <input
+                    type="color"
+                    value={value}
+                    onChange={(event) =>
+                      onChange(name, event.target.value)
+                    }
+                    style={{ width: 28, height: 22, padding: 0 }}
+                  />
+                )}
+                <input
+                  type="text"
+                  value={value}
+                  onChange={(event) => onChange(name, event.target.value)}
+                  style={{ width: hex ? 90 : 130, fontSize: 10 }}
+                />
+              </label>
+            );
+          })}
+        </div>
+      ))}
+      <button type="button" onClick={copyCss} style={{ width: "100%" }}>
+        {copied ? "¡Copiado!" : "Copiar CSS"}
+      </button>
+    </div>
+  );
+}
 
 function App() {
   const [markdown, setMarkdown] = useState(DEMO);
   const editorRef = useRef<MarkdownEditorHandle>(null);
   const [modified, setModified] = useState<boolean | null>(null);
   const [themeId, setThemeId] = useState(THEME_PRESETS[0]!.id);
-  const activeTheme =
-    THEME_PRESETS.find((theme) => theme.id === themeId) ?? THEME_PRESETS[0]!;
+  const [customVars, setCustomVars] = useState<ThemeVars>(
+    THEME_PRESETS[0]!.vars,
+  );
+
+  const selectPreset = (id: string) => {
+    const preset = THEME_PRESETS.find((theme) => theme.id === id);
+    if (!preset) return;
+    setThemeId(id);
+    setCustomVars(preset.vars);
+  };
+
+  const updateVar = (name: string, value: string) => {
+    setCustomVars((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // React no acepta custom properties tipadas en `CSSProperties`; el cast es
+  // la forma estándar de pasarlas vía `style` inline.
+  const editorStyle = useMemo(
+    () => customVars as unknown as React.CSSProperties,
+    [customVars],
+  );
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24, padding: 16 }}>
       <section>
@@ -235,14 +396,13 @@ function App() {
       </section>
 
       <section>
-        <h2>Theming: 5 estilos (CSS Custom Properties)</h2>
-        <style>{THEME_PRESETS.map((theme) => theme.css).join("\n")}</style>
+        <h2>Theming: 5 estilos + edición en vivo (CSS Custom Properties)</h2>
         <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
           {THEME_PRESETS.map((theme) => (
             <button
               key={theme.id}
               type="button"
-              onClick={() => setThemeId(theme.id)}
+              onClick={() => selectPreset(theme.id)}
               style={{
                 fontWeight: theme.id === themeId ? "bold" : "normal",
                 outline: theme.id === themeId ? "2px solid #3d6fd8" : "none",
@@ -252,13 +412,12 @@ function App() {
             </button>
           ))}
         </div>
-        <MarkdownEditor
-          key={activeTheme.id}
-          className={activeTheme.className || undefined}
-          initialContent={DEMO}
-          width={500}
-          height={300}
-        />
+        <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+          <div style={editorStyle}>
+            <MarkdownEditor initialContent={DEMO} width={500} height={300} />
+          </div>
+          <ThemeEditor vars={customVars} onChange={updateVar} />
+        </div>
       </section>
     </div>
   );
