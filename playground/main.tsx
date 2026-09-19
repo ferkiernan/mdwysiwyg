@@ -32,7 +32,7 @@ const DEMO = [
   "// Yep, this code has some style.",
   "```",
   "",
-  "And diagrams render for real:",
+  "And mermaid diagrams render for real:",
   "",
   "```mermaid",
   "graph TD",
@@ -249,6 +249,33 @@ const THEME_PRESETS: ThemePreset[] = [
       "--mdw-mermaid-bg": "#f5f9ff",
     },
   },
+  {
+    id: "anthropic",
+    label: "Anthropic",
+    vars: {
+      "--mdw-toolbar-gradient-from": "#faf9f5",
+      "--mdw-toolbar-gradient-via": "#faf9f5",
+      "--mdw-toolbar-gradient-to": "#f0eee6",
+      "--mdw-toolbar-fg": "#1f1e1d",
+      "--mdw-toolbar-font-family":
+        '"Segoe UI", ui-sans-serif, system-ui, sans-serif',
+      "--mdw-toolbar-select-bg": "#f0eee6",
+      "--mdw-button-active-bg": "#d97757",
+      "--mdw-button-hover-gradient-from": "#f0eee6",
+      "--mdw-button-hover-gradient-to": "#e8e6dc",
+      "--mdw-content-bg": "#faf9f5",
+      "--mdw-content-wysiwyg-fg": "#1f1e1d",
+      "--mdw-content-wysiwyg-font-family":
+        'Georgia, "Iowan Old Style", serif',
+      "--mdw-content-markdown-fg": "#3d3d3a",
+      "--mdw-content-markdown-font-family": "ui-monospace, Consolas, monospace",
+      "--mdw-scrollbar-thumb": "#d97757",
+      "--mdw-scrollbar-track": "#f0eee6",
+      "--mdw-table-header-bg": "#f0eee6",
+      "--mdw-code-block-bg": "#f0eee6",
+      "--mdw-mermaid-bg": "#f0eee6",
+    },
+  },
 ];
 
 /** Arma el bloque CSS `.mi-clase { --var: valor; ... }`. */
@@ -433,7 +460,9 @@ function App() {
         </div>
         <MarkdownEditor
           ref={editorRef}
-          initialContent="# Original\n\nProbá editar esto."
+          initialContent="# Original
+          
+Probá editar esto."
           documentId="demo-1"
           fileName="demo-readme.md"
           height={220}
