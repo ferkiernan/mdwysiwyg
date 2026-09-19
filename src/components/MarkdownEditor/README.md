@@ -174,6 +174,7 @@ variables en un selector que apunte al `className` que le pases:
 | --- | --- | --- |
 | `--mdw-table-header-bg` | `var(--mdw-muted)` | Fondo de los encabezados (`th`) de tablas en la vista renderizada |
 | `--mdw-code-block-bg` | `var(--mdw-muted)` | Fondo de los bloques de código en la vista renderizada |
+| `--mdw-mermaid-bg` | `var(--mdw-muted)` | Fondo del contenedor donde se renderiza un diagrama Mermaid |
 
 **Scroll:**
 

@@ -79,7 +79,11 @@ const THEME_VAR_ORDER: Array<{ group: string; vars: string[] }> = [
   },
   {
     group: "Tablas y código",
-    vars: ["--mdw-table-header-bg", "--mdw-code-block-bg"],
+    vars: [
+      "--mdw-table-header-bg",
+      "--mdw-code-block-bg",
+      "--mdw-mermaid-bg",
+    ],
   },
 ];
 
@@ -117,13 +121,14 @@ const THEME_PRESETS: ThemePreset[] = [
       "--mdw-scrollbar-track": "transparent",
       "--mdw-table-header-bg": "#f6f7f9",
       "--mdw-code-block-bg": "#f6f7f9",
+      "--mdw-mermaid-bg": "#f6f7f9",
     },
   },
   {
     id: "dark",
     label: "Oscuro",
     vars: {
-      "--mdw-toolbar-gradient-from": "#1e293b",
+      "--mdw-toolbar-gradient-from": "#f5f5f5",
       "--mdw-toolbar-gradient-via": "#0f172a",
       "--mdw-toolbar-gradient-to": "#020617",
       "--mdw-toolbar-fg": "#f8fafc",
@@ -139,8 +144,9 @@ const THEME_PRESETS: ThemePreset[] = [
       "--mdw-content-markdown-font-family": "ui-monospace, Consolas, monospace",
       "--mdw-scrollbar-thumb": "#475569",
       "--mdw-scrollbar-track": "#0b1220",
-      "--mdw-table-header-bg": "#1e293b",
+      "--mdw-table-header-bg": "#3f4b5f",
       "--mdw-code-block-bg": "#1e293b",
+      "--mdw-mermaid-bg": "#1e293b",
     },
   },
   {
@@ -165,6 +171,7 @@ const THEME_PRESETS: ThemePreset[] = [
       "--mdw-scrollbar-track": "transparent",
       "--mdw-table-header-bg": "#fef3c7",
       "--mdw-code-block-bg": "#fef3c7",
+      "--mdw-mermaid-bg": "#fef3c7",
     },
   },
   {
@@ -189,6 +196,7 @@ const THEME_PRESETS: ThemePreset[] = [
       "--mdw-scrollbar-track": "#000000",
       "--mdw-table-header-bg": "#052e16",
       "--mdw-code-block-bg": "#052e16",
+      "--mdw-mermaid-bg": "#052e16",
     },
   },
   {
@@ -213,6 +221,7 @@ const THEME_PRESETS: ThemePreset[] = [
       "--mdw-scrollbar-track": "#000000",
       "--mdw-table-header-bg": "#000000",
       "--mdw-code-block-bg": "#000000",
+      "--mdw-mermaid-bg": "#000000",
     },
   },
 ];

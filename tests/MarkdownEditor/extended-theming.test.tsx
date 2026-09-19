@@ -28,6 +28,7 @@ const NEW_VARIABLES: Array<[string, string]> = [
   ["--mdw-button-hover-gradient-to", "#d8d8d8"],
   ["--mdw-table-header-bg", "var(--mdw-muted)"],
   ["--mdw-code-block-bg", "var(--mdw-muted)"],
+  ["--mdw-mermaid-bg", "var(--mdw-muted)"],
 ];
 
 describe("US5: theming extendido (CSS Custom Properties)", () => {
@@ -99,6 +100,23 @@ describe("US5: theming extendido (CSS Custom Properties)", () => {
       );
       expect(style.getPropertyValue("--mdw-code-block-bg").trim()).toBe(
         "#111827",
+      );
+    } finally {
+      cleanup();
+    }
+  });
+
+  it("permite personalizar el fondo del área de diagramas Mermaid", () => {
+    const cleanup = injectStyle(`
+      .mdw-mermaid-theme { --mdw-mermaid-bg: #ecfdf5; }
+    `);
+    try {
+      const { container } = render(
+        <MarkdownEditor className="mdw-mermaid-theme" />,
+      );
+      const style = getComputedStyle(rootOf(container));
+      expect(style.getPropertyValue("--mdw-mermaid-bg").trim()).toBe(
+        "#ecfdf5",
       );
     } finally {
       cleanup();

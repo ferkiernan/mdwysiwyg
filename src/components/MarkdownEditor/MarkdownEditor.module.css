@@ -22,6 +22,7 @@
   --mdw-scrollbar-track: transparent;
   --mdw-table-header-bg: var(--mdw-muted);
   --mdw-code-block-bg: var(--mdw-muted);
+  --mdw-mermaid-bg: var(--mdw-muted);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -180,6 +181,12 @@
   border-radius: 4px;
   padding: 6px 10px;
   margin: 0.6em 0;
+}
+
+.content :global(.ProseMirror div[data-mermaid-block]) {
+  background: var(--mdw-mermaid-bg);
+  border-radius: 4px;
+  padding: 8px 12px;
 }
 
 .source {
