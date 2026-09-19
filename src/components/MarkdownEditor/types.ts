@@ -15,6 +15,20 @@ export interface MarkdownEditorProps {
   onlyView?: boolean;
   /** Permite redimensionar el componente arrastrando su esquina inferior derecha. Default: true. */
   resizable?: boolean;
+  /** Texto del aviso mostrado en la barra con `onlyView`. Default: "Edición desactivada". */
+  onlyViewNotice?: string;
+  /** Identificador de documento de uso libre para la app consumidora. */
+  documentId?: string;
+  /** Nombre de archivo de uso libre para la app consumidora. */
+  fileName?: string;
+}
+
+/** API imperativa expuesta por `ref` (ver contracts/MarkdownEditor.md de 005). */
+export interface MarkdownEditorHandle {
+  /** Restablece el contenido al valor con el que se montó el componente. */
+  reset(): void;
+  /** Indica si el contenido actual difiere del contenido original. */
+  isModified(): boolean;
 }
 
 export type ViewMode = "wysiwyg" | "markdown";

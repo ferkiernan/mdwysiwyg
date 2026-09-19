@@ -41,8 +41,38 @@ Sin `initialContent` el editor comienza vacío. Sin `width`/`height` usa 700×50
 | `className` | `string` | — | Clase adicional para el contenedor raíz. |
 | `onlyView` | `boolean` | `false` | Arranca en modo de solo lectura: ninguna vista es editable, la barra muestra "Edición desactivada" y conserva solo el control de exportar. |
 | `resizable` | `boolean` | `true` | Permite redimensionar el componente arrastrando su esquina inferior derecha (como un `<textarea>` nativo). Con `false`, el tamaño queda fijo. |
+| `onlyViewNotice` | `string` | `"Edición desactivada"` | Texto del aviso mostrado en la barra con `onlyView` activo. Útil para mostrar, por ejemplo, el nombre del archivo. |
+| `documentId` | `string` | — | Identificador de documento de uso libre para la app consumidora. El componente lo acepta sin darle un uso propio. |
+| `fileName` | `string` | — | Nombre de archivo de uso libre para la app consumidora. No se usa automáticamente como `onlyViewNotice`: pasalo explícitamente si lo querés ahí. |
 
-Tipos exportados: `MarkdownEditorProps`.
+Tipos exportados: `MarkdownEditorProps`, `MarkdownEditorHandle`.
+
+## API imperativa (`ref`)
+
+El componente acepta una `ref` que expone métodos para controlarlo desde la aplicación:
+
+```tsx
+import { useRef } from "react";
+import { MarkdownEditor } from "mdwysiwyg";
+import type { MarkdownEditorHandle } from "mdwysiwyg";
+
+function Editor() {
+  const ref = useRef<MarkdownEditorHandle>(null);
+
+  return (
+    <>
+      <MarkdownEditor ref={ref} initialContent="# Original" />
+      <button onClick={() => ref.current?.reset()}>Descartar cambios</button>
+      <button onClick={() => alert(ref.current?.isModified())}>¿Modificado?</button>
+    </>
+  );
+}
+```
+
+| Método | Devuelve | Descripción |
+| --- | --- | --- |
+| `reset()` | `void` | Restablece el contenido al valor con el que se montó el componente, en ambas vistas. |
+| `isModified()` | `boolean` | `true` si el contenido actual difiere del original. Vuelve a `false` tras `reset()`. |
 
 ## Barra de herramientas
 
@@ -52,7 +82,47 @@ Tipos exportados: `MarkdownEditorProps`.
   TypeScript, JavaScript, Java u "Otro…" para especificar cualquier otro), cita, línea horizontal.
 - **Insertar**: imagen (por URL), enlace, tabla (selector visual de tamaño: cuadrícula 10×10,
   convención columnas × filas — "3 × 4" = 3 columnas y 4 filas), HTML embebido.
-- **`</>`**: alterna entre vista renderizada y vista Markdown. Alternar nunca modifica el contenido.
+- **`</>`**: alterna entre vista renderizada y vista Markdown. Alternar nunca modifica el
+  contenido, y el cursor se reposiciona en el punto equivalente de la vista destino.
+- **Export** (icono de descarga, alineado al extremo derecho de la barra): copia al portapapeles
+  como Markdown o como HTML.
+
+La barra se mantiene en una sola fila: si el espacio disponible es insuficiente, el selector de
+encabezado se encoge (hasta 30px de ancho mínimo) antes que cualquier otro control.
+
+### Tablas
+
+Con el cursor ya posicionado dentro de una celda, un **segundo clic sobre esa misma celda** abre
+un menú de acciones estructurales:
+
+- **Celda de encabezado** → menú de columna: añadir a la derecha/izquierda, mover a la
+  derecha/izquierda, eliminar esta columna.
+- **Celda de datos** → menú de fila: añadir arriba/abajo, subir/bajar esta fila, eliminar esta
+  fila.
+
+El primer clic solo posiciona el cursor. Si entre ambos clics se hace clic en otra parte, el
+siguiente vuelve a contar como "primer clic". Mover una columna/fila más allá del borde de la
+tabla no tiene efecto.
+
+### Diagramas Mermaid
+
+Un bloque de código con lenguaje `mermaid` se renderiza como diagrama en la vista renderizada:
+
+````markdown
+```mermaid
+graph TD
+A-->B
+```
+````
+
+Con sintaxis inválida, el bloque degrada al texto del código sin romper el documento. Al usar
+**Insertar HTML**, si el contenido pegado es en realidad sintaxis Mermaid, se inserta como bloque
+de código `mermaid` en lugar de HTML embebido. El renderizado es puramente visual: el Markdown
+fuente nunca se altera.
+
+La librería de Mermaid se carga de forma perezosa (solo cuando aparece un diagrama), por lo que no
+pesa en el bundle de quien no la usa, y se configura con `securityLevel: "strict"` (HTML escapado
+en etiquetas, sin callbacks de clic) por tratarse de contenido potencialmente no confiable.
 
 ### Enlaces
 
@@ -64,17 +134,14 @@ insertar como al editar un enlace ya existente.
 Hacer clic sobre un enlace en la vista renderizada abre un panel con **Ir a la url**, **Copiar
 url**, y **Editar url** (que muestra un campo con la URL actual, **Eliminar link**, y **Guardar**).
 En modo `onlyView` el panel solo ofrece "Ir a la url" y "Copiar url" — sin edición.
-- **Export** (icono de descarga, alineado al extremo derecho de la barra): copia al portapapeles
-  como Markdown o como HTML.
-
-La barra se mantiene en una sola fila: si el espacio disponible es insuficiente, el selector de
-encabezado se encoge (hasta 30px de ancho mínimo) antes que cualquier otro control.
 
 ## Theming (CSS Custom Properties)
 
 El aspecto visual de la barra de herramientas y del fondo del área de contenido se personaliza
 con CSS estándar, sin agregar props al componente. Sobreescribí cualquier subconjunto de estas
 variables en un selector que apunte al `className` que le pases:
+
+**Barra de herramientas:**
 
 | Variable | Default | Controla |
 | --- | --- | --- |
@@ -83,7 +150,30 @@ variables en un selector que apunte al `className` que le pases:
 | `--mdw-toolbar-gradient-to` | `#cfcfcf` | Color final del degradado |
 | `--mdw-toolbar-fg` | `#222222` | Color de texto e iconos de la barra |
 | `--mdw-toolbar-font-family` | `Arial, sans-serif` | Fuente tipográfica de la barra |
+| `--mdw-toolbar-select-bg` | `#e9e9e9` | Fondo del selector de nivel de encabezado |
+| `--mdw-button-active-bg` | `#c8c8c8` | Fondo de un botón presionado o activo |
+| `--mdw-button-hover-gradient-from` | `#ffffff` | Color inicial del degradado de un botón en hover |
+| `--mdw-button-hover-gradient-to` | `#d8d8d8` | Color final del degradado de un botón en hover |
+
+**Área de contenido:**
+
+| Variable | Default | Controla |
+| --- | --- | --- |
 | `--mdw-content-bg` | `var(--mdw-bg)` (blanco) | Fondo del área de contenido (ambas vistas): admite color sólido, degradado o imagen |
+| `--mdw-content-wysiwyg-fg` | `var(--mdw-fg)` | Color de texto de la vista renderizada |
+| `--mdw-content-wysiwyg-font-family` | `inherit` | Fuente de la vista renderizada |
+| `--mdw-content-markdown-fg` | `var(--mdw-fg)` | Color de texto de la vista Markdown |
+| `--mdw-content-markdown-font-family` | `ui-monospace, Consolas, monospace` | Fuente de la vista Markdown |
+
+**Scroll:**
+
+| Variable | Default | Controla |
+| --- | --- | --- |
+| `--mdw-scrollbar-thumb` | `#c1c1c1` | Color del "pulgar" de la barra de scroll |
+| `--mdw-scrollbar-track` | `transparent` | Color del riel de la barra de scroll |
+
+Los colores de scroll se aplican donde el navegador lo permite (`scrollbar-color` y los
+pseudo-elementos `::-webkit-scrollbar-*`); en navegadores sin soporte se ignoran silenciosamente.
 
 `--mdw-content-bg` acepta cualquier valor válido de la propiedad CSS `background` (shorthand
 completo: color, `linear-gradient(...)`, o `url(...)` con capas y transparencia combinadas), ya
@@ -158,3 +248,12 @@ Cualquier variable que no sobreescribas conserva su valor por defecto.
 - **Redimensionamiento**: el tamaño resultante de arrastrar la esquina es efímero (no se persiste
   entre sesiones); si tu app necesita recordarlo, escuchá el resize por tu cuenta (por ejemplo con
   un `ResizeObserver` externo) y volvé a pasar `width`/`height` en el próximo montaje.
+- **Posición del cursor al alternar**: es una correspondencia de mejor esfuerzo. Cuando la
+  sintaxis Markdown no tiene reflejo en el texto renderizado (marcadores como `**`, `#`, `|`), el
+  cursor cae en la aproximación más cercana, no en una coincidencia exacta de carácter.
+- **Mermaid**: los diagramas se renderizan con `securityLevel: "strict"`. La detección al insertar
+  HTML usa un filtro de palabras clave antes de validar con el parser de Mermaid, para no cargar
+  la librería al pegar HTML común.
+- **`reset()` / `isModified()`**: comparan contra el contenido con el que se **montó** el
+  componente. `initialContent` no es una prop controlada: cambiarla después del montaje no
+  redefine ese valor de referencia.

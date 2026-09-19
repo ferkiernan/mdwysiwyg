@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import styles from "../MarkdownEditor.module.css";
 
 export interface MarkdownSourceViewProps {
@@ -6,13 +7,13 @@ export interface MarkdownSourceViewProps {
   readOnly?: boolean;
 }
 
-export function MarkdownSourceView({
-  value,
-  onChange,
-  readOnly = false,
-}: MarkdownSourceViewProps) {
+export const MarkdownSourceView = forwardRef<
+  HTMLTextAreaElement,
+  MarkdownSourceViewProps
+>(function MarkdownSourceView({ value, onChange, readOnly = false }, ref) {
   return (
     <textarea
+      ref={ref}
       className={styles["source"]}
       aria-label="Código fuente Markdown"
       spellCheck={false}
@@ -21,4 +22,4 @@ export function MarkdownSourceView({
       onChange={(event) => onChange(event.target.value)}
     />
   );
-}
+});

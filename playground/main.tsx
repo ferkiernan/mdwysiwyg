@@ -1,6 +1,7 @@
-import { StrictMode, useState } from "react";
+import { StrictMode, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { MarkdownEditor } from "../src";
+import type { MarkdownEditorHandle } from "../src";
 
 const DEMO = [
   "# Demo mdwysiwyg",
@@ -30,6 +31,14 @@ const DEMO = [
   "}",
   "// Yep, this code has some style.",
   "```",
+  "",
+  "And diagrams render for real:",
+  "",
+  "```mermaid",
+  "graph TD",
+  "  A[Markdown] --> B[WYSIWYG]",
+  "  B --> A",
+  "```",
   "Would you like to insert some",
   '<div style="color: teal"><b>⚽embedded HTML? Yes please💙💛</b>',
   "</div>",
@@ -38,6 +47,8 @@ const DEMO = [
 
 function App() {
   const [markdown, setMarkdown] = useState(DEMO);
+  const editorRef = useRef<MarkdownEditorHandle>(null);
+  const [modified, setModified] = useState<boolean | null>(null);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24, padding: 16 }}>
       <section>
@@ -60,8 +71,44 @@ function App() {
       </section>
 
       <section>
-        <h2>Modo solo lectura (onlyView)</h2>
-        <MarkdownEditor onlyView initialContent={DEMO} width={500} height={300} />
+        <h2>Modo solo lectura (onlyView) con aviso personalizado</h2>
+        <MarkdownEditor
+          onlyView
+          onlyViewNotice="demo-readme.md"
+          initialContent={DEMO}
+          width={500}
+          height={300}
+        />
+      </section>
+
+      <section>
+        <h2>API imperativa (reset / isModified)</h2>
+        <p>
+          Editá el contenido y usá los botones: el estado se consulta por{" "}
+          <code>ref</code>, sin remontar el componente.
+        </p>
+        <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+          <button type="button" onClick={() => editorRef.current?.reset()}>
+            Descartar cambios
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              setModified(editorRef.current?.isModified() ?? false)
+            }
+          >
+            ¿Modificado?
+          </button>
+          <span>{modified === null ? "—" : modified ? "Sí" : "No"}</span>
+        </div>
+        <MarkdownEditor
+          ref={editorRef}
+          initialContent="# Original\n\nProbá editar esto."
+          documentId="demo-1"
+          fileName="demo-readme.md"
+          width={500}
+          height={220}
+        />
       </section>
 
       <section>

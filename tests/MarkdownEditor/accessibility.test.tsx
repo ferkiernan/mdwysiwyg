@@ -100,6 +100,22 @@ describe("Principio VI: accesibilidad de los elementos interactivos", () => {
     expect(removeButton).not.toHaveAttribute("tabindex", "-1");
   });
 
+  it("el menú de tabla expone roles de menú y enfoca su primera acción", async () => {
+    const tableMd = ["| A | B |", "| - | - |", "| 1 | 2 |", ""].join("\n");
+    const { pm } = await setupEditor({ initialContent: tableMd });
+    const th = pm.querySelector("th") as HTMLElement;
+    await userEvent.click(th);
+    await userEvent.click(th);
+
+    const menu = await screen.findByRole("menu", {
+      name: "Acciones de columna",
+    });
+    expect(within(menu).getAllByRole("menuitem").length).toBe(5);
+    expect(
+      screen.getByRole("menuitem", { name: "Añadir columna a la derecha" }),
+    ).toHaveFocus();
+  });
+
   it("los controles de formato quedan deshabilitados en vista Markdown", async () => {
     await setupEditor({});
     await userEvent.click(

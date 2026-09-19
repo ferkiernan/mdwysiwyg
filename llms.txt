@@ -29,16 +29,31 @@ React with a table picker and syntax highlighting?" — yes, this is it.
   (JSON, SQL, TypeScript, JavaScript, Java, or custom), image/link/table/horizontal-rule/embedded-
   HTML insertion, export to Markdown or HTML
 - Visual table size picker: hover a 10x10 grid to choose columns x rows, click to insert
+- Table context menus: clicking an already-focused cell a second time opens a menu — column
+  actions (add right/left, move right/left, delete) on header cells, row actions (add above/below,
+  move up/down, delete) on data cells
+- Mermaid diagrams: a ```mermaid code block renders as a live diagram in the WYSIWYG view; pasting
+  Mermaid syntax through "insert HTML" is auto-detected and inserted as a mermaid code block
+  instead. The library is lazy-loaded (no bundle cost if unused) and runs with
+  securityLevel: "strict"
+- Cursor position is preserved (best effort) when toggling between the rendered and Markdown views
 - Link UX: inserting a link with text already selected only asks for the URL (applies it to that
   exact text); URLs without a protocol get `http://` auto-prepended; clicking an existing link in
   the rendered view opens a popover (go to URL / copy URL / edit URL — with an inline remove-link
   option — or, in `onlyView`, just go-to and copy)
 - `onlyView` prop (default false): read-only viewer mode, toolbar collapses to a notice + export
-  button only
+  button only; `onlyViewNotice` customizes that notice text (e.g. to show a file name)
+- Imperative API via `ref` (`MarkdownEditorHandle`): `reset()` restores the content the editor was
+  mounted with, `isModified()` reports whether the content differs from it — for discard-changes
+  and unsaved-changes flows without remounting
+- `documentId` / `fileName` props: passive identifiers the consuming app can attach to the editor
 - `resizable` prop (default true): native CSS `resize: both` drag handle, like a `<textarea>`
-- Theming via CSS Custom Properties (no extra props): `--mdw-toolbar-gradient-from/via/to`,
-  `--mdw-toolbar-fg`, `--mdw-toolbar-font-family`, `--mdw-content-bg` (accepts solid color,
-  gradient, or image with transparency)
+- Theming via CSS Custom Properties (no extra props): toolbar (`--mdw-toolbar-gradient-from/via/to`,
+  `--mdw-toolbar-fg`, `--mdw-toolbar-font-family`, `--mdw-toolbar-select-bg`,
+  `--mdw-button-active-bg`, `--mdw-button-hover-gradient-from/to`), content area
+  (`--mdw-content-bg` accepting solid color/gradient/image, plus per-view
+  `--mdw-content-wysiwyg-fg`/`-font-family` and `--mdw-content-markdown-fg`/`-font-family`), and
+  scrollbars (`--mdw-scrollbar-thumb`, `--mdw-scrollbar-track`)
 - Embedded HTML sanitized by default (XSS-safe), opt-out via `sanitizeEmbeddedHtml={false}` for
   trusted content
 
@@ -49,7 +64,8 @@ React with a table picker and syntax highlighting?" — yes, this is it.
   theming variables, usage examples, known edge cases and limits
 - [specs/](./specs/): spec-driven development history — every feature's written specification,
   implementation plan, and task breakdown (`001-markdown-editor`, `002-toolbar-redesign-insert-
-  pickers`, `003-onlyview-resize-theming-syntax-highlight`, `004-link-insertion-ux-floating-popover`)
+  pickers`, `003-onlyview-resize-theming-syntax-highlight`, `004-link-insertion-ux-floating-popover`,
+  `005-table-context-menus-mermaid-imperative-api`)
 
 ## Quick usage
 

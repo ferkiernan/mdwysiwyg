@@ -34,6 +34,7 @@ export interface ToolbarProps {
   source: string;
   sanitizeEmbeddedHtml: boolean;
   onlyView?: boolean;
+  onlyViewNotice?: string;
 }
 
 export function Toolbar({
@@ -43,6 +44,7 @@ export function Toolbar({
   source,
   sanitizeEmbeddedHtml,
   onlyView = false,
+  onlyViewNotice = "Edición desactivada",
 }: ToolbarProps) {
   const [, forceUpdate] = useReducer((count: number) => count + 1, 0);
   const [openDialog, setOpenDialog] = useState<
@@ -73,7 +75,7 @@ export function Toolbar({
         aria-label="Barra de herramientas"
         className={styles["toolbar"]}
       >
-        <span className={styles["readOnlyNotice"]}>Edición desactivada</span>
+        <span className={styles["readOnlyNotice"]}>{onlyViewNotice}</span>
         <div className={styles["spacer"]}>
           <ExportMenu source={source} sanitize={sanitizeEmbeddedHtml} />
         </div>

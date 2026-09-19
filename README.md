@@ -40,7 +40,12 @@ personal and commercial use under the MIT license.
 - 🖍️ **Syntax-highlighted code blocks** — JSON, SQL, TypeScript, JavaScript, Java out of the
   box, with graceful fallback for any other language.
 - 📊 **Visual table picker** — a hover-to-size 10×10 grid, just like Excel/Google Sheets/Notion,
-  instead of typing row/column counts into a form.
+  instead of typing row/column counts into a form. Click a cell you're already in to add, move or
+  delete columns and rows from a context menu.
+- 📈 **Mermaid diagrams** — ` ```mermaid ` blocks render as real diagrams, with auto-detection when
+  you paste diagram syntax. Lazy-loaded, so it costs nothing if you never use it.
+- 🎛️ **Imperative API** — a `ref` with `reset()` and `isModified()`, so "discard changes" and
+  "unsaved changes?" flows are three lines of code, not a remount hack.
 - 🧩 **GitHub Flavored Markdown** — tables, task lists, strikethrough, and more, parsed and
   serialized through the same battle-tested `unified`/`remark`/`rehype` ecosystem used across
   the JS Markdown world.
@@ -111,11 +116,14 @@ Try it in your browser, no install required: **[ferkiernan.github.io/mdwysiwyg](
 | Lists | Ordered, unordered, nested, task lists (checklists) |
 | Insert | Images (by URL), links (URL-only dialog when text is already selected, auto `http://` prefix), tables (visual size picker), horizontal rules, embedded HTML |
 | Links | Click an existing link to open a quick popover: go to URL, copy URL, or edit/remove it inline |
+| Tables | Click an already-focused cell again for a context menu: add/move/delete columns (header cells) or rows (data cells) |
 | Code | Fenced code blocks with a language picker (JSON/SQL/TypeScript/JavaScript/Java/custom) and syntax highlighting |
+| Diagrams | ` ```mermaid ` blocks render as live diagrams; pasted Mermaid syntax is auto-detected on HTML insert. Lazy-loaded, `securityLevel: strict` |
 | Export | Copy as Markdown or as HTML, one click |
-| Modes | Full editor (default) or read-only viewer (`onlyView`) |
+| Modes | Full editor (default) or read-only viewer (`onlyView`, with a configurable notice via `onlyViewNotice`) |
 | Sizing | Fixed (`width`/`height` props) or user-resizable (`resizable`, default on) |
-| Theming | CSS Custom Properties for toolbar colors/gradient/font and content-area background (solid color, gradient, or image) |
+| Theming | CSS Custom Properties for toolbar colors/gradient/font, per-view content color & font, scrollbar colors, and content-area background (solid color, gradient, or image) |
+| Imperative API | `ref` exposing `reset()` and `isModified()` for discard-changes / unsaved-warning flows |
 
 ## Tech under the hood
 

@@ -20,6 +20,7 @@ import {
   markdownToEditorHtml,
   sanitizeHtmlFragment,
 } from "./pipeline";
+import { renderMermaid } from "./mermaid";
 
 /**
  * Registro selectivo: solo los 5 lenguajes ya ofrecidos por el selector de
@@ -80,6 +81,83 @@ export const HtmlBlock = Node.create<HtmlBlockOptions>({
   },
 });
 
+/**
+ * Bloque de código con renderizado de diagramas Mermaid: cuando el lenguaje
+ * del bloque es "mermaid", el node view monta un contenedor y sustituye su
+ * contenido por el SVG renderizado de forma asíncrona. Con sintaxis inválida
+ * cae al texto fuente legible (FR-007, FR-008). Es puramente presentacional:
+ * el nodo del documento (y por tanto el Markdown) nunca se modifica (FR-010).
+ */
+const CodeBlockWithMermaid = CodeBlockLowlight.extend({
+  addNodeView() {
+    const parentNodeView = this.parent?.();
+
+    return (props) => {
+      if (props.node.attrs["language"] !== "mermaid") {
+        if (parentNodeView) return parentNodeView(props);
+        // Sin node view heredado: `pre > code` editable estándar, para que el
+        // resaltado por plugin de lowlight siga funcionando igual que antes.
+        const pre = document.createElement("pre");
+        const code = document.createElement("code");
+        const language = props.node.attrs["language"];
+        if (typeof language === "string" && language !== "") {
+          code.classList.add(`language-${language}`);
+        }
+        pre.appendChild(code);
+        return { dom: pre, contentDOM: code };
+      }
+
+      const dom = document.createElement("div");
+      dom.setAttribute("data-mermaid-block", "");
+
+      let lastRenderedSource: string | null = null;
+
+      const paintFallback = (source: string) => {
+        dom.replaceChildren();
+        const pre = document.createElement("pre");
+        const code = document.createElement("code");
+        code.textContent = source;
+        pre.appendChild(code);
+        dom.appendChild(pre);
+      };
+
+      const paint = (source: string) => {
+        if (source === lastRenderedSource) return;
+        lastRenderedSource = source;
+        void renderMermaid(source).then((svg) => {
+          // Descartar resultados obsoletos si el contenido cambió mientras
+          // el render estaba en vuelo.
+          if (lastRenderedSource !== source) return;
+          if (svg === null) {
+            paintFallback(source);
+            return;
+          }
+          dom.innerHTML = svg;
+          const svgEl = dom.querySelector("svg");
+          svgEl?.setAttribute("role", "img");
+          svgEl?.setAttribute("aria-label", "Diagrama Mermaid");
+        });
+      };
+
+      paintFallback(props.node.textContent);
+      paint(props.node.textContent);
+
+      return {
+        dom,
+        // Nodo atómico a efectos de renderizado: el contenido se edita desde
+        // la vista Markdown; aquí solo se muestra el diagrama.
+        ignoreMutation: () => true,
+        update(updatedNode) {
+          if (updatedNode.type.name !== props.node.type.name) return false;
+          if (updatedNode.attrs["language"] !== "mermaid") return false;
+          paint(updatedNode.textContent);
+          return true;
+        },
+      };
+    };
+  },
+});
+
 export interface EditorExtensionOptions {
   sanitizeEmbeddedHtml: boolean;
 }
@@ -89,7 +167,7 @@ export function createEditorExtensions(
 ): Extensions {
   return [
     StarterKit.configure({ codeBlock: false }),
-    CodeBlockLowlight.configure({ lowlight }),
+    CodeBlockWithMermaid.configure({ lowlight }),
     Table.configure({ resizable: false }),
     TableRow,
     TableHeader,

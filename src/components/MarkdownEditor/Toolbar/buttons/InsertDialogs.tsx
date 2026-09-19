@@ -8,6 +8,7 @@ import {
 } from "react";
 import type { Editor } from "@tiptap/core";
 import { ensureProtocol } from "../../markdown/links";
+import { isMermaidSyntax } from "../../markdown/mermaid";
 import styles from "../../MarkdownEditor.module.css";
 
 export type DialogKind = "image" | "link" | "html";
@@ -117,9 +118,30 @@ export function InsertDialog({ kind, editor, onClose }: InsertDialogProps) {
           .run();
       }
     } else if (kind === "html" && html) {
-      chain
-        .insertContent({ type: "htmlBlock", attrs: { content: html } })
-        .run();
+      // La detección de Mermaid es asíncrona (carga perezosa de la librería):
+      // se resuelve antes de decidir entre bloque de código Mermaid y HTML
+      // embebido (FR-009).
+      void isMermaidSyntax(html).then((isMermaid) => {
+        if (isMermaid) {
+          editor
+            .chain()
+            .focus()
+            .insertContent({
+              type: "codeBlock",
+              attrs: { language: "mermaid" },
+              content: [{ type: "text", text: html }],
+            })
+            .run();
+        } else {
+          editor
+            .chain()
+            .focus()
+            .insertContent({ type: "htmlBlock", attrs: { content: html } })
+            .run();
+        }
+      });
+      onClose();
+      return;
     }
     onClose();
   };
