@@ -2,6 +2,25 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.2.1
+
+### Security
+
+- Upgraded `@tiptap/*` from v2.27.3 to v3.31.3, fixing
+  [GHSA-cp6q-959q-f8rh](https://github.com/advisories/GHSA-cp6q-959q-f8rh) (moderate): the entire
+  Tiptap v2.x line had a prototype-pollution bug in `mergeAttributes()` where an own `__proto__`
+  key could become an inherited, executable DOM attribute once rendered by ProseMirror's
+  `DOMSerializer` — a potential XSS vector for untrusted document/extension attribute objects.
+  Fixed upstream starting in `3.30.4`. No public API or behavior changes; two internal call sites
+  updated for v3's `setContent()` options-object signature and `@tiptap/extension-table`'s named
+  export.
+- Pinned the `lodash-es` transitive dependency (via `mermaid` → `chevrotain`) to `^4.18.1` through
+  an `overrides` entry, fixing
+  [GHSA-r5fr-rjxr-66jc](https://github.com/advisories/GHSA-r5fr-rjxr-66jc) (code injection via
+  `_.template`) and
+  [GHSA-f23m-r3pf-42rh](https://github.com/advisories/GHSA-f23m-r3pf-42rh) (prototype pollution
+  via `_.unset`/`_.omit`), both high severity.
+
 ## 0.2.0
 
 ### Added
