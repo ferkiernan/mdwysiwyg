@@ -195,10 +195,9 @@ export const MarkdownEditor = forwardRef<
     } else {
       const offset = textareaRef.current?.selectionStart ?? 0;
       // emitUpdate=false: cambiar de vista nunca dispara onChange (FR-004)
-      editor?.commands.setContent(
-        markdownToEditorContent(sourceRef.current),
-        false,
-      );
+      editor?.commands.setContent(markdownToEditorContent(sourceRef.current), {
+        emitUpdate: false,
+      });
       setViewMode("wysiwyg");
       if (editor !== null) {
         const pos = markdownOffsetToProseMirrorPos(
@@ -225,7 +224,9 @@ export const MarkdownEditor = forwardRef<
         const original = originalContentRef.current;
         sourceRef.current = original;
         setSource(original);
-        editor?.commands.setContent(markdownToEditorContent(original), false);
+        editor?.commands.setContent(markdownToEditorContent(original), {
+          emitUpdate: false,
+        });
       },
       isModified() {
         return sourceRef.current !== originalContentRef.current;
