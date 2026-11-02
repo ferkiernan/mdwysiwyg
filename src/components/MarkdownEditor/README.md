@@ -43,6 +43,7 @@ Sin `initialContent` el editor comienza vacío. Sin `width`/`height` usa 700×50
 | `resizable` | `boolean` | `true` | Permite redimensionar el componente arrastrando su esquina inferior derecha (como un `<textarea>` nativo). Con `false`, el tamaño queda fijo. |
 | `onlyViewNotice` | `string` | `"Edición desactivada"` | Texto del aviso mostrado en la barra con `onlyView` activo. Útil para mostrar, por ejemplo, el nombre del archivo. |
 | `documentId` | `string` | — | Identificador de documento de uso libre para la app consumidora. El componente lo acepta sin darle un uso propio. |
+| `resolveImageSrc` | `(src: string) => string` | — | Resuelve el `src` de las imágenes **solo para mostrarlas** (p. ej. ruta relativa → URL servible). El Markdown conserva el `src` original. Debe pasarse desde el montaje (activarlo o no después no tiene efecto). |
 | `fileName` | `string` | — | Nombre de archivo de uso libre para la app consumidora. No se usa automáticamente como `onlyViewNotice`: pasalo explícitamente si lo querés ahí. |
 
 Tipos exportados: `MarkdownEditorProps`, `MarkdownEditorHandle`.
@@ -73,6 +74,8 @@ function Editor() {
 | --- | --- | --- |
 | `reset()` | `void` | Restablece el contenido al valor con el que se montó el componente, en ambas vistas. |
 | `isModified()` | `boolean` | `true` si el contenido actual difiere del original. Vuelve a `false` tras `reset()`. |
+| `insertMarkdown(markdown)` | `void` | Inserta Markdown en el cursor (reemplaza la selección). En la vista Markdown inserta en la selección del textarea. Invoca `onChange`. |
+| `setMarkdown(markdown)` | `void` | Reemplaza todo el contenido como un cambio **deshacible** en la vista renderizada (Ctrl+Z restaura el anterior; en la vista Markdown se usa el deshacer nativo del textarea, que no lo incluye). No cambia la base de `isModified()`. Invoca `onChange`. |
 
 ## Barra de herramientas
 

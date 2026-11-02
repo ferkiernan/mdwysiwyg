@@ -160,6 +160,38 @@ const CodeBlockWithMermaid = CodeBlockLowlight.extend({
 
 export interface EditorExtensionOptions {
   sanitizeEmbeddedHtml: boolean;
+  /**
+   * When set, images are displayed through this resolver (e.g. relative path -> asset URL).
+   * It is read lazily on every paint. Display only: the document keeps the original `src`,
+   * so the serialized Markdown never contains the resolved URL.
+   */
+  resolveImageSrc?: () => ((src: string) => string) | undefined;
+}
+
+function createResolvedImage(getResolver: NonNullable<EditorExtensionOptions["resolveImageSrc"]>) {
+  return Image.extend({
+    addNodeView() {
+      return ({ node }) => {
+        const img = document.createElement("img");
+        const paint = (attrs: Record<string, unknown>) => {
+          const src = String(attrs["src"] ?? "");
+          img.src = getResolver()?.(src) ?? src;
+          img.alt = String(attrs["alt"] ?? "");
+          if (attrs["title"]) img.title = String(attrs["title"]);
+          else img.removeAttribute("title");
+        };
+        paint(node.attrs);
+        return {
+          dom: img,
+          update(updated) {
+            if (updated.type.name !== node.type.name) return false;
+            paint(updated.attrs);
+            return true;
+          },
+        };
+      };
+    },
+  });
 }
 
 export function createEditorExtensions(
@@ -175,7 +207,7 @@ export function createEditorExtensions(
     TaskList,
     TaskItem.configure({ nested: true }),
     Link.configure({ openOnClick: false }),
-    Image,
+    options.resolveImageSrc ? createResolvedImage(options.resolveImageSrc) : Image,
     HtmlBlock.configure({ sanitize: options.sanitizeEmbeddedHtml }),
   ];
 }

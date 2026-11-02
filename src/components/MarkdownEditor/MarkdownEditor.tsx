@@ -60,6 +60,7 @@ export const MarkdownEditor = forwardRef<
     onlyView = false,
     resizable = true,
     onlyViewNotice,
+    resolveImageSrc,
   },
   ref,
 ) {
@@ -84,10 +85,17 @@ export const MarkdownEditor = forwardRef<
   onChangeRef.current = onChange;
   const sourceRef = useRef(source);
   sourceRef.current = source;
+  const resolveImageSrcRef = useRef(resolveImageSrc);
+  resolveImageSrcRef.current = resolveImageSrc;
+  const hasImageResolver = resolveImageSrc !== undefined;
 
   const extensions = useMemo(
-    () => createEditorExtensions({ sanitizeEmbeddedHtml }),
-    [sanitizeEmbeddedHtml],
+    () =>
+      createEditorExtensions({
+        sanitizeEmbeddedHtml,
+        resolveImageSrc: hasImageResolver ? () => resolveImageSrcRef.current : undefined,
+      }),
+    [sanitizeEmbeddedHtml, hasImageResolver],
   );
 
   const editor = useEditor(
@@ -231,8 +239,31 @@ export const MarkdownEditor = forwardRef<
       isModified() {
         return sourceRef.current !== originalContentRef.current;
       },
+      insertMarkdown(markdown: string) {
+        const textarea = textareaRef.current;
+        if (effectiveViewMode === "markdown" && textarea) {
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+          const current = sourceRef.current;
+          handleSourceChange(current.slice(0, start) + markdown + current.slice(end));
+          return;
+        }
+        editor
+          ?.chain()
+          .focus()
+          .insertContent(markdownToEditorContent(markdown))
+          .run();
+      },
+      setMarkdown(markdown: string) {
+        sourceRef.current = markdown;
+        setSource(markdown);
+        editor?.commands.setContent(markdownToEditorContent(markdown), {
+          emitUpdate: false,
+        });
+        onChangeRef.current?.(markdown);
+      },
     }),
-    [editor],
+    [editor, effectiveViewMode],
   );
 
   const closeLinkPopover = () => setLinkPopover(null);
