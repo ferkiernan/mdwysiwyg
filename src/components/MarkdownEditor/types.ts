@@ -21,6 +21,11 @@ export interface MarkdownEditorProps {
   documentId?: string;
   /** Nombre de archivo de uso libre para la app consumidora. */
   fileName?: string;
+  /**
+   * Resuelve el `src` de las imágenes SOLO para mostrarlas (p. ej. ruta relativa -> URL
+   * servible). El Markdown conserva el `src` original. Debe pasarse desde el montaje.
+   */
+  resolveImageSrc?: (src: string) => string;
 }
 
 /** API imperativa expuesta por `ref` (ver contracts/MarkdownEditor.md de 005). */
@@ -29,6 +34,13 @@ export interface MarkdownEditorHandle {
   reset(): void;
   /** Indica si el contenido actual difiere del contenido original. */
   isModified(): boolean;
+  /** Inserta Markdown en la posición del cursor (o reemplaza la selección). Notifica `onChange`. */
+  insertMarkdown(markdown: string): void;
+  /**
+   * Reemplaza todo el contenido como un cambio deshacible en la vista renderizada
+   * (Ctrl+Z restaura el anterior). No modifica la base de `isModified()`. Notifica `onChange`.
+   */
+  setMarkdown(markdown: string): void;
 }
 
 export type ViewMode = "wysiwyg" | "markdown";
