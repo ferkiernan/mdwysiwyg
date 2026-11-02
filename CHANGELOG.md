@@ -2,7 +2,18 @@
 
 All notable changes to this project are documented in this file.
 
-## 0.2.2
+## 0.3.0
+
+### Added
+
+- `resolveImageSrc(src) => string` prop: maps an image `src` to the URL used to **display** it (e.g. a
+  relative path to a servable URL in desktop apps). The document keeps the original `src`, so the
+  serialized Markdown never contains the resolved URL.
+- `insertMarkdown(markdown)` on the imperative handle: inserts Markdown at the cursor (or replaces the
+  selection) in the rendered view, or at the textarea selection in the Markdown view. Notifies `onChange`.
+- `setMarkdown(markdown)` on the imperative handle: replaces the whole content as an **undoable** change in the
+  rendered view (Ctrl+Z restores the previous content). Does not change the `isModified()` baseline. Notifies
+  `onChange`.
 
 ### Fixed
 

@@ -101,10 +101,10 @@ Single project: `src/` y `tests/` en la raíz del repo.
 
 - [x] T014 [P] Documentar el comportamiento en `README.md` y `src/components/MarkdownEditor/README.md` (qué hace, bloques cubiertos, nota sobre líneas en blanco múltiples y Markdown)
 - [x] T015 [P] Actualizar `llms.txt` con el comportamiento de la línea posterior
-- [x] T016 [P] Añadir entrada `0.2.2` en `CHANGELOG.md` (Fixed: cursor/Enter tras tabla, código, Mermaid y otros bloques al final del documento)
+- [x] T016 [P] Añadir entrada `0.3.0` en `CHANGELOG.md` (Fixed: cursor/Enter tras tabla, código, Mermaid y otros bloques al final del documento)
 - [x] T017 Ejecutar `npm run typecheck`, `npm test` y `npm run build` sin errores (Definition of Done)
 - [x] T018 Validación manual en playground no ejecutable en esta sesión (sin navegador interactivo); comportamiento cubierto por tests jsdom + contrato (mousedown sobre wrapper/contenedor). Pendiente de verificación visual por el usuario
-- [x] T019 Subir versión a `0.2.2` en `package.json`/`package-lock.json`, commit, push a git y `npm publish` (autorizado por el usuario)
+- [x] T019 Subir versión a `0.3.0` en `package.json`/`package-lock.json`, commit, push a git y `npm publish` (autorizado por el usuario)
 
 ---
 
