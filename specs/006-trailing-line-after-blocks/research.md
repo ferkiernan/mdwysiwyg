@@ -52,6 +52,24 @@
 - Sin párrafo auxiliar ni redirección cuando el editor no es editable (FR-009), evitando una línea
   en blanco visible en vistas de solo lectura.
 
-### D5 — Fuera de alcance
+### D5 — Bloque no final: cursor de hueco (ampliación tras verificación en navegador)
 
-- Cursor entre bloques consecutivos intermedios (ya documentado en Assumptions).
+- **Hallazgo**: la primera entrega solo cubría el último bloque. En el caso real (tabla seguida de
+  un bloque de código) el clic a la derecha de la tabla caía en el wrapper de la tabla y el margen
+  entre bloques en el contenedor del editor; ProseMirror los resolvía hacia una celda o el código.
+- **Decision**: `mousedown` calcula la **frontera** entre bloques de nivel superior que
+  corresponde al clic (derecha o margen de una tabla; hueco entre bloques si alguno no admite texto;
+  bajo el contenido) y coloca allí la selección: dentro de la línea vacía adyacente si existe; si no,
+  un `GapCursor` (de `@tiptap/pm/gapcursor`, ya incluido en StarterKit). Enter sobre un
+  `GapCursor` ejecuta `createParagraphNear` (ya en el keymap de Tiptap) e inserta la línea.
+- **Rationale**: es el mecanismo estándar de ProseMirror para "cursor entre bloques"; no inserta
+  párrafos al hacer clic, de modo que un clic sin escribir no modifica el documento.
+- **Alternatives**: insertar un párrafo vacío en cada clic (muta el documento sin que el usuario
+  escriba); *dropcursor* (solo para arrastrar).
+- **Verificación**: probado en Chrome real con el playground (clic a la derecha de la tabla y en
+  el margen entre tabla y código; Enter; escribir). jsdom no calcula layout, por lo que los tests
+  simulan geometría con `getBoundingClientRect` simulado.
+
+### D6 — Fuera de alcance
+
+- Tablas anidadas dentro de citas o listas.

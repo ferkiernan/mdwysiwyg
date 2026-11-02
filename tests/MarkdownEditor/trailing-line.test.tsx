@@ -221,3 +221,104 @@ describe("US4: sin efectos secundarios", () => {
     expect(onChange).toHaveBeenLastCalledWith(TABLE_MD);
   });
 });
+
+function rect(top: number, bottom: number): DOMRect {
+  return {
+    top,
+    bottom,
+    left: 0,
+    right: 0,
+    width: 0,
+    height: bottom - top,
+    x: 0,
+    y: top,
+    toJSON: () => ({}),
+  };
+}
+
+function stubRect(el: Element, top: number, bottom: number): void {
+  vi.spyOn(el, "getBoundingClientRect").mockReturnValue(rect(top, bottom));
+}
+
+describe("US5: línea entre una tabla y el bloque siguiente (no final)", () => {
+  const TABLE_THEN_CODE = `${TABLE_MD}\n${CODE_MD}`;
+
+  it("clic a la derecha de la tabla deja un cursor de hueco antes del bloque siguiente", async () => {
+    const { pm } = await setupEditor({ initialContent: TABLE_THEN_CODE });
+    const wrapper = pm.querySelector(".tableWrapper") as HTMLElement;
+
+    fireEvent.mouseDown(wrapper);
+
+    const gap = pm.querySelector(".ProseMirror-gapcursor");
+    expect(gap).not.toBeNull();
+    expect(wrapper.nextElementSibling).toBe(gap);
+    expect(gap?.nextElementSibling?.tagName).toBe("PRE");
+  });
+
+  it("Enter desde ese cursor añade una línea en blanco entre la tabla y el código", async () => {
+    const { onChange, pm } = await setupEditor({
+      initialContent: TABLE_THEN_CODE,
+    });
+    const wrapper = pm.querySelector(".tableWrapper") as HTMLElement;
+
+    fireEvent.mouseDown(wrapper);
+    await userEvent.keyboard("{Enter}");
+
+    const between = wrapper.nextElementSibling;
+    expect(between?.tagName).toBe("P");
+    expect(between?.textContent).toBe("");
+    expect(between?.nextElementSibling?.tagName).toBe("PRE");
+
+    await userEvent.keyboard("hola");
+    expect(onChange).toHaveBeenLastCalledWith(
+      `${TABLE_MD}\nhola\n\n${CODE_MD}`,
+    );
+  });
+
+  it("clic a la derecha de la tabla seguida de texto: Enter inserta la línea entre ambos", async () => {
+    const { onChange, pm } = await setupEditor({
+      initialContent: `${TABLE_MD}\ntexto\n`,
+    });
+
+    fireEvent.mouseDown(pm.querySelector(".tableWrapper") as HTMLElement);
+    await userEvent.keyboard("{Enter}nuevo");
+
+    expect(onChange).toHaveBeenLastCalledWith(
+      `${TABLE_MD}\nnuevo\n\ntexto\n`,
+    );
+  });
+
+  it("clic sobre el margen superior de una tabla inicial permite escribir antes de ella", async () => {
+    const { onChange, pm } = await setupEditor({ initialContent: TABLE_MD });
+    const wrapper = pm.querySelector(".tableWrapper") as HTMLElement;
+    stubRect(wrapper.querySelector("table") as HTMLElement, 100, 200);
+
+    fireEvent.mouseDown(wrapper, { clientY: 50 });
+    await userEvent.keyboard("{Enter}arriba");
+
+    expect(onChange).toHaveBeenLastCalledWith(`arriba\n\n${TABLE_MD}`);
+  });
+
+  it("clic en el hueco entre la tabla y el bloque siguiente (fuera de ambos) deja el cursor de hueco", async () => {
+    const { pm } = await setupEditor({
+      initialContent: `${TABLE_MD}\n${CODE_MD}`,
+    });
+    const [wrapper, pre, trailing] = Array.from(pm.children);
+    stubRect(wrapper as Element, 0, 100);
+    stubRect(pre as Element, 120, 200);
+    stubRect(trailing as Element, 210, 230);
+
+    expect(fireEvent.mouseDown(pm, { clientY: 110 })).toBe(false);
+
+    expect(pm.querySelector(".ProseMirror-gapcursor")).not.toBeNull();
+  });
+
+  it("clic en el hueco entre dos párrafos no se redirige", async () => {
+    const { pm } = await setupEditor({ initialContent: "uno\n\ndos\n" });
+    const [p1, p2] = Array.from(pm.children);
+    stubRect(p1 as Element, 0, 20);
+    stubRect(p2 as Element, 40, 60);
+
+    expect(fireEvent.mouseDown(pm, { clientY: 30 })).toBe(true);
+  });
+});

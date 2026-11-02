@@ -8,14 +8,15 @@
 
 Garantizar que, en la vista renderizada, un documento cuyo último elemento es un bloque (tabla,
 bloque de código, Mermaid, cita, lista, regla horizontal, imagen) siempre tenga un párrafo vacío
-editable después de él, y que un clic en el área libre a la derecha/debajo del último bloque
-coloque el cursor ahí. Causa raíz (ver [research.md](./research.md)): la extensión `trailingNode`
+editable después de él, y que un clic en el área libre a la derecha de una tabla, en el hueco entre
+bloques o debajo del último bloque coloque el cursor ahí (cursor de hueco o línea vacía), y que
+Enter inserte la línea en ese punto. Causa raíz (ver [research.md](./research.md)): la extensión `trailingNode`
 de StarterKit solo reacciona tras una transacción que modifica el documento, por lo que un
 documento cargado desde `initialContent` que termina en bloque **no** tiene párrafo posterior; y
 el clic fuera del bloque (wrapper de tabla / contenedor del editor) lo resuelve ProseMirror hacia
 la última celda o el interior del bloque. Solución: (1) asegurar el párrafo final al crear el
 editor, sin disparar `onChange` ni historial; (2) manejar `mousedown` sobre áreas libres para
-llevar el cursor al párrafo final. Sin props ni dependencias nuevas.
+llevar el cursor a la frontera entre bloques correspondiente (ver research.md D5). Sin props ni dependencias nuevas.
 
 ## Technical Context
 

@@ -97,7 +97,20 @@ Single project: `src/` y `tests/` en la raíz del repo.
 
 ---
 
-## Phase 7: Polish & Cross-Cutting Concerns
+## Phase 7: User Story 5 - Línea entre una tabla y el bloque siguiente (Priority: P1)
+
+**Goal**: clic a la derecha/margen de una tabla o en el hueco entre bloques deja el cursor en la frontera; Enter inserta la línea.
+
+**Independent Test**: documento `tabla + código` → `mousedown` sobre el wrapper → Enter → escribir → el texto queda entre ambos.
+
+- [x] T020 [US5] Ampliar `findBoundary`/`selectionAtBoundary` en `src/components/MarkdownEditor/markdown/trailingLine.ts` para fronteras intermedias (derecha/margen de tabla, hueco entre bloques, margen superior) usando `GapCursor` de `@tiptap/pm/gapcursor`
+- [x] T021 [US5] Tests en `tests/MarkdownEditor/trailing-line.test.tsx` (tabla+código, tabla+texto, tabla inicial, hueco entre bloques con geometría simulada, hueco entre párrafos sin redirección)
+- [x] T022 [US5] Estilo del cursor de hueco en `src/components/MarkdownEditor/MarkdownEditor.module.css` (color del tema)
+- [x] T023 [US5] Verificar en Chrome real con el playground (`npm run dev`): clic a la derecha de la tabla y en el margen tabla→código, Enter y escribir
+
+---
+
+## Phase 8: Polish & Cross-Cutting Concerns
 
 - [x] T014 [P] Documentar el comportamiento en `README.md` y `src/components/MarkdownEditor/README.md` (qué hace, bloques cubiertos, nota sobre líneas en blanco múltiples y Markdown)
 - [x] T015 [P] Actualizar `llms.txt` con el comportamiento de la línea posterior

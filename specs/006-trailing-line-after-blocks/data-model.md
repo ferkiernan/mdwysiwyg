@@ -26,3 +26,5 @@ Sin datos persistentes ni cambios de esquema. Solo invariantes del documento del
 | Selección en Línea posterior | Enter | nuevo párrafo vacío debajo; selección en él |
 | Selección en Línea posterior | escribir | el texto queda tras el bloque |
 | Último = párrafo con texto | `mousedown` en área libre | selección al final de ese párrafo (sin cambios) |
+| Cursor entre bloques (tabla → bloque) | `mousedown` en área libre | `GapCursor` en la frontera (o selección en la línea vacía adyacente) |
+| `GapCursor` | Enter | párrafo vacío insertado en la frontera; selección en él |

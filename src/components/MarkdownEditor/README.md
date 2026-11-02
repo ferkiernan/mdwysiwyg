@@ -110,17 +110,23 @@ siguiente vuelve a contar como "primer clic". Mover una columna/fila más allá 
 tabla no tiene efecto. Si hay contenido seleccionado (por ejemplo, arrastrando el mouse sobre
 texto de la celda) el clic no abre el menú, para no interrumpir la selección.
 
-### Línea posterior a un bloque final
+### Cursor y líneas entre bloques
 
-Si el documento termina en un bloque (tabla, bloque de código, diagrama Mermaid, cita, lista,
-regla horizontal, imagen), la vista renderizada mantiene siempre un párrafo vacío después de él.
-Un clic en el área libre **a la derecha** de la última tabla o **debajo** del último bloque
-posiciona el cursor en esa línea; desde ahí, Enter añade líneas en blanco y escribir añade texto
-fuera del bloque. Con el teclado, la flecha abajo / Ctrl+Fin desde el último bloque llega al mismo
-punto. Un clic *dentro* de una celda, del código o del diagrama conserva su comportamiento.
+Un clic en el área libre **a la derecha de una tabla** (a la altura de cualquiera de sus filas),
+en su margen, o en el **hueco entre dos bloques** (tabla, código, diagrama…) posiciona el cursor
+entre ambos en vez de dentro de una celda o del bloque. Se muestra como un cursor horizontal (de
+hueco); **Enter** inserta ahí una línea en blanco y escribir añade texto en ese punto. Un clic en
+el margen superior de una tabla permite escribir antes de ella. Con una línea vacía ya presente
+junto al hueco, el cursor entra directamente en ella.
 
-La línea auxiliar no emite `onChange`, no entra en el historial de deshacer y no altera el
-Markdown. No se aplica en `onlyView`.
+Si el documento termina en un bloque (tabla, código, Mermaid, cita, lista, regla horizontal,
+imagen), la vista renderizada mantiene siempre un párrafo vacío después de él, y un clic a su
+derecha o debajo coloca el cursor ahí. Con el teclado, la flecha abajo / Ctrl+Fin desde el último
+bloque llega al mismo punto. Un clic *dentro* de una celda, del código o del diagrama conserva su
+comportamiento.
+
+Estas líneas auxiliares no emiten `onChange` al crearse, no entran en el historial de deshacer y no
+alteran el Markdown mientras estén vacías. No se aplican en `onlyView`.
 
 ### Diagramas Mermaid
 
@@ -271,8 +277,8 @@ Cualquier variable que no sobreescribas conserva su valor por defecto.
   virtualización para documentos masivos.
 - **Líneas en blanco finales**: el Markdown estándar no representa líneas en blanco múltiples de
   forma semántica; las líneas vacías tras el último bloque existen en la vista renderizada pero no
-  se serializan. El texto escrito después del bloque sí se conserva. Colocar el cursor entre dos
-  bloques consecutivos *intermedios* queda fuera de esta funcionalidad.
+  se serializan. El texto escrito en ellas sí se conserva. Las tablas anidadas dentro de citas o
+  listas no tienen este acceso por clic.
 - **Persistencia**: fuera del alcance del componente — usa `onChange` para guardar donde decidas.
 - **Resaltado de sintaxis**: aplica a los 5 lenguajes del selector (JSON, SQL, TypeScript,
   JavaScript, Java); un lenguaje personalizado no reconocido se muestra en texto plano legible,

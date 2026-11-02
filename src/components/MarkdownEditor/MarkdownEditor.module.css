@@ -145,6 +145,11 @@
   background: var(--mdw-table-header-bg);
 }
 
+/* Cursor de hueco entre bloques: hereda el color del texto del tema. */
+.content :global(.ProseMirror-gapcursor:after) {
+  border-top-color: var(--mdw-content-wysiwyg-fg);
+}
+
 .content :global(.ProseMirror hr) {
   border: none;
   border-top: 2px solid var(--mdw-border);

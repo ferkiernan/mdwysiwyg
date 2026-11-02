@@ -126,6 +126,40 @@ clic debajo del último párrafo, y comparando el Markdown resultante con el ori
 
 ---
 
+---
+
+### User Story 5 - Añadir una línea entre una tabla y el bloque siguiente (Priority: P1)
+
+Un usuario tiene una tabla seguida de otro bloque (por ejemplo, un bloque de código) en medio del
+documento. Hace clic en el espacio libre a la derecha de la tabla, a la altura de su última fila,
+o en el hueco entre la tabla y el bloque siguiente, y el cursor queda posicionado justo debajo de
+la tabla. Al pulsar Enter se añade una línea en blanco entre la tabla y el bloque siguiente, donde
+puede escribir.
+
+**Why this priority**: Es el caso real reportado tras la primera entrega de esta feature: la
+tabla no era el último elemento del documento, por lo que no había forma de intercalar texto
+entre la tabla y el bloque que le sigue.
+
+**Independent Test**: Se puede probar de forma aislada con un documento `tabla + bloque de código`:
+clic a la derecha de la tabla (o en el hueco entre ambos) y Enter, verificando que aparece una
+línea en blanco entre los dos bloques y que lo escrito en ella queda entre ambos en el Markdown.
+
+**Acceptance Scenarios**:
+
+1. **Given** una tabla seguida de un bloque de código, **When** el usuario hace clic a la derecha
+   de la tabla a la altura de su última fila, **Then** el cursor queda posicionado entre la tabla
+   y el bloque, sin entrar en ninguna celda.
+2. **Given** el cursor posicionado entre la tabla y el bloque siguiente, **When** el usuario pulsa
+   Enter, **Then** se crea una línea en blanco entre ambos y el cursor queda en ella.
+3. **Given** el cursor posicionado entre la tabla y el bloque siguiente, **When** el usuario
+   escribe texto, **Then** el texto queda entre la tabla y el bloque en el Markdown resultante.
+4. **Given** una tabla seguida de un párrafo, **When** el usuario hace clic a la derecha de la
+   tabla y pulsa Enter, **Then** se crea una línea en blanco entre la tabla y el párrafo.
+5. **Given** una tabla que es el primer elemento del documento, **When** el usuario hace clic en
+   su margen superior y pulsa Enter, **Then** puede escribir antes de la tabla.
+
+---
+
 ### Edge Cases
 
 - **Documento vacío o con solo un bloque**: si el documento contiene únicamente una tabla, un
@@ -137,8 +171,10 @@ clic debajo del último párrafo, y comparando el Markdown resultante con el ori
 - **Clic dentro del bloque**: hacer clic dentro de una celda, del código o del diagrama mantiene su
   comportamiento actual (edición de celda, edición de código, apertura de edición del diagrama);
   solo el clic en el área libre *fuera* del bloque activa el nuevo comportamiento.
-- **Varios bloques consecutivos al final** (por ejemplo, tabla seguida de bloque de código): el
-  espacio libre posterior al **último** bloque del documento es el que da acceso a la nueva línea.
+- **Varios bloques consecutivos** (por ejemplo, tabla seguida de bloque de código): el espacio libre
+  a la derecha de cada tabla y el hueco entre bloques consecutivos dan acceso a una línea nueva
+  entre ellos; el espacio libre tras el **último** bloque da acceso a la línea final.
+- **Hueco entre dos párrafos**: sin cambios; el comportamiento habitual de clic ya es correcto.
 - **Vista Markdown (código fuente)**: este comportamiento aplica solo a la vista renderizada; la
   vista Markdown ya permite colocar el cursor libremente.
 - **Modo de solo lectura (`onlyView`)**: no se permite posicionar un cursor editable ni insertar
@@ -181,6 +217,17 @@ clic debajo del último párrafo, y comparando el Markdown resultante con el ori
 - **FR-011**: El comportamiento MUST ser accesible por teclado: el usuario MUST poder alcanzar la
   línea posterior al último bloque sin usar el ratón.
 
+- **FR-012**: Al hacer clic en el área libre a la derecha de una tabla (a la altura de cualquiera de sus
+  filas) o en su margen inferior, el sistema MUST posicionar el cursor inmediatamente después de la
+  tabla, aunque haya otro bloque o texto a continuación; si ya hay una línea vacía a continuación,
+  el cursor MUST entrar en ella.
+- **FR-013**: Al hacer clic en el hueco entre dos bloques consecutivos de los que alguno no admite
+  cursor de texto (tabla, código, diagrama…), el sistema MUST posicionar el cursor entre ambos.
+- **FR-014**: Con el cursor posicionado entre dos bloques, Enter MUST insertar una línea en blanco
+  en ese punto y colocar el cursor en ella; escribir MUST crear texto en ese punto.
+- **FR-015**: Al hacer clic en el margen superior de una tabla, el cursor MUST posicionarse
+  inmediatamente antes de ella.
+
 ### Key Entities *(include if feature involves data)*
 
 - **Bloque final**: el último elemento del documento cuando no es un párrafo de texto (tabla,
@@ -204,12 +251,15 @@ clic debajo del último párrafo, y comparando el Markdown resultante con el ori
   espacio libre posterior (sin escribir) es idéntico al original.
 - **SC-005**: Ninguna de las pruebas de comportamiento existentes de edición de tablas, código y
   Mermaid deja de pasar tras este cambio.
+- **SC-006**: Con una tabla seguida de un bloque de código, un clic a la derecha de la tabla más Enter
+  deja una línea en blanco entre ambos en el 100 % de los intentos.
 
 ## Assumptions
 
 - El comportamiento aplica únicamente a la **vista renderizada**; la vista Markdown no cambia.
-- El alcance se limita al espacio posterior al **último** elemento del documento. Colocar el cursor
-  entre dos bloques consecutivos en medio del documento queda fuera de alcance de esta feature.
+- El alcance cubre el espacio posterior al último elemento, el espacio a la derecha/margen de las
+  tablas y el hueco entre bloques consecutivos de nivel superior. Las tablas anidadas dentro de
+  otros contenedores (citas, listas) quedan fuera de alcance.
 - Las líneas en blanco se entienden como párrafos vacíos en la vista renderizada. El Markdown
   estándar no representa líneas en blanco múltiples de forma semántica, por lo que no se garantiza
   que el número exacto de líneas en blanco adicionales se conserve al volver a cargar el Markdown;

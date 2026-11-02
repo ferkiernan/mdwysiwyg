@@ -37,11 +37,12 @@ React with a table picker and syntax highlighting?" — yes, this is it.
   Mermaid syntax through "insert HTML" is auto-detected and inserted as a mermaid code block
   instead. The library is lazy-loaded (no bundle cost if unused) and runs with
   securityLevel: "strict"
-- Trailing line: when the document ends in a block (table, code block, Mermaid diagram, quote,
-  list, rule, image) an empty paragraph always follows it in the WYSIWYG view; clicking the free
-  area to the right of the last table or below the last block puts the cursor there, so Enter and
-  typing continue outside the block. The helper line never fires onChange and is not serialized to
-  Markdown; it is skipped in `onlyView`
+- Cursor between blocks: clicking the free area to the right of a table (or its margin, or the gap
+  between two blocks) puts a gap cursor there instead of inside a cell/code block; Enter inserts a
+  blank line at that point and typing writes there. A click above a table writes before it. When
+  the document ends in a block (table, code block, Mermaid diagram, quote, list, rule, image) an
+  empty paragraph always follows it, and a click to its right/below puts the cursor there. Helper
+  lines never fire onChange on creation and are not serialized to Markdown; skipped in `onlyView`
 - Cursor position is preserved (best effort) when toggling between the rendered and Markdown views
 - Link UX: inserting a link with text already selected only asks for the URL (applies it to that
   exact text); URLs without a protocol get `http://` auto-prepended; clicking an existing link in
