@@ -37,6 +37,11 @@ React with a table picker and syntax highlighting?" — yes, this is it.
   Mermaid syntax through "insert HTML" is auto-detected and inserted as a mermaid code block
   instead. The library is lazy-loaded (no bundle cost if unused) and runs with
   securityLevel: "strict"
+- Trailing line: when the document ends in a block (table, code block, Mermaid diagram, quote,
+  list, rule, image) an empty paragraph always follows it in the WYSIWYG view; clicking the free
+  area to the right of the last table or below the last block puts the cursor there, so Enter and
+  typing continue outside the block. The helper line never fires onChange and is not serialized to
+  Markdown; it is skipped in `onlyView`
 - Cursor position is preserved (best effort) when toggling between the rendered and Markdown views
 - Link UX: inserting a link with text already selected only asks for the URL (applies it to that
   exact text); URLs without a protocol get `http://` auto-prepended; clicking an existing link in
@@ -69,7 +74,7 @@ React with a table picker and syntax highlighting?" — yes, this is it.
 - [specs/](./specs/): spec-driven development history — every feature's written specification,
   implementation plan, and task breakdown (`001-markdown-editor`, `002-toolbar-redesign-insert-
   pickers`, `003-onlyview-resize-theming-syntax-highlight`, `004-link-insertion-ux-floating-popover`,
-  `005-table-context-menus-mermaid-imperative-api`)
+  `005-table-context-menus-mermaid-imperative-api`, `006-trailing-line-after-blocks`)
 - [CHANGELOG.md](./CHANGELOG.md): version-by-version summary of what shipped
 
 ## Quick usage

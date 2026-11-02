@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.2.2
+
+### Fixed
+
+- When the document ended in a table, code block, Mermaid diagram, quote, list, horizontal rule or
+  image, the cursor could not be placed after it: there was no line below the block, and a click in
+  the free area to the right of the table (or below the last block) landed inside the block. The
+  rendered view now always keeps an empty line after a trailing block, clicking the free area to
+  its right/below places the cursor there, and Enter / typing continue outside the block. The
+  helper line doesn't fire `onChange`, isn't added to undo history and isn't serialized to
+  Markdown; it's skipped in `onlyView`.
+
 ## 0.2.1
 
 ### Security

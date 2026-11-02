@@ -117,6 +117,7 @@ Try it in your browser, no install required: **[ferkiernan.github.io/mdwysiwyg](
 | Insert | Images (by URL), links (URL-only dialog when text is already selected, auto `http://` prefix), tables (visual size picker), horizontal rules, embedded HTML |
 | Links | Click an existing link to open a quick popover: go to URL, copy URL, or edit/remove it inline |
 | Tables | Click an already-focused cell again for a context menu: add/move/delete columns (header cells) or rows (data cells) |
+| Trailing line | When the document ends in a table, code block, Mermaid diagram, quote, list, rule or image, there's always an empty line after it: click the free area to its right/below to place the cursor there, then press Enter / type to keep writing |
 | Code | Fenced code blocks with a language picker (JSON/SQL/TypeScript/JavaScript/Java/custom) and syntax highlighting |
 | Diagrams | ` ```mermaid ` blocks render as live diagrams; pasted Mermaid syntax is auto-detected on HTML insert. Lazy-loaded, `securityLevel: strict` |
 | Export | Copy as Markdown or as HTML, one click |

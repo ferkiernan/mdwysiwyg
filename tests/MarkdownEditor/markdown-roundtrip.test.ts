@@ -60,3 +60,17 @@ describe("pipeline GFM round-trip", () => {
     expect(html).toContain("<hr>");
   });
 });
+
+describe("párrafos vacíos finales (línea posterior a un bloque)", () => {
+  it.each([
+    [
+      "tabla",
+      "<table><thead><tr><th><p>a</p></th></tr></thead><tbody><tr><td><p>1</p></td></tr></tbody></table>",
+    ],
+    ["bloque de código", "<pre><code>x</code></pre>"],
+  ])("%s: los <p></p> vacíos finales no alteran el Markdown", (_name, html) => {
+    const expected = editorHtmlToMarkdown(html);
+    expect(editorHtmlToMarkdown(`${html}<p></p>`)).toBe(expected);
+    expect(editorHtmlToMarkdown(`${html}<p></p><p></p>`)).toBe(expected);
+  });
+});

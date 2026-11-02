@@ -18,6 +18,10 @@ import {
   proseMirrorPosToMarkdownOffset,
 } from "./markdown/cursorMapping";
 import { moveCurrentColumn, moveCurrentRow } from "./markdown/tableCommands";
+import {
+  ensureTrailingParagraph,
+  handleBlankAreaMouseDown,
+} from "./markdown/trailingLine";
 import { RenderedView } from "./views/RenderedView";
 import { MarkdownSourceView } from "./views/MarkdownSourceView";
 import { Toolbar } from "./Toolbar/Toolbar";
@@ -102,6 +106,8 @@ export const MarkdownEditor = forwardRef<
           "aria-label": "Editor de texto enriquecido",
         },
         handleDOMEvents: {
+          // Clic en el área libre tras el último bloque → línea posterior.
+          mousedown: handleBlankAreaMouseDown,
           click(view, event) {
             const target = event.target;
             if (!(target instanceof Element)) return false;
@@ -162,6 +168,9 @@ export const MarkdownEditor = forwardRef<
             return true;
           },
         },
+      },
+      onCreate({ editor: createdEditor }) {
+        ensureTrailingParagraph(createdEditor);
       },
       onUpdate({ editor: currentEditor }) {
         const markdown = editorToMarkdown(currentEditor);
