@@ -26,6 +26,7 @@ npm run dev        # playground at http://localhost:5173
 npm test            # run the test suite
 npm run typecheck   # strict TypeScript check
 npm run build        # produce dist/ (ESM + CJS + .d.ts)
+npm run verify:dist  # check the built artifact (CSS Module class maps vs dist/index.css)
 ```
 
 ## Guidelines
@@ -45,7 +46,8 @@ npm run build        # produce dist/ (ESM + CJS + .d.ts)
 
 1. Fork, branch from `master`.
 2. Make your change with tests.
-3. Run `npm run typecheck && npm test && npm run build` locally — all three must pass.
+3. Run `npm run typecheck && npm test && npm run build && npm run verify:dist` locally — all must pass.
+   (`npm publish` runs the same chain via `prepublishOnly`.)
 4. Open a PR describing what changed and why.
 
 By contributing, you agree your contributions are licensed under this project's
