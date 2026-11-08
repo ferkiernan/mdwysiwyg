@@ -2,6 +2,22 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.3.1
+
+### Fixed
+
+- **The published package rendered unstyled.** `tsup` bundled `*.module.css` as global CSS and exported an
+  empty class map (`styles["root"]` was `undefined`), so no element received its class: bare toolbar buttons,
+  no icons or gradient, no table/code styles. The demo looked fine only because it builds from source. The
+  build now uses the `local-css` loader (hashed names such as `MarkdownEditor_root` plus the matching JS
+  map); `:global(...)` selectors and `--mdw-*` custom properties are unchanged. No API changes.
+
+### Added
+
+- `npm run verify:dist`: checks the built artifact (non-empty CSS Module class maps, every mapped class present
+  in `dist/index.css`, ESM and CJS in agreement). It runs as part of `prepublishOnly` together with typecheck,
+  tests and build, and a test renders the component from `dist/` so this cannot ship broken again.
+
 ## 0.3.0
 
 ### Added
