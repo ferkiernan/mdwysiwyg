@@ -12,6 +12,17 @@ All notable changes to this project are documented in this file.
   anything and focus returns to the editor if it was on a toolbar control. While hidden, the view toggle and
   Export are not available from the UI.
 
+- **Compare mode** (`mode="compare"`, `compareOrientation`, `compareContent`, `onCompareDecision`): shows the
+  original content (read-only) and a new content (editable) side by side or one above the other, with
+  new/changed words highlighted in yellow in both the rendered and Markdown views (whole-element highlight for
+  new paragraphs, list items, table rows and code blocks; changed lines in code/Mermaid blocks). A second bar
+  offers "Rechazar cambio", "Aceptar cambio" and "Restaurar" (visible only when the new pane differs from
+  `compareContent`). Accept/reject call `onChange` and `onCompareDecision({ decision, markdown })` and return
+  the control to default mode. The compare bar follows `showToolbar`. `reset()` acts as "Restaurar" and
+  `isModified()` is true exactly when it is visible. New types `EditorMode`, `CompareOrientation`,
+  `CompareDecision`; new custom property `--mdw-compare-highlight-bg`. No new dependencies; default mode is
+  unchanged.
+
 ### Changed
 
 - **Table column/row menu now opens from a corner triangle.** Hovering a table cell shows a small

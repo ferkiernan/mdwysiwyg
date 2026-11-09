@@ -124,6 +124,7 @@ Try it in your browser, no install required: **[ferkiernan.github.io/mdwysiwyg](
 | Modes | Full editor (default) or read-only viewer (`onlyView`, with a configurable notice via `onlyViewNotice`) |
 | Sizing | Fixed (`width`/`height` props) or user-resizable (`resizable`, default on) |
 | Toolbar | Shown by default; hide/show it at runtime with `showToolbar` (no content, caret or undo loss) |
+| Compare mode | `mode="compare"` + `compareOrientation` (`side-to-side` / `up-and-down`) + `compareContent`: read-only original next to an editable new version with changed words highlighted in yellow, and a second bar to accept, reject or restore the change (`onCompareDecision`) |
 | Theming | CSS Custom Properties for toolbar colors/gradient/font, per-view content color & font, table header, code block & Mermaid-diagram-area backgrounds, scrollbar colors (including the toolbar's own auto-scroll), and content-area background (solid color, gradient, or image) |
 | Imperative API | `ref` exposing `reset()` and `isModified()` for discard-changes / unsaved-warning flows |
 

@@ -5,17 +5,22 @@ export interface MarkdownSourceViewProps {
   value: string;
   onChange: (value: string) => void;
   readOnly?: boolean;
+  /** Nombre accesible. Default: "Código fuente Markdown". */
+  ariaLabel?: string;
 }
 
 export const MarkdownSourceView = forwardRef<
   HTMLTextAreaElement,
   MarkdownSourceViewProps
->(function MarkdownSourceView({ value, onChange, readOnly = false }, ref) {
+>(function MarkdownSourceView(
+  { value, onChange, readOnly = false, ariaLabel = "Código fuente Markdown" },
+  ref,
+) {
   return (
     <textarea
       ref={ref}
       className={styles["source"]}
-      aria-label="Código fuente Markdown"
+      aria-label={ariaLabel}
       spellCheck={false}
       value={value}
       readOnly={readOnly}

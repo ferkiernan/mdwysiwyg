@@ -56,6 +56,13 @@ React with a table picker and syntax highlighting?" — yes, this is it.
 - `documentId` / `fileName` props: passive identifiers the consuming app can attach to the editor
 - `showToolbar` prop (default true): show/hide the toolbar (including the reduced `onlyView` bar) at runtime
   without losing content, caret, undo history or view mode; toggling never fires onChange
+- Compare mode: `mode="compare"` plus `compareOrientation` (`"side-to-side"` | `"up-and-down"`) and
+  `compareContent` (new Markdown) shows the original (read-only) and the new content (editable) in two
+  panes with changed/added words highlighted yellow (`<mark>`, themable with `--mdw-compare-highlight-bg`)
+  in both the rendered and Markdown views. A second bar offers "Rechazar cambio", "Aceptar cambio" and
+  "Restaurar" (only when the new pane differs from `compareContent`); accept/reject call `onChange` and
+  `onCompareDecision({ decision: "accepted" | "rejected", markdown })` and the control returns to default
+  mode. The bar follows `showToolbar`. `reset()` = Restaurar, `isModified()` = Restaurar visible
 - `resizable` prop (default true): native CSS `resize: both` drag handle, like a `<textarea>`
 - Theming via CSS Custom Properties (no extra props): toolbar (`--mdw-toolbar-gradient-from/via/to`,
   `--mdw-toolbar-fg`, `--mdw-toolbar-font-family`, `--mdw-toolbar-select-bg`,

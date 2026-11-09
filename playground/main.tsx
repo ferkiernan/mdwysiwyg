@@ -1,8 +1,110 @@
 import { StrictMode, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { MarkdownEditor } from "../src";
-import type { MarkdownEditorHandle } from "../src";
+import type {
+  CompareDecision,
+  CompareOrientation,
+  EditorMode,
+  MarkdownEditorHandle,
+} from "../src";
 
+const COMPARE_ORIGINAL = [
+  "# Informe",
+  "",
+  "El proyecto avanza según lo previsto y el equipo está contento.",
+  "",
+  "- Diseño",
+  "- Desarrollo",
+  "",
+  "| Fase | Estado |",
+  "| --- | --- |",
+  "| Diseño | Hecho |",
+  "",
+].join("\n");
+
+const COMPARE_PROPOSED = [
+  "# Informe",
+  "",
+  "El proyecto avanza mejor de lo previsto y el equipo está muy contento.",
+  "",
+  "Se añade un párrafo nuevo con la propuesta.",
+  "",
+  "- Diseño",
+  "- Pruebas",
+  "- Desarrollo",
+  "",
+  "| Fase | Estado |",
+  "| --- | --- |",
+  "| Diseño | Hecho |",
+  "| Pruebas | Pendiente |",
+  "",
+].join("\n");
+
+/** Demo del modo de comparación: modo, orientación, contenido nuevo y registro de decisiones. */
+function CompareDemo({ showToolbar }: { showToolbar: boolean }) {
+  const [mode, setMode] = useState<EditorMode>("compare");
+  const [orientation, setOrientation] =
+    useState<CompareOrientation>("side-to-side");
+  const [proposed, setProposed] = useState(COMPARE_PROPOSED);
+  const [log, setLog] = useState<string[]>([]);
+
+  const record = (result: CompareDecision) =>
+    setLog((previous) => [
+      `${result.decision}: ${JSON.stringify(result.markdown).slice(0, 80)}…`,
+      ...previous,
+    ]);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+        <label>
+          Modo{" "}
+          <select
+            value={mode}
+            onChange={(event) => setMode(event.target.value as EditorMode)}
+          >
+            <option value="default">default</option>
+            <option value="compare">compare</option>
+          </select>
+        </label>
+        <label>
+          Orientación{" "}
+          <select
+            value={orientation}
+            onChange={(event) =>
+              setOrientation(event.target.value as CompareOrientation)
+            }
+          >
+            <option value="side-to-side">side-to-side</option>
+            <option value="up-and-down">up-and-down</option>
+          </select>
+        </label>
+      </div>
+      <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        Contenido nuevo (compareContent)
+        <textarea
+          rows={4}
+          value={proposed}
+          onChange={(event) => setProposed(event.target.value)}
+          style={{ fontFamily: "monospace", fontSize: 12 }}
+        />
+      </label>
+      <MarkdownEditor
+        initialContent={COMPARE_ORIGINAL}
+        mode={mode}
+        compareOrientation={orientation}
+        compareContent={proposed}
+        onCompareDecision={record}
+        showToolbar={showToolbar}
+        height={560}
+        width="100%"
+      />
+      <pre style={{ background: "#f6f7f9", padding: 8, fontSize: 12, margin: 0 }}>
+        {log.length === 0 ? "Sin decisiones todavía" : log.join("\n")}
+      </pre>
+    </div>
+  );
+}
 
 const DEMO = [
   "# Demo mdwysiwyg",
@@ -440,6 +542,11 @@ function App() {
             {markdown}
           </pre>
         </div>
+      </section>
+
+      <section>
+        <h2>Modo comparación (compare)</h2>
+        <CompareDemo showToolbar={showToolbar} />
       </section>
 
       <section>

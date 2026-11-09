@@ -1,2 +1,8 @@
 export { MarkdownEditor } from "./MarkdownEditor";
-export type { MarkdownEditorProps, MarkdownEditorHandle } from "./types";
+export type {
+  MarkdownEditorProps,
+  MarkdownEditorHandle,
+  EditorMode,
+  CompareOrientation,
+  CompareDecision,
+} from "./types";

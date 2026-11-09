@@ -1,14 +1,17 @@
 import {
   forwardRef,
+  useCallback,
   useEffect,
+  useId,
   useImperativeHandle,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
   type KeyboardEvent,
   type MouseEvent,
 } from "react";
-import { useEditor } from "@tiptap/react";
+import { useEditor, useEditorState } from "@tiptap/react";
 import { getMarkRange, type Range } from "@tiptap/core";
 import { TextSelection } from "@tiptap/pm/state";
 import {
@@ -25,8 +28,16 @@ import {
   ensureTrailingParagraph,
   handleBlankAreaMouseDown,
 } from "./markdown/trailingLine";
+import {
+  CompareHighlight,
+  getCompareSummary,
+  setCompareOriginal,
+} from "./compare/compareHighlight";
+import { diffText, type DiffSummary } from "./compare/textDiff";
+import { CompareBar } from "./compare/CompareBar";
+import { OriginalPane } from "./compare/OriginalPane";
+import { HighlightedSource } from "./compare/HighlightedSource";
 import { RenderedView } from "./views/RenderedView";
-import { MarkdownSourceView } from "./views/MarkdownSourceView";
 import { TableCellTrigger } from "./views/TableCellTrigger";
 import { ToolbarSlot } from "./views/ToolbarSlot";
 import { Toolbar } from "./Toolbar/Toolbar";
@@ -51,8 +62,52 @@ interface TableMenuState {
   anchor: HTMLElement;
 }
 
+/** Comparación en curso: contenido original y contenido nuevo proporcionado. */
+interface CompareSession {
+  original: string;
+  provided: string;
+}
+
+interface CompareState {
+  /** Último `compareContent` visto mientras la comparación estaba solicitada. */
+  key: string | null;
+  /** Sesión activa; `null` en modo normal o tras aceptar/rechazar. */
+  session: CompareSession | null;
+}
+
+const NO_DIFFERENCES: DiffSummary = { changed: false, count: 0 };
+
 function toCssSize(value: number | string): string {
   return typeof value === "number" ? `${value}px` : value;
+}
+
+/**
+ * Transición del estado de comparación cuando cambia lo solicitado por el host
+ * (`requested`: el `compareContent` si el modo es válido, si no `null`).
+ */
+function nextCompareState(
+  previous: CompareState,
+  requested: string | null,
+  currentContent: string,
+): CompareState {
+  if (requested === null) return { key: null, session: null };
+  if (previous.session !== null) {
+    // Mismo original; el panel nuevo pasa a ser el contenido proporcionado.
+    return {
+      key: requested,
+      session: { original: previous.session.original, provided: requested },
+    };
+  }
+  return {
+    key: requested,
+    session: { original: currentContent, provided: requested },
+  };
+}
+
+function describeDifferences({ changed, count }: DiffSummary): string {
+  if (!changed) return "Sin diferencias";
+  if (count === 0) return "Solo hay contenido eliminado";
+  return count === 1 ? "1 diferencia resaltada" : `${count} diferencias resaltadas`;
 }
 
 export const MarkdownEditor = forwardRef<
@@ -71,10 +126,38 @@ export const MarkdownEditor = forwardRef<
     resizable = true,
     onlyViewNotice,
     resolveImageSrc,
+    mode = "default",
+    compareOrientation,
+    compareContent,
+    onCompareDecision,
   },
   ref,
 ) {
-  const [source, setSource] = useState(initialContent);
+  // El modo de comparación solo se activa con orientación y contenido nuevo.
+  const requestedContent =
+    mode === "compare" &&
+    compareOrientation !== undefined &&
+    compareContent !== undefined
+      ? compareContent
+      : null;
+  const [source, setSource] = useState(requestedContent ?? initialContent);
+  const [compareState, setCompareState] = useState<CompareState>(() =>
+    requestedContent === null
+      ? { key: null, session: null }
+      : {
+          key: requestedContent,
+          session: { original: initialContent, provided: requestedContent },
+        },
+  );
+  let currentCompare = compareState;
+  if (compareState.key !== requestedContent) {
+    // Derivado de las props durante el render (patrón admitido por React).
+    currentCompare = nextCompareState(compareState, requestedContent, source);
+    setCompareState(currentCompare);
+  }
+  const session = currentCompare.session;
+  const descriptionId = useId();
+  const [providedCanonical, setProvidedCanonical] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("wysiwyg");
   const effectiveViewMode: ViewMode = onlyView ? "wysiwyg" : viewMode;
   const [linkPopover, setLinkPopover] = useState<LinkPopoverState | null>(
@@ -96,17 +179,29 @@ export const MarkdownEditor = forwardRef<
   onChangeRef.current = onChange;
   const sourceRef = useRef(source);
   sourceRef.current = source;
+  const onCompareDecisionRef = useRef(onCompareDecision);
+  onCompareDecisionRef.current = onCompareDecision;
+  const sessionRef = useRef(session);
+  sessionRef.current = session;
+  const providedCanonicalRef = useRef(providedCanonical);
+  providedCanonicalRef.current = providedCanonical;
   const resolveImageSrcRef = useRef(resolveImageSrc);
   resolveImageSrcRef.current = resolveImageSrc;
   const hasImageResolver = resolveImageSrc !== undefined;
+  const getImageResolver = useCallback(() => resolveImageSrcRef.current, []);
 
   const extensions = useMemo(
-    () =>
-      createEditorExtensions({
+    () => [
+      ...createEditorExtensions({
         sanitizeEmbeddedHtml,
-        resolveImageSrc: hasImageResolver ? () => resolveImageSrcRef.current : undefined,
+        resolveImageSrc: hasImageResolver ? getImageResolver : undefined,
       }),
-    [sanitizeEmbeddedHtml, hasImageResolver],
+      CompareHighlight.configure({
+        markClass: styles["compareMark"] ?? "",
+        blockClass: styles["compareBlock"] ?? "",
+      }),
+    ],
+    [sanitizeEmbeddedHtml, hasImageResolver, getImageResolver],
   );
 
   const editor = useEditor(
@@ -209,10 +304,121 @@ export const MarkdownEditor = forwardRef<
     onChangeRef.current?.(value);
   };
 
+  /** Carga Markdown en el editor y en el texto fuente sin notificar a `onChange`. */
+  const loadContent = (markdown: string) => {
+    sourceRef.current = markdown;
+    setSource(markdown);
+    editor?.commands.setContent(markdownToEditorContent(markdown), {
+      emitUpdate: false,
+    });
+  };
+
+  /** Devuelve el foco al panel editable (el nuevo en comparación). */
+  const focusNewPane = () => {
+    if (effectiveViewMode === "markdown") textareaRef.current?.focus();
+    else editor?.view.focus();
+  };
+
+  // Al empezar una sesión o cambiar su contenido nuevo, el panel editable pasa
+  // a mostrarlo; `providedCanonical` es su serialización (para saber si el
+  // usuario lo ha dejado igual a mano).
+  const appliedSessionRef = useRef<CompareSession | null>(session);
+  const canonicalForRef = useRef<CompareSession | null>(null);
+  useLayoutEffect(() => {
+    if (session === null) {
+      appliedSessionRef.current = null;
+      canonicalForRef.current = null;
+      setProvidedCanonical(null);
+      return;
+    }
+    if (editor === null) return;
+    if (appliedSessionRef.current !== session) {
+      loadContent(session.provided);
+      appliedSessionRef.current = session;
+    }
+    if (canonicalForRef.current !== session) {
+      canonicalForRef.current = session;
+      setProvidedCanonical(editorToMarkdown(editor));
+    }
+    // `loadContent` solo usa `editor` y refs/estado estables.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, editor]);
+
+  // El editor resalta lo distinto frente al original de la sesión; si se
+  // recrea (p. ej. cambia `onlyView`) hay que volver a indicárselo.
+  const originalMarkdown = session?.original ?? null;
+  useLayoutEffect(() => {
+    if (editor === null) return;
+    setCompareOriginal(editor, originalMarkdown);
+  }, [editor, originalMarkdown]);
+
+  const renderedSummary =
+    useEditorState({
+      editor,
+      selector: ({ editor: current }) =>
+        current === null ? NO_DIFFERENCES : getCompareSummary(current),
+      equalityFn: (a, b) =>
+        b !== null && a.changed === b.changed && a.count === b.count,
+    }) ?? NO_DIFFERENCES;
+  const textDiff = useMemo(
+    () =>
+      session !== null && effectiveViewMode === "markdown"
+        ? diffText(session.original, source)
+        : null,
+    [session, effectiveViewMode, source],
+  );
+  const summary =
+    session === null ? NO_DIFFERENCES : (textDiff?.summary ?? renderedSummary);
+  const modified =
+    session !== null &&
+    source !== session.provided &&
+    source !== providedCanonical;
+
+  /** Termina la comparación sin cambiar lo solicitado: no se reinicia sola. */
+  const endCompare = () => {
+    sessionRef.current = null;
+    setCompareState((previous) => ({ ...previous, session: null }));
+  };
+
+  const acceptChange = () => {
+    if (sessionRef.current === null) return;
+    const markdown = sourceRef.current;
+    endCompare();
+    onChangeRef.current?.(markdown);
+    onCompareDecisionRef.current?.({ decision: "accepted", markdown });
+  };
+
+  const rejectChange = () => {
+    const current = sessionRef.current;
+    if (current === null) return;
+    loadContent(current.original);
+    endCompare();
+    onChangeRef.current?.(current.original);
+    onCompareDecisionRef.current?.({
+      decision: "rejected",
+      markdown: current.original,
+    });
+  };
+
+  const restoreProvided = (moveFocus: boolean) => {
+    const current = sessionRef.current;
+    if (current === null) return;
+    loadContent(current.provided);
+    onChangeRef.current?.(current.provided);
+    if (moveFocus) focusNewPane();
+  };
+  const restoreRef = useRef(restoreProvided);
+  restoreRef.current = restoreProvided;
+
   useImperativeHandle(
     ref,
     () => ({
       reset() {
+        if (sessionRef.current !== null) {
+          // En comparación, reset() equivale a "Restaurar".
+          restoreRef.current(false);
+          return;
+        }
         const original = originalContentRef.current;
         sourceRef.current = original;
         setSource(original);
@@ -221,6 +427,14 @@ export const MarkdownEditor = forwardRef<
         });
       },
       isModified() {
+        const current = sessionRef.current;
+        if (current !== null) {
+          const content = sourceRef.current;
+          return (
+            content !== current.provided &&
+            content !== providedCanonicalRef.current
+          );
+        }
         return sourceRef.current !== originalContentRef.current;
       },
       insertMarkdown(markdown: string) {
@@ -360,6 +574,19 @@ export const MarkdownEditor = forwardRef<
     .filter(Boolean)
     .join(" ");
 
+  const orientation = compareOrientation ?? "side-to-side";
+  const panesClassName = [
+    styles["panes"],
+    session !== null ? styles["panesCompare"] : undefined,
+    session !== null
+      ? orientation === "up-and-down"
+        ? styles["upAndDown"]
+        : styles["sideToSide"]
+      : undefined,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <div
       className={rootClassName}
@@ -378,35 +605,76 @@ export const MarkdownEditor = forwardRef<
           />
         </ToolbarSlot>
       )}
+      {showToolbar && session !== null && (
+        <ToolbarSlot onFocusLost={focusNewPane}>
+          <CompareBar
+            canDecide={summary.changed}
+            modified={modified}
+            onReject={rejectChange}
+            onAccept={acceptChange}
+            onRestore={() => restoreProvided(true)}
+          />
+        </ToolbarSlot>
+      )}
       <div
-        ref={contentRef}
-        className={styles["content"]}
-        onMouseOver={handleContentMouseOver}
-        onMouseOut={handleContentMouseOut}
-        onKeyDown={handleContentKeyDown}
+        className={panesClassName}
+        {...(session !== null
+          ? { "data-compare-orientation": orientation }
+          : {})}
       >
-        {effectiveViewMode === "wysiwyg" ? (
-          <RenderedView editor={editor} />
-        ) : (
-          <MarkdownSourceView
-            ref={textareaRef}
-            value={source}
-            onChange={handleSourceChange}
-            readOnly={onlyView}
+        {session !== null && (
+          <OriginalPane
+            markdown={session.original}
+            viewMode={effectiveViewMode}
+            sanitizeEmbeddedHtml={sanitizeEmbeddedHtml}
+            {...(hasImageResolver ? { resolveImageSrc: getImageResolver } : {})}
           />
         )}
-        {tableTriggerEnabled &&
-          triggerCell !== null &&
-          triggerCell.isConnected &&
-          contentRef.current !== null && (
-            <TableCellTrigger
-              cell={triggerCell}
-              container={contentRef.current}
-              expanded={tableMenu !== null}
-              remeasureKey={source}
-              onActivate={() => openTableMenuForCell(triggerCell)}
+        <div
+          ref={contentRef}
+          className={styles["content"]}
+          {...(session !== null
+            ? {
+                role: "group",
+                "aria-label": onlyView
+                  ? "Contenido nuevo (solo lectura)"
+                  : "Contenido nuevo (editable)",
+                "aria-describedby": descriptionId,
+              }
+            : {})}
+          onMouseOver={handleContentMouseOver}
+          onMouseOut={handleContentMouseOut}
+          onKeyDown={handleContentKeyDown}
+        >
+          {effectiveViewMode === "wysiwyg" ? (
+            <RenderedView editor={editor} />
+          ) : (
+            <HighlightedSource
+              ref={textareaRef}
+              value={source}
+              onChange={handleSourceChange}
+              readOnly={onlyView}
+              ranges={session !== null ? (textDiff?.ranges ?? []) : null}
             />
           )}
+          {tableTriggerEnabled &&
+            triggerCell !== null &&
+            triggerCell.isConnected &&
+            contentRef.current !== null && (
+              <TableCellTrigger
+                cell={triggerCell}
+                container={contentRef.current}
+                expanded={tableMenu !== null}
+                remeasureKey={source}
+                onActivate={() => openTableMenuForCell(triggerCell)}
+              />
+            )}
+        </div>
+        {session !== null && (
+          <span id={descriptionId} className={styles["visuallyHidden"]}>
+            {describeDifferences(summary)}
+          </span>
+        )}
       </div>
       {linkPopover !== null && (
         <FloatingPanel anchor={linkPopover.anchor} autoFocus>

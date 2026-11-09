@@ -41,6 +41,10 @@ Sin `initialContent` el editor comienza vacío. Sin `width`/`height` usa 700×50
 | `className` | `string` | — | Clase adicional para el contenedor raíz. |
 | `onlyView` | `boolean` | `false` | Arranca en modo de solo lectura: ninguna vista es editable, la barra muestra "Edición desactivada" y conserva solo el control de exportar. |
 | `showToolbar` | `boolean` | `true` | Muestra u oculta la barra de herramientas (también la barra reducida de `onlyView`). Se puede cambiar en cualquier momento sin perder contenido, cursor ni historial. Oculta, no hay botón de vista Markdown ni Export. |
+| `mode` | `"default" \| "compare"` | `"default"` | `"compare"` muestra el contenido original y un contenido nuevo lado a lado (o arriba y abajo) con las diferencias resaltadas. Requiere también `compareOrientation` y `compareContent`; si falta alguno, se comporta como `"default"`. Ver [Modo comparación](#modo-comparación). |
+| `compareOrientation` | `"side-to-side" \| "up-and-down"` | — | Disposición de los paneles en modo `"compare"`: original a la izquierda/arriba y nuevo (editable) a la derecha/abajo, mitad y mitad. |
+| `compareContent` | `string` | — | Markdown nuevo (propuesto) del panel editable en modo `"compare"`. Es también la referencia de "Restaurar". |
+| `onCompareDecision` | `(result: { decision: "accepted" \| "rejected"; markdown: string }) => void` | — | Se invoca una vez cuando el usuario acepta o rechaza el cambio; `markdown` es el contenido resultante. El componente vuelve por sí mismo al modo normal. |
 | `resizable` | `boolean` | `true` | Permite redimensionar el componente arrastrando su esquina inferior derecha (como un `<textarea>` nativo). Con `false`, el tamaño queda fijo. |
 | `onlyViewNotice` | `string` | `"Edición desactivada"` | Texto del aviso mostrado en la barra con `onlyView` activo. Útil para mostrar, por ejemplo, el nombre del archivo. |
 | `documentId` | `string` | — | Identificador de documento de uso libre para la app consumidora. El componente lo acepta sin darle un uso propio. |
@@ -73,8 +77,8 @@ function Editor() {
 
 | Método | Devuelve | Descripción |
 | --- | --- | --- |
-| `reset()` | `void` | Restablece el contenido al valor con el que se montó el componente, en ambas vistas. |
-| `isModified()` | `boolean` | `true` si el contenido actual difiere del original. Vuelve a `false` tras `reset()`. |
+| `reset()` | `void` | Restablece el contenido al valor con el que se montó el componente, en ambas vistas. En modo comparación equivale a "Restaurar" (vuelve a `compareContent` y notifica `onChange`). |
+| `isModified()` | `boolean` | `true` si el contenido actual difiere del original. Vuelve a `false` tras `reset()`. En modo comparación es `true` exactamente cuando "Restaurar" es visible. |
 | `insertMarkdown(markdown)` | `void` | Inserta Markdown en el cursor (reemplaza la selección). En la vista Markdown inserta en la selección del textarea. Invoca `onChange`. |
 | `setMarkdown(markdown)` | `void` | Reemplaza todo el contenido como un cambio **deshacible** en la vista renderizada (Ctrl+Z restaura el anterior; en la vista Markdown se usa el deshacer nativo del textarea, que no lo incluye). No cambia la base de `isModified()`. Invoca `onChange`. |
 
@@ -111,6 +115,56 @@ si un control de la barra tenía el foco, este pasa al editor. Contenido, cursor
 deshacer y vista (renderizada/Markdown) no cambian, y alternar la prop nunca dispara `onChange`. Los
 atajos de teclado, los menús de tabla, el popover de enlaces y la API imperativa siguen funcionando.
 Mientras está oculta no hay botón de vista Markdown ni Export.
+
+### Modo comparación
+
+Con `mode="compare"`, `compareOrientation` y `compareContent`, el componente muestra el contenido
+**original** (el que tenía al empezar la comparación; en un montaje nuevo, `initialContent`) y el
+contenido **nuevo** que le pasas, para que el usuario decida qué hacer:
+
+```tsx
+<MarkdownEditor
+  initialContent={current}
+  mode="compare"
+  compareOrientation="side-to-side" // o "up-and-down"
+  compareContent={proposal}
+  onChange={(markdown) => setDraft(markdown)}
+  onCompareDecision={({ decision, markdown }) => {
+    // decision: "accepted" | "rejected"; markdown: contenido que queda en el editor
+    save(decision === "accepted" ? markdown : current);
+  }}
+/>
+```
+
+- **Paneles**: original a la izquierda (`side-to-side`) o arriba (`up-and-down`), nuevo a la derecha o
+  abajo, cada uno con la mitad del espacio. Solo el panel **nuevo** es editable (con toda la barra de
+  herramientas, atajos, menús de tabla y popover de enlaces); el original es de solo lectura. Con
+  `onlyView` ambos lo son. El botón `</>` alterna ambos paneles entre vista renderizada y código Markdown.
+- **Diferencias**: lo que en el panel nuevo es nuevo o distinto respecto del original tiene fondo amarillo
+  (`<mark>`): a nivel de palabra dentro de párrafos, encabezados, celdas y elementos de lista (también un
+  cambio solo de formato, p. ej. una palabra en negrita); elementos enteramente nuevos (párrafo, elemento de
+  lista, fila de tabla, bloque de código) se resaltan completos; en bloques de código y Mermaid, las líneas
+  cambiadas. El resaltado se recalcula al editar. Lo eliminado no se marca (se ve en el panel original). El
+  panel nuevo se describe para lectores de pantalla con el número de diferencias.
+- **Barra de comparación** (bajo la barra de herramientas): **Rechazar cambio**, **Aceptar cambio** (ambos
+  deshabilitados si no hay diferencias) y **Restaurar**, que solo aparece cuando el panel nuevo difiere de
+  `compareContent` y lo devuelve a ese contenido (notifica `onChange`). Si ocultas las barras con
+  `showToolbar={false}`, la barra de comparación se oculta también y el host debe ofrecer su propia
+  forma de decidir.
+- **Aceptar / Rechazar**: se invoca `onChange` y luego `onCompareDecision` con el Markdown resultante
+  (aceptar: el contenido actual del panel nuevo, incluidas las ediciones manuales; rechazar: el original) y
+  el componente vuelve al modo normal mostrándolo. No reinicia la comparación hasta que el host salga del
+  modo (`mode="default"`) y vuelva a entrar, o pase otro `compareContent`.
+- **En tiempo real**: puedes cambiar `mode`, `compareOrientation` o `compareContent` con el componente
+  montado. Cambiar la orientación conserva el panel nuevo (con sus ediciones); otro `compareContent`
+  reemplaza el panel nuevo y descarta las ediciones, manteniendo el original; pasar a `"default"` deja el
+  contenido del panel nuevo en el editor. Ninguno de estos cambios dispara `onChange`.
+- **`onChange` y API imperativa**: en comparación `onChange` informa del Markdown del panel nuevo.
+  `reset()` equivale a "Restaurar" e `isModified()` es `true` exactamente cuando "Restaurar" es visible.
+- **Tema**: `--mdw-compare-highlight-bg` (por defecto `#fff176`) es el color del resaltado.
+- **Límites**: sin desplazamiento sincronizado, sin aceptar/rechazar diferencias sueltas, sin navegación
+  entre diferencias. En la vista Markdown se comparan los textos tal cual, así que un Markdown no canónico
+  (p. ej. `* a` frente a `- a`) puede contar como diferencia allí y no en la vista renderizada.
 
 ### Tablas
 
@@ -220,6 +274,7 @@ variables en un selector que apunte al `className` que le pases:
 | `--mdw-table-menu-trigger-size` | `0.7em` | Longitud de cada cateto del triángulo (≈ mitad de la altura del cursor de texto) |
 | `--mdw-code-block-bg` | `var(--mdw-muted)` | Fondo de los bloques de código en la vista renderizada |
 | `--mdw-mermaid-bg` | `var(--mdw-muted)` | Fondo del contenedor donde se renderiza un diagrama Mermaid |
+| `--mdw-compare-highlight-bg` | `#fff176` | Fondo del resaltado de diferencias en el modo comparación |
 
 **Scroll:**
 

@@ -1,3 +1,16 @@
+/** Modo del componente. */
+export type EditorMode = "default" | "compare";
+
+/** Disposición de los paneles en modo de comparación. */
+export type CompareOrientation = "side-to-side" | "up-and-down";
+
+/** Resultado de aceptar o rechazar el cambio en modo de comparación. */
+export interface CompareDecision {
+  decision: "accepted" | "rejected";
+  /** Markdown que pasa a ser el contenido del componente. */
+  markdown: string;
+}
+
 export interface MarkdownEditorProps {
   /** Contenido Markdown (GFM) inicial. Vacío por defecto. */
   initialContent?: string;
@@ -22,6 +35,21 @@ export interface MarkdownEditorProps {
   showToolbar?: boolean;
   /** Texto del aviso mostrado en la barra con `onlyView`. Default: "Edición desactivada". */
   onlyViewNotice?: string;
+  /**
+   * `"default"` (edición normal) o `"compare"` (original frente a contenido nuevo). La comparación solo se
+   * activa si también se indican `compareOrientation` y `compareContent`; si no, se comporta como `"default"`.
+   * Default: `"default"`.
+   */
+  mode?: EditorMode;
+  /** Disposición de los dos paneles en modo `"compare"`: original a la izquierda/arriba, nuevo a la derecha/abajo. */
+  compareOrientation?: CompareOrientation;
+  /** Markdown nuevo (propuesto) que se muestra en el panel editable en modo `"compare"`. */
+  compareContent?: string;
+  /**
+   * Se llama una vez cuando el usuario acepta o rechaza el cambio. El componente vuelve por sí mismo
+   * al modo `"default"` mostrando `markdown`.
+   */
+  onCompareDecision?: (result: CompareDecision) => void;
   /** Identificador de documento de uso libre para la app consumidora. */
   documentId?: string;
   /** Nombre de archivo de uso libre para la app consumidora. */

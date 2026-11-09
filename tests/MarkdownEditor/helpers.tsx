@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 import { MarkdownEditor } from "../../src";
@@ -43,3 +43,53 @@ export async function placeCaretIn(element: HTMLElement): Promise<void> {
   window.getSelection()?.setBaseAndExtent(text, 0, text, 0);
   document.dispatchEvent(new Event("selectionchange"));
 }
+
+export const ORIGINAL_PANE = { name: "Contenido original (solo lectura)" };
+export const NEW_PANE = { name: "Contenido nuevo (editable)" };
+
+/** Monta el componente en modo comparación y espera a que ambos paneles existan. */
+export async function setupCompare(props: MarkdownEditorProps = {}) {
+  const onChange = vi.fn();
+  const onCompareDecision = vi.fn();
+  const merged: MarkdownEditorProps = {
+    mode: "compare",
+    compareOrientation: "side-to-side",
+    ...props,
+  };
+  const view = render(
+    <MarkdownEditor
+      onChange={onChange}
+      onCompareDecision={onCompareDecision}
+      {...merged}
+    />,
+  );
+  const update = (next: MarkdownEditorProps) =>
+    view.rerender(
+      <MarkdownEditor
+        onChange={onChange}
+        onCompareDecision={onCompareDecision}
+        {...merged}
+        {...next}
+      />,
+    );
+  const originalPane = await screen.findByRole("group", ORIGINAL_PANE);
+  const newPane = await screen.findByRole("group", { name: /^Contenido nuevo/ });
+  return { onChange, onCompareDecision, update, view, originalPane, newPane };
+}
+
+/** Textos resaltados (`<mark>`) dentro de un panel. */
+export function highlighted(pane: HTMLElement): string[] {
+  return Array.from(pane.querySelectorAll("mark")).map(
+    (mark) => mark.textContent ?? "",
+  );
+}
+
+/** Espera a que los textos resaltados de un panel sean exactamente `expected`. */
+export async function expectHighlighted(
+  pane: HTMLElement,
+  expected: string[],
+): Promise<void> {
+  await waitFor(() => expect(highlighted(pane)).toEqual(expected));
+}
+
+export { within };
