@@ -54,6 +54,8 @@ React with a table picker and syntax highlighting?" — yes, this is it.
   mounted with, `isModified()` reports whether the content differs from it — for discard-changes
   and unsaved-changes flows without remounting
 - `documentId` / `fileName` props: passive identifiers the consuming app can attach to the editor
+- `showToolbar` prop (default true): show/hide the toolbar (including the reduced `onlyView` bar) at runtime
+  without losing content, caret, undo history or view mode; toggling never fires onChange
 - `resizable` prop (default true): native CSS `resize: both` drag handle, like a `<textarea>`
 - Theming via CSS Custom Properties (no extra props): toolbar (`--mdw-toolbar-gradient-from/via/to`,
   `--mdw-toolbar-fg`, `--mdw-toolbar-font-family`, `--mdw-toolbar-select-bg`,

@@ -4,6 +4,14 @@ All notable changes to this project are documented in this file.
 
 ## Unreleased
 
+### Added
+
+- **`showToolbar` prop** (default `true`): shows or hides the toolbar (editing bar, or the reduced `onlyView`
+  bar) and can be changed at any time. Toggling never remounts the editor, never fires `onChange`, and keeps
+  content, caret, undo history and the rendered/Markdown view; open toolbar panels close without applying
+  anything and focus returns to the editor if it was on a toolbar control. While hidden, the view toggle and
+  Export are not available from the UI.
+
 ### Changed
 
 - **Table column/row menu now opens from a corner triangle.** Hovering a table cell shows a small

@@ -15,6 +15,11 @@ export interface MarkdownEditorProps {
   onlyView?: boolean;
   /** Permite redimensionar el componente arrastrando su esquina inferior derecha. Default: true. */
   resizable?: boolean;
+  /**
+   * Muestra u oculta la barra de herramientas. Se puede cambiar en cualquier momento sin
+   * perder contenido, cursor ni historial. Default: true.
+   */
+  showToolbar?: boolean;
   /** Texto del aviso mostrado en la barra con `onlyView`. Default: "Edición desactivada". */
   onlyViewNotice?: string;
   /** Identificador de documento de uso libre para la app consumidora. */

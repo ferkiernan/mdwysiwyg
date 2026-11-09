@@ -28,6 +28,7 @@ import {
 import { RenderedView } from "./views/RenderedView";
 import { MarkdownSourceView } from "./views/MarkdownSourceView";
 import { TableCellTrigger } from "./views/TableCellTrigger";
+import { ToolbarSlot } from "./views/ToolbarSlot";
 import { Toolbar } from "./Toolbar/Toolbar";
 import { LinkPopover } from "./Toolbar/buttons/LinkPopover";
 import { TableContextMenu } from "./Toolbar/buttons/TableContextMenu";
@@ -66,6 +67,7 @@ export const MarkdownEditor = forwardRef<
     sanitizeEmbeddedHtml = true,
     className,
     onlyView = false,
+    showToolbar = true,
     resizable = true,
     onlyViewNotice,
     resolveImageSrc,
@@ -363,15 +365,19 @@ export const MarkdownEditor = forwardRef<
       className={rootClassName}
       style={{ width: toCssSize(width), height: toCssSize(height) }}
     >
-      <Toolbar
-        editor={editor}
-        viewMode={effectiveViewMode}
-        onToggleView={toggleView}
-        source={source}
-        sanitizeEmbeddedHtml={sanitizeEmbeddedHtml}
-        onlyView={onlyView}
-        {...(onlyViewNotice !== undefined ? { onlyViewNotice } : {})}
-      />
+      {showToolbar && (
+        <ToolbarSlot onFocusLost={() => editor?.view.focus()}>
+          <Toolbar
+            editor={editor}
+            viewMode={effectiveViewMode}
+            onToggleView={toggleView}
+            source={source}
+            sanitizeEmbeddedHtml={sanitizeEmbeddedHtml}
+            onlyView={onlyView}
+            {...(onlyViewNotice !== undefined ? { onlyViewNotice } : {})}
+          />
+        </ToolbarSlot>
+      )}
       <div
         ref={contentRef}
         className={styles["content"]}

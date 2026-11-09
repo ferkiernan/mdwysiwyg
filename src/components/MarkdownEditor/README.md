@@ -40,6 +40,7 @@ Sin `initialContent` el editor comienza vacío. Sin `width`/`height` usa 700×50
 | `sanitizeEmbeddedHtml` | `boolean` | `true` | Sanitiza el HTML embebido antes de renderizarlo en la vista WYSIWYG (elimina `<script>`, handlers inline y demás vectores XSS). Desactivar solo con contenido de confianza. |
 | `className` | `string` | — | Clase adicional para el contenedor raíz. |
 | `onlyView` | `boolean` | `false` | Arranca en modo de solo lectura: ninguna vista es editable, la barra muestra "Edición desactivada" y conserva solo el control de exportar. |
+| `showToolbar` | `boolean` | `true` | Muestra u oculta la barra de herramientas (también la barra reducida de `onlyView`). Se puede cambiar en cualquier momento sin perder contenido, cursor ni historial. Oculta, no hay botón de vista Markdown ni Export. |
 | `resizable` | `boolean` | `true` | Permite redimensionar el componente arrastrando su esquina inferior derecha (como un `<textarea>` nativo). Con `false`, el tamaño queda fijo. |
 | `onlyViewNotice` | `string` | `"Edición desactivada"` | Texto del aviso mostrado en la barra con `onlyView` activo. Útil para mostrar, por ejemplo, el nombre del archivo. |
 | `documentId` | `string` | — | Identificador de documento de uso libre para la app consumidora. El componente lo acepta sin darle un uso propio. |
@@ -94,6 +95,22 @@ function Editor() {
 
 La barra se mantiene en una sola fila: si el espacio disponible es insuficiente, el selector de
 encabezado se encoge (hasta 30px de ancho mínimo) antes que cualquier otro control.
+
+### Mostrar y ocultar la barra
+
+`showToolbar` (por defecto `true`) permite al host mostrar u ocultar la barra en caliente:
+
+```tsx
+const [showToolbar, setShowToolbar] = useState(true);
+<MarkdownEditor showToolbar={showToolbar} />
+```
+
+Al ocultarla desaparece del layout y del árbol de accesibilidad (el área de contenido ocupa su
+espacio; el tamaño del componente no cambia), se cierran sus paneles abiertos sin aplicar acciones y,
+si un control de la barra tenía el foco, este pasa al editor. Contenido, cursor, historial de
+deshacer y vista (renderizada/Markdown) no cambian, y alternar la prop nunca dispara `onChange`. Los
+atajos de teclado, los menús de tabla, el popover de enlaces y la API imperativa siguen funcionando.
+Mientras está oculta no hay botón de vista Markdown ni Export.
 
 ### Tablas
 

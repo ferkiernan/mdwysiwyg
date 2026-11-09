@@ -123,6 +123,7 @@ Try it in your browser, no install required: **[ferkiernan.github.io/mdwysiwyg](
 | Export | Copy as Markdown or as HTML, one click |
 | Modes | Full editor (default) or read-only viewer (`onlyView`, with a configurable notice via `onlyViewNotice`) |
 | Sizing | Fixed (`width`/`height` props) or user-resizable (`resizable`, default on) |
+| Toolbar | Shown by default; hide/show it at runtime with `showToolbar` (no content, caret or undo loss) |
 | Theming | CSS Custom Properties for toolbar colors/gradient/font, per-view content color & font, table header, code block & Mermaid-diagram-area backgrounds, scrollbar colors (including the toolbar's own auto-scroll), and content-area background (solid color, gradient, or image) |
 | Imperative API | `ref` exposing `reset()` and `isModified()` for discard-changes / unsaved-warning flows |
 

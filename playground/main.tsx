@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { MarkdownEditor } from "../src";
 import type { MarkdownEditorHandle } from "../src";
 
+
 const DEMO = [
   "# Demo mdwysiwyg",
   "",
@@ -380,6 +381,7 @@ function App() {
   const [markdown, setMarkdown] = useState(DEMO);
   const editorRef = useRef<MarkdownEditorHandle>(null);
   const [modified, setModified] = useState<boolean | null>(null);
+  const [showToolbar, setShowToolbar] = useState(true);
   const [themeId, setThemeId] = useState(THEME_PRESETS[0]!.id);
   const [customVars, setCustomVars] = useState<ThemeVars>(
     THEME_PRESETS[0]!.vars,
@@ -411,8 +413,20 @@ function App() {
     <div style={{ display: "flex", flexDirection: "column", gap: 24, padding: 16 }}>
       <section>
         <h2>Editor normal (resizable por defecto)</h2>
+        <label style={{ display: "block", marginBottom: 8 }}>
+          <input
+            type="checkbox"
+            checked={showToolbar}
+            onChange={(event) => setShowToolbar(event.target.checked)}
+          />{" "}
+          Mostrar barra
+        </label>
         <div style={{ display: "flex", gap: 16 }}>
-          <MarkdownEditor initialContent={DEMO} onChange={setMarkdown} />
+          <MarkdownEditor
+            initialContent={DEMO}
+            onChange={setMarkdown}
+            showToolbar={showToolbar}
+          />
           <pre
             style={{
               flex: 1,
