@@ -61,7 +61,9 @@ React with a table picker and syntax highlighting?" — yes, this is it.
   (`--mdw-content-bg` accepting solid color/gradient/image, plus per-view
   `--mdw-content-wysiwyg-fg`/`-font-family` and `--mdw-content-markdown-fg`/`-font-family`),
   table header, code block, and Mermaid-diagram-area backgrounds (`--mdw-table-header-bg`,
-  `--mdw-code-block-bg`, `--mdw-mermaid-bg`), and
+  `--mdw-code-block-bg`, `--mdw-mermaid-bg`), the table cell menu-trigger triangle
+  (`--mdw-table-menu-trigger-color`, defaults to the scrollbar thumb color, and
+  `--mdw-table-menu-trigger-size`), and
   scrollbars (`--mdw-scrollbar-thumb`, `--mdw-scrollbar-track`) — also applied to the toolbar's
   own auto-scroll when it overflows the viewport
 - Embedded HTML sanitized by default (XSS-safe), opt-out via `sanitizeEmbeddedHtml={false}` for

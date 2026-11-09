@@ -1,9 +1,12 @@
 import {
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
   useState,
+  type KeyboardEvent,
+  type MouseEvent,
 } from "react";
 import { useEditor } from "@tiptap/react";
 import { getMarkRange, type Range } from "@tiptap/core";
@@ -24,6 +27,7 @@ import {
 } from "./markdown/trailingLine";
 import { RenderedView } from "./views/RenderedView";
 import { MarkdownSourceView } from "./views/MarkdownSourceView";
+import { TableCellTrigger } from "./views/TableCellTrigger";
 import { Toolbar } from "./Toolbar/Toolbar";
 import { LinkPopover } from "./Toolbar/buttons/LinkPopover";
 import { TableContextMenu } from "./Toolbar/buttons/TableContextMenu";
@@ -75,9 +79,10 @@ export const MarkdownEditor = forwardRef<
     null,
   );
   const [tableMenu, setTableMenu] = useState<TableMenuState | null>(null);
-  // Celda de tabla que tenía el cursor antes del clic actual: un segundo clic
-  // sobre la misma celda abre el menú en vez de solo reposicionar (FR-002).
-  const lastFocusedCellPosRef = useRef<number | null>(null);
+  // Celda de tabla bajo el puntero: sobre ella se muestra el disparador del
+  // menú de columna/fila.
+  const [hoveredCell, setHoveredCell] = useState<HTMLElement | null>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   // Valor con el que se montó el componente: referencia para reset()/
   // isModified() (FR-015, FR-016).
   const originalContentRef = useRef(initialContent);
@@ -120,40 +125,8 @@ export const MarkdownEditor = forwardRef<
             const target = event.target;
             if (!(target instanceof Element)) return false;
 
-            // --- Tabla: segundo clic sobre la celda ya enfocada abre el menú
-            const cellEl = target.closest("th, td");
-            if (cellEl !== null && view.dom.contains(cellEl)) {
-              // Un arrastre para seleccionar texto también dispara "click":
-              // con una selección no vacía, el usuario está seleccionando
-              // contenido, no pidiendo el menú contextual.
-              if (!view.state.selection.empty) {
-                lastFocusedCellPosRef.current = null;
-                return false;
-              }
-              const cellPos = view.posAtDOM(cellEl, 0);
-              if (lastFocusedCellPosRef.current === cellPos) {
-                event.preventDefault();
-                // Anclar la selección dentro de la celda: los comandos de
-                // tabla (addColumnAfter, selectedRect, …) operan sobre la
-                // posición del cursor, y `preventDefault` impide que
-                // ProseMirror la fije por su cuenta.
-                const tr = view.state.tr.setSelection(
-                  TextSelection.near(view.state.doc.resolve(cellPos + 1)),
-                );
-                view.dispatch(tr);
-                setTableMenu({
-                  kind: cellEl.tagName === "TH" ? "column" : "row",
-                  anchor: cellEl as HTMLElement,
-                });
-                return true;
-              }
-              lastFocusedCellPosRef.current = cellPos;
-              return false;
-            }
-            // Clic fuera de cualquier celda: el próximo clic en una celda
-            // cuenta como "primer clic" (edge case de la spec).
-            lastFocusedCellPosRef.current = null;
-
+            // El menú de tabla ya no se abre con clics sobre la celda: lo abre
+            // el disparador de su esquina (ver TableCellTrigger).
             const anchorEl = target.closest("a");
             if (anchorEl === null || !view.dom.contains(anchorEl)) {
               return false;
@@ -285,6 +258,74 @@ export const MarkdownEditor = forwardRef<
     closeTableMenu();
   };
 
+  const tableTriggerEnabled =
+    editor !== null && !onlyView && effectiveViewMode === "wysiwyg";
+
+  // El hover no sobrevive a un cambio de vista ni a la eliminación de la celda.
+  useEffect(() => {
+    setHoveredCell(null);
+  }, [effectiveViewMode, onlyView]);
+  useEffect(() => {
+    if (hoveredCell !== null && !hoveredCell.isConnected) setHoveredCell(null);
+  }, [hoveredCell, source]);
+
+  /**
+   * Abre el menú de columna (encabezado) o fila (celda de datos) de `cell`.
+   * Ancla la selección dentro de la celda: los comandos de tabla
+   * (addColumnAfter, selectedRect, …) operan sobre la posición del cursor.
+   */
+  const openTableMenuForCell = (cell: HTMLElement) => {
+    if (editor === null) return;
+    const { view } = editor;
+    const cellPos = view.posAtDOM(cell, 0);
+    view.dispatch(
+      view.state.tr.setSelection(
+        TextSelection.near(view.state.doc.resolve(cellPos + 1)),
+      ),
+    );
+    setTableMenu({
+      kind: cell.tagName === "TH" ? "column" : "row",
+      anchor: cell,
+    });
+  };
+
+  const handleContentMouseOver = (event: MouseEvent<HTMLDivElement>) => {
+    if (!tableTriggerEnabled || !(event.target instanceof Element)) return;
+    const cell = event.target.closest("th, td");
+    if (cell instanceof HTMLElement && cell.closest(".ProseMirror") !== null) {
+      setHoveredCell(cell);
+    }
+  };
+
+  const handleContentMouseOut = (event: MouseEvent<HTMLDivElement>) => {
+    if (!(event.target instanceof Element)) return;
+    const zone = "th, td, [data-table-menu-trigger]";
+    if (event.target.closest(zone) === null) return;
+    // Pasar de la celda a su disparador (o entre elementos de la misma zona)
+    // no cuenta como salir.
+    const next = event.relatedTarget;
+    if (next instanceof Element && next.closest(zone) !== null) return;
+    setHoveredCell(null);
+  };
+
+  const handleContentKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const opensMenu =
+      event.key === "ContextMenu" || (event.key === "F10" && event.shiftKey);
+    if (!opensMenu || !tableTriggerEnabled || editor === null) return;
+    const { node } = editor.view.domAtPos(editor.state.selection.from);
+    const element = node instanceof Element ? node : node.parentElement;
+    const cell = element?.closest("th, td");
+    if (
+      cell instanceof HTMLElement &&
+      editor.view.dom.contains(cell)
+    ) {
+      event.preventDefault();
+      openTableMenuForCell(cell);
+    }
+  };
+
+  const triggerCell = tableMenu?.anchor ?? hoveredCell;
+
   const saveLinkPopover = (newUrl: string) => {
     if (!editor || !linkPopover) return;
     editor
@@ -331,7 +372,13 @@ export const MarkdownEditor = forwardRef<
         onlyView={onlyView}
         {...(onlyViewNotice !== undefined ? { onlyViewNotice } : {})}
       />
-      <div className={styles["content"]}>
+      <div
+        ref={contentRef}
+        className={styles["content"]}
+        onMouseOver={handleContentMouseOver}
+        onMouseOut={handleContentMouseOut}
+        onKeyDown={handleContentKeyDown}
+      >
         {effectiveViewMode === "wysiwyg" ? (
           <RenderedView editor={editor} />
         ) : (
@@ -342,6 +389,18 @@ export const MarkdownEditor = forwardRef<
             readOnly={onlyView}
           />
         )}
+        {tableTriggerEnabled &&
+          triggerCell !== null &&
+          triggerCell.isConnected &&
+          contentRef.current !== null && (
+            <TableCellTrigger
+              cell={triggerCell}
+              container={contentRef.current}
+              expanded={tableMenu !== null}
+              remeasureKey={source}
+              onActivate={() => openTableMenuForCell(triggerCell)}
+            />
+          )}
       </div>
       {linkPopover !== null && (
         <FloatingPanel anchor={linkPopover.anchor} autoFocus>

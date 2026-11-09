@@ -29,6 +29,8 @@ const NEW_VARIABLES: Array<[string, string]> = [
   ["--mdw-table-header-bg", "var(--mdw-muted)"],
   ["--mdw-code-block-bg", "var(--mdw-muted)"],
   ["--mdw-mermaid-bg", "var(--mdw-muted)"],
+  ["--mdw-table-menu-trigger-size", "0.7em"],
+  ["--mdw-table-menu-trigger-color", "var(--mdw-scrollbar-thumb)"],
 ];
 
 describe("US5: theming extendido (CSS Custom Properties)", () => {
@@ -40,6 +42,23 @@ describe("US5: theming extendido (CSS Custom Properties)", () => {
       expect(style.getPropertyValue(variable).trim()).toBe(expected);
     },
   );
+
+  it("--mdw-table-menu-trigger-color es personalizable independientemente de la scrollbar", () => {
+    const cleanup = injectStyle(`
+      .mdw-trigger-theme { --mdw-table-menu-trigger-color: #ff0000; }
+    `);
+    try {
+      const { container } = render(
+        <MarkdownEditor className="mdw-trigger-theme" />,
+      );
+      const style = getComputedStyle(rootOf(container));
+      expect(
+        style.getPropertyValue("--mdw-table-menu-trigger-color").trim(),
+      ).toBe("#ff0000");
+    } finally {
+      cleanup();
+    }
+  });
 
   it("--mdw-content-wysiwyg-font-family es personalizable sobre su default heredado", () => {
     const cleanup = injectStyle(`

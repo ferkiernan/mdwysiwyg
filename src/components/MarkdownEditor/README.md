@@ -97,18 +97,23 @@ encabezado se encoge (hasta 30px de ancho mínimo) antes que cualquier otro cont
 
 ### Tablas
 
-Con el cursor ya posicionado dentro de una celda, un **segundo clic sobre esa misma celda** abre
-un menú de acciones estructurales:
+Al pasar el puntero sobre una celda aparece un pequeño **triángulo en su esquina superior
+derecha**. Un clic sobre el triángulo (el puntero cambia al de enlace) abre un menú de acciones
+estructurales:
 
 - **Celda de encabezado** → menú de columna: añadir a la derecha/izquierda, mover a la
   derecha/izquierda, eliminar esta columna.
 - **Celda de datos** → menú de fila: añadir arriba/abajo, subir/bajar esta fila, eliminar esta
   fila.
 
-El primer clic solo posiciona el cursor. Si entre ambos clics se hace clic en otra parte, el
-siguiente vuelve a contar como "primer clic". Mover una columna/fila más allá del borde de la
-tabla no tiene efecto. Si hay contenido seleccionado (por ejemplo, arrastrando el mouse sobre
-texto de la celda) el clic no abre el menú, para no interrumpir la selección.
+Las acciones se aplican a la celda cuyo triángulo se pulsó, sin necesidad de hacer clic antes en
+ella. Hacer clic de nuevo en una celda ya activa **no** abre el menú: solo reposiciona el cursor.
+Con el teclado, con el cursor dentro de una celda, la tecla **Menú contextual** o **Mayús+F10**
+abre el mismo menú. Mover una columna/fila más allá del borde de la tabla no tiene efecto. El
+triángulo no aparece con `onlyView` ni en la vista Markdown, y nunca forma parte del Markdown
+resultante. El color y el tamaño se personalizan con `--mdw-table-menu-trigger-color` (por
+defecto el de la scrollbar) y `--mdw-table-menu-trigger-size` (por defecto `0.7em`, ≈ la mitad
+de la altura del cursor de texto).
 
 ### Cursor y líneas entre bloques
 
@@ -194,6 +199,8 @@ variables en un selector que apunte al `className` que le pases:
 | Variable | Default | Controla |
 | --- | --- | --- |
 | `--mdw-table-header-bg` | `var(--mdw-muted)` | Fondo de los encabezados (`th`) de tablas en la vista renderizada |
+| `--mdw-table-menu-trigger-color` | `var(--mdw-scrollbar-thumb)` | Color del triángulo que abre el menú de columna/fila en cada celda |
+| `--mdw-table-menu-trigger-size` | `0.7em` | Longitud de cada cateto del triángulo (≈ mitad de la altura del cursor de texto) |
 | `--mdw-code-block-bg` | `var(--mdw-muted)` | Fondo de los bloques de código en la vista renderizada |
 | `--mdw-mermaid-bg` | `var(--mdw-muted)` | Fondo del contenedor donde se renderiza un diagrama Mermaid |
 

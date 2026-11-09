@@ -1,6 +1,6 @@
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { setupEditor } from "./helpers";
+import { setupEditor, openTableMenuViaTrigger } from "./helpers";
 
 describe("Principio VI: accesibilidad de los elementos interactivos", () => {
   it("todos los controles de la barra tienen nombre accesible", async () => {
@@ -104,8 +104,7 @@ describe("Principio VI: accesibilidad de los elementos interactivos", () => {
     const tableMd = ["| A | B |", "| - | - |", "| 1 | 2 |", ""].join("\n");
     const { pm } = await setupEditor({ initialContent: tableMd });
     const th = pm.querySelector("th") as HTMLElement;
-    await userEvent.click(th);
-    await userEvent.click(th);
+    await openTableMenuViaTrigger(th);
 
     const menu = await screen.findByRole("menu", {
       name: "Acciones de columna",

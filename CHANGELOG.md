@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented in this file.
 
+## Unreleased
+
+### Changed
+
+- **Table column/row menu now opens from a corner triangle.** Hovering a table cell shows a small
+  right-angled triangle in its top-right corner (link pointer on hover); a single click on it opens the same
+  column (header) / row (data) menu as before, for that cell. The "second click on the active cell" gesture
+  is removed: it now just moves the caret. The menu is also reachable from the keyboard
+  (`ContextMenu` key or `Shift+F10` with the caret in a cell). The triangle is not shown with `onlyView` or in
+  the Markdown view and is never part of the Markdown output.
+- New theming custom properties: `--mdw-table-menu-trigger-color` (default `var(--mdw-scrollbar-thumb)`) and
+  `--mdw-table-menu-trigger-size` (default `0.7em`).
+- Links inside table cells now open the link popover on click (the removed second-click handler used to
+  swallow those clicks).
+
 ## 0.3.1
 
 ### Fixed

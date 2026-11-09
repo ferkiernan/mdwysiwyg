@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { setupEditor, selectAll } from "./helpers";
+import { setupEditor, openTableMenuViaTrigger } from "./helpers";
 
 const TABLE_MD = [
   "| A | B |",
@@ -21,45 +21,10 @@ function dataCell(pm: HTMLElement, index: number): HTMLElement {
 }
 
 describe("US2: menú de fila (celda de datos)", () => {
-  it("el primer clic sobre una celda de datos no abre el menú", async () => {
-    const { pm } = await setupEditor({ initialContent: TABLE_MD });
-    await userEvent.click(dataCell(pm, 0));
-
-    expect(screen.queryByRole("menu", MENU)).toBeNull();
-  });
-
-  it("el segundo clic sobre la misma celda abre el menú con las 5 acciones en orden", async () => {
-    const { pm } = await setupEditor({ initialContent: TABLE_MD });
-    const cell = dataCell(pm, 0);
-    await userEvent.click(cell);
-    await userEvent.click(cell);
-
-    await screen.findByRole("menu", MENU);
-    const items = screen.getAllByRole("menuitem");
-    expect(items.map((item) => item.textContent)).toEqual([
-      "Añadir fila arriba",
-      "Añadir fila abajo",
-      "Subir esta fila",
-      "Bajar esta fila",
-      "Eliminar esta fila",
-    ]);
-  });
-
-  it("con contenido seleccionado (arrastre) el segundo clic no abre el menú", async () => {
-    const { pm } = await setupEditor({ initialContent: TABLE_MD });
-    const cell = dataCell(pm, 0);
-    await userEvent.click(cell);
-    selectAll(pm);
-    await userEvent.click(cell);
-
-    expect(screen.queryByRole("menu", MENU)).toBeNull();
-  });
-
   it("'Añadir fila abajo' inserta una fila nueva", async () => {
     const { pm } = await setupEditor({ initialContent: TABLE_MD });
     const cell = dataCell(pm, 0);
-    await userEvent.click(cell);
-    await userEvent.click(cell);
+    await openTableMenuViaTrigger(cell);
     await userEvent.click(
       screen.getByRole("menuitem", { name: "Añadir fila abajo" }),
     );
@@ -71,8 +36,7 @@ describe("US2: menú de fila (celda de datos)", () => {
   it("'Eliminar esta fila' elimina la fila completa", async () => {
     const { onChange, pm } = await setupEditor({ initialContent: TABLE_MD });
     const cell = dataCell(pm, 0);
-    await userEvent.click(cell);
-    await userEvent.click(cell);
+    await openTableMenuViaTrigger(cell);
     await userEvent.click(
       screen.getByRole("menuitem", { name: "Eliminar esta fila" }),
     );
@@ -85,8 +49,7 @@ describe("US2: menú de fila (celda de datos)", () => {
   it("'Bajar esta fila' intercambia con la fila siguiente", async () => {
     const { pm } = await setupEditor({ initialContent: TABLE_MD });
     const cell = dataCell(pm, 0);
-    await userEvent.click(cell);
-    await userEvent.click(cell);
+    await openTableMenuViaTrigger(cell);
     await userEvent.click(
       screen.getByRole("menuitem", { name: "Bajar esta fila" }),
     );
@@ -98,8 +61,7 @@ describe("US2: menú de fila (celda de datos)", () => {
   it("subir la primera fila de datos no la mueve al encabezado", async () => {
     const { pm } = await setupEditor({ initialContent: TABLE_MD });
     const cell = dataCell(pm, 0);
-    await userEvent.click(cell);
-    await userEvent.click(cell);
+    await openTableMenuViaTrigger(cell);
     await userEvent.click(
       screen.getByRole("menuitem", { name: "Subir esta fila" }),
     );

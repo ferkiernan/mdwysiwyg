@@ -23,6 +23,8 @@
   --mdw-table-header-bg: var(--mdw-muted);
   --mdw-code-block-bg: var(--mdw-muted);
   --mdw-mermaid-bg: var(--mdw-muted);
+  --mdw-table-menu-trigger-size: 0.7em;
+  --mdw-table-menu-trigger-color: var(--mdw-scrollbar-thumb);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -49,6 +51,7 @@
 }
 
 .content {
+  position: relative;
   flex: 1;
   min-height: 0;
   overflow: auto;
@@ -143,6 +146,31 @@
 
 .content :global(.ProseMirror th) {
   background: var(--mdw-table-header-bg);
+}
+
+/* Disparador del menú de tabla: botón superpuesto (fuera del documento) sobre
+   la esquina superior derecha de la celda. La forma triangular se define abajo. */
+.tableMenuTrigger {
+  position: absolute;
+  z-index: 1;
+  padding: 0;
+  border: 0;
+  font-size: inherit;
+  /* Triángulo rectángulo con el ángulo recto en la esquina superior derecha;
+     los catetos miden ~la mitad de la altura del cursor de texto (0.7em). */
+  width: var(--mdw-table-menu-trigger-size);
+  height: var(--mdw-table-menu-trigger-size);
+  background: var(--mdw-table-menu-trigger-color);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  cursor: pointer;
+  /* `left` es el borde derecho de la celda: el botón se extiende hacia dentro. */
+  transform: translateX(-100%);
+}
+
+/* clip-path recorta también el contorno: el foco se marca con un halo. */
+.tableMenuTrigger:focus-visible {
+  outline: none;
+  filter: drop-shadow(0 0 2px var(--mdw-accent));
 }
 
 /* Cursor de hueco entre bloques: hereda el color del texto del tema. */
