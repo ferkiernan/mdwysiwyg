@@ -367,9 +367,99 @@
   scrollbar-color: var(--mdw-scrollbar-thumb) var(--mdw-scrollbar-track);
 }
 
-/* Segunda barra (comparación): bajo la principal, con una línea de separación. */
-.compareBar {
+/* Segunda barra (comparación o historial): bajo la principal, con una línea de separación. */
+.compareBar,
+.historyBar {
   border-top: 1px solid #fff;
+}
+
+/* Undo/Redo no disponibles: se mantienen enfocables (aria-disabled, no disabled). */
+.button[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.button[aria-disabled="true"]:hover {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* Envoltorio del modo historial: sin caja mientras está cerrado; abierto reparte
+   documento (izquierda) y lista de versiones (derecha). */
+.historyLayout {
+  display: contents;
+}
+
+.historyLayoutOpen {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+}
+
+.historyLayoutOpen > .content {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.versionList {
+  flex: 0 0 auto;
+  width: 8.5em;
+  min-height: 0;
+  overflow-y: auto;
+  border-left: 1px solid var(--mdw-border);
+  background: var(--mdw-muted);
+  color: var(--mdw-fg);
+  scrollbar-color: var(--mdw-scrollbar-thumb) var(--mdw-scrollbar-track);
+}
+
+.versionItems {
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+}
+
+.versionRow {
+  margin: 0;
+  padding: 0;
+}
+
+.versionItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  margin: 0;
+  padding: 3px 8px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+  cursor: pointer;
+}
+
+.versionItem:hover {
+  background: var(--mdw-button-hover-gradient-to);
+}
+
+.versionItem:focus-visible {
+  outline: 2px solid var(--mdw-accent);
+  outline-offset: -2px;
+}
+
+.versionCurrent {
+  font-weight: 700;
+  background: var(--mdw-button-active-bg);
+}
+
+.versionMarker {
+  display: inline-block;
+  width: 0.8em;
+  font-size: 0.7em;
 }
 
 .readOnlyNotice {

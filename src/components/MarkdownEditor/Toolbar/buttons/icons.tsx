@@ -4,6 +4,17 @@ type IconProps = SVGProps<SVGSVGElement>;
 
 const base = { viewBox: "0 0 24 24", "aria-hidden": true } as const;
 
+/** Reloj con una flecha circular en sentido antihorario (historial de versiones). */
+export function IconHistory(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1" />
+      <path d="M3.5 4.5v4.5h4.5" />
+      <path d="M12 7.5V12l3 2" />
+    </svg>
+  );
+}
+
 export function IconCode(props: IconProps) {
   return (
     <svg {...base} {...props}>

@@ -63,6 +63,18 @@ React with a table picker and syntax highlighting?" — yes, this is it.
   "Restaurar" (only when the new pane differs from `compareContent`); accept/reject call `onChange` and
   `onCompareDecision({ decision: "accepted" | "rejected", markdown })` and the control returns to default
   mode. The bar follows `showToolbar`. `reset()` = Restaurar, `isModified()` = Restaurar visible
+- Compare scroll sync: `compareSyncScroll` prop (default true). In `mode="compare"` scrolling either pane scrolls
+  the other to the matching content (top edge of the scrolled pane; the pane scrolled last leads). Matching reuses
+  the diff: paired blocks in the rendered view, identical lines in the Markdown view; passages present on one side
+  only are crossed proportionally; with no common content it is proportional; top/bottom map to top/bottom.
+  Vertical only, no animation; typing in the new pane never moves it. `false` = independent panes
+- Version history: opt-in `historyUndo` prop (default false). A version of the Markdown is saved after 3 s
+  without changes (max 200, in memory only). A clock icon right after the HTML button of the toolbar (default mode only)
+  opens history mode: a bar with Undo / Redo / Confirm / Cancel (back to last version) under the toolbar and a right-hand list of
+  versions with their time (click an entry to jump to that version); the document is read-only while browsing and `onChange` is not called. Confirm
+  keeps the shown version (notifies once if it differs from the content at entry, appended as newest version);
+  Cancel (back to last version) restores the content at entry. Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z / Ctrl+Y act as Undo / Redo
+  while open. Closes without applying on prop off, `onlyView`, compare mode or `showToolbar={false}`
 - `resizable` prop (default true): native CSS `resize: both` drag handle, like a `<textarea>`
 - Theming via CSS Custom Properties (no extra props): toolbar (`--mdw-toolbar-gradient-from/via/to`,
   `--mdw-toolbar-fg`, `--mdw-toolbar-font-family`, `--mdw-toolbar-select-bg`,

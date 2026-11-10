@@ -45,6 +45,8 @@ Sin `initialContent` el editor comienza vacío. Sin `width`/`height` usa 700×50
 | `compareOrientation` | `"side-to-side" \| "up-and-down"` | — | Disposición de los paneles en modo `"compare"`: original a la izquierda/arriba y nuevo (editable) a la derecha/abajo, mitad y mitad. |
 | `compareContent` | `string` | — | Markdown nuevo (propuesto) del panel editable en modo `"compare"`. Es también la referencia de "Restaurar". |
 | `onCompareDecision` | `(result: { decision: "accepted" \| "rejected"; markdown: string }) => void` | — | Se invoca una vez cuando el usuario acepta o rechaza el cambio; `markdown` es el contenido resultante. El componente vuelve por sí mismo al modo normal. |
+| `historyUndo` | `boolean` | `false` | Activa el historial de versiones: se guarda una versión tras 3 s sin cambios y un icono tras el botón HTML de la barra abre el modo historial (Undo / Redo / Confirm / Cancel (back to last version) y una lista de versiones con su hora). Solo en modo `"default"` y sin `onlyView`. Se puede cambiar en cualquier momento. Ver [Historial de versiones](#historial-de-versiones). |
+| `compareSyncScroll` | `boolean` | `true` | En modo `"compare"`, mantiene los dos paneles sobre el mismo contenido al desplazarse (ver «Desplazamiento sincronizado»). Con `false` se desplazan por separado. Se puede cambiar en cualquier momento. |
 | `resizable` | `boolean` | `true` | Permite redimensionar el componente arrastrando su esquina inferior derecha (como un `<textarea>` nativo). Con `false`, el tamaño queda fijo. |
 | `onlyViewNotice` | `string` | `"Edición desactivada"` | Texto del aviso mostrado en la barra con `onlyView` activo. Útil para mostrar, por ejemplo, el nombre del archivo. |
 | `documentId` | `string` | — | Identificador de documento de uso libre para la app consumidora. El componente lo acepta sin darle un uso propio. |
@@ -162,9 +164,57 @@ contenido **nuevo** que le pasas, para que el usuario decida qué hacer:
 - **`onChange` y API imperativa**: en comparación `onChange` informa del Markdown del panel nuevo.
   `reset()` equivale a "Restaurar" e `isModified()` es `true` exactamente cuando "Restaurar" es visible.
 - **Tema**: `--mdw-compare-highlight-bg` (por defecto `#fff176`) es el color del resaltado.
-- **Límites**: sin desplazamiento sincronizado, sin aceptar/rechazar diferencias sueltas, sin navegación
+- **Desplazamiento sincronizado** (`compareSyncScroll`, por defecto `true`): al desplazar un panel, el otro
+  muestra el contenido que corresponde al borde superior del panel que se mueve. La correspondencia sale de
+  las mismas diferencias que se resaltan (vista renderizada: bloques idénticos o muy parecidos; vista
+  Markdown: líneas idénticas, medidas con su ajuste de línea), así que los bloques añadidos o eliminados
+  antes no desalinean los paneles. Un tramo que solo existe en un lado se recorre de forma proporcional hasta
+  el siguiente contenido común; sin contenido común se sigue el progreso proporcional, y arriba/abajo de un
+  panel llevan al otro arriba/abajo. Guía el panel que se desplazó en último lugar (rueda, barra, teclado o
+  cursor al escribir); escribir en el panel nuevo nunca lo mueve. Solo es vertical, funciona en ambas
+  orientaciones y vistas, no usa animación y se recoloca al cambiar el contenido, la vista, la orientación o
+  el tamaño. Con `compareSyncScroll={false}` los paneles son independientes; al volver a activarla el otro
+  panel se alinea con el que se desplazó en último lugar. No altera contenido, cursor ni `onChange`.
+- **Límites**: sin aceptar/rechazar diferencias sueltas, sin navegación
   entre diferencias. En la vista Markdown se comparan los textos tal cual, así que un Markdown no canónico
   (p. ej. `* a` frente a `- a`) puede contar como diferencia allí y no en la vista renderizada.
+
+### Historial de versiones
+
+Con `historyUndo` (por defecto `false`) el componente guarda versiones del documento y permite recorrerlas:
+
+```tsx
+<MarkdownEditor historyUndo onChange={save} />
+```
+
+- **Versiones**: la primera es el contenido al empezar a grabar. Tras cualquier cambio y 3 s de inactividad se
+  guarda una nueva versión con su hora; una ráfaga de cambios con pausas menores de 3 s genera una sola, y no
+  se guarda si el contenido es igual a la última. Se conservan como máximo 200 (se descartan las más
+  antiguas). Viven en memoria: no se persisten y se pierden al desmontar el componente.
+- **Icono**: un reloj con flecha antihoraria, situado justo tras el botón HTML (Export queda aparte, a la derecha). Solo con
+  `historyUndo`, en modo `"default"`, sin `onlyView` y con la barra visible. Al pulsarlo se guarda antes
+  cualquier cambio pendiente y se abre el **modo historial**; volver a pulsarlo equivale a **Cancel (back to last version)**.
+- **Modo historial**: aparece una barra bajo la barra de herramientas con **← Undo**, **Redo →**,
+  **Confirm** y **Cancel (back to last version)**, y a la derecha una lista de versiones (la más reciente arriba) con su
+  hora `hh:mm:ss`; la versión mostrada se marca (negrita y viñeta) y se mantiene a la vista. Pulsar una
+  entrada (ratón, Enter o Espacio) lleva a esa versión y muestra su contenido; Undo/Redo siguen desde ahí. Undo/Redo
+  cambian el documento a la versión anterior/siguiente en cualquier vista (rendered o Markdown) sin llamar a
+  `onChange`. Están deshabilitados (`aria-disabled`, el foco no se pierde) en la primera/última versión.
+  `Ctrl/Cmd+Z` es Undo y `Ctrl/Cmd+Shift+Z` o `Ctrl+Y` es Redo mientras el modo está abierto.
+- **Solo lectura**: mientras se recorre el historial el documento no se puede modificar (teclado, barra,
+  menú de tabla, popover de enlaces); el botón de vista Markdown y Export siguen disponibles.
+- **Confirm**: conserva la versión mostrada y cierra el modo. Llama a `onChange` una vez si difiere del
+  contenido que había al abrir; si difiere de la última versión se añade como la más reciente (las versiones
+  posteriores se conservan: el historial nunca se reescribe).
+- **Cancel (back to last version)**: restaura exactamente el contenido que había al abrir el modo, sin llamar a `onChange`.
+- **Cierres forzados** (equivalen a Cancel (back to last version)): `historyUndo` pasa a `false` (además se descartan las
+  versiones), `onlyView`, comenzar un modo `"compare"` (la comparación usa el contenido previo como original),
+  ocultar la barra con `showToolbar={false}`, y las llamadas imperativas `setMarkdown`, `insertMarkdown` y
+  `reset` (que se aplican después). Con el modo abierto, `isModified()` compara el contenido previo.
+- **Accesibilidad**: el icono es un botón con `aria-pressed`; la barra es un `toolbar` etiquetado; la lista es
+  una `nav` con `aria-current` en la versión mostrada y una región `status` anuncia «Versión n de m — hora».
+- **Límites**: plazo (3 s) y tope (200) fijos; sin persistencia, sin nombrar ni comparar versiones. El deshacer nativo del editor (`Ctrl+Z` fuera del modo historial) es
+  independiente de este historial.
 
 ### Tablas
 

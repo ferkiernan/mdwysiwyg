@@ -8,6 +8,13 @@ import type {
   MarkdownEditorHandle,
 } from "../src";
 
+// Relleno para que ambos paneles tengan que desplazarse (prueba del desplazamiento sincronizado).
+const COMPARE_FILLER = Array.from(
+  { length: 24 },
+  (_, index) =>
+    `Párrafo de relleno ${index + 1}: texto largo para comprobar que al desplazar un panel el otro muestra el mismo contenido.\n`,
+);
+
 const COMPARE_ORIGINAL = [
   "# Informe",
   "",
@@ -20,6 +27,7 @@ const COMPARE_ORIGINAL = [
   "| --- | --- |",
   "| Diseño | Hecho |",
   "",
+  ...COMPARE_FILLER,
 ].join("\n");
 
 const COMPARE_PROPOSED = [
@@ -38,6 +46,11 @@ const COMPARE_PROPOSED = [
   "| Diseño | Hecho |",
   "| Pruebas | Pendiente |",
   "",
+  "Sección nueva antes del relleno.",
+  "",
+  "Otro párrafo añadido por la propuesta.",
+  "",
+  ...COMPARE_FILLER,
 ].join("\n");
 
 /** Demo del modo de comparación: modo, orientación, contenido nuevo y registro de decisiones. */
@@ -46,6 +59,7 @@ function CompareDemo({ showToolbar }: { showToolbar: boolean }) {
   const [orientation, setOrientation] =
     useState<CompareOrientation>("side-to-side");
   const [proposed, setProposed] = useState(COMPARE_PROPOSED);
+  const [syncScroll, setSyncScroll] = useState(true);
   const [log, setLog] = useState<string[]>([]);
 
   const record = (result: CompareDecision) =>
@@ -79,6 +93,14 @@ function CompareDemo({ showToolbar }: { showToolbar: boolean }) {
             <option value="up-and-down">up-and-down</option>
           </select>
         </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={syncScroll}
+            onChange={(event) => setSyncScroll(event.target.checked)}
+          />{" "}
+          Desplazamiento sincronizado (compareSyncScroll)
+        </label>
       </div>
       <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
         Contenido nuevo (compareContent)
@@ -94,6 +116,7 @@ function CompareDemo({ showToolbar }: { showToolbar: boolean }) {
         mode={mode}
         compareOrientation={orientation}
         compareContent={proposed}
+        compareSyncScroll={syncScroll}
         onCompareDecision={record}
         showToolbar={showToolbar}
         height={560}
@@ -484,6 +507,7 @@ function App() {
   const editorRef = useRef<MarkdownEditorHandle>(null);
   const [modified, setModified] = useState<boolean | null>(null);
   const [showToolbar, setShowToolbar] = useState(true);
+  const [historyUndo, setHistoryUndo] = useState(true);
   const [themeId, setThemeId] = useState(THEME_PRESETS[0]!.id);
   const [customVars, setCustomVars] = useState<ThemeVars>(
     THEME_PRESETS[0]!.vars,
@@ -523,11 +547,20 @@ function App() {
           />{" "}
           Mostrar barra
         </label>
+        <label style={{ display: "block", marginBottom: 8 }}>
+          <input
+            type="checkbox"
+            checked={historyUndo}
+            onChange={(event) => setHistoryUndo(event.target.checked)}
+          />{" "}
+          Historial de versiones (historyUndo)
+        </label>
         <div style={{ display: "flex", gap: 16 }}>
           <MarkdownEditor
             initialContent={DEMO}
             onChange={setMarkdown}
             showToolbar={showToolbar}
+            historyUndo={historyUndo}
           />
           <pre
             style={{

@@ -169,6 +169,98 @@ function similarity(
   return total === 0 ? 1 : (2 * matched) / total;
 }
 
+interface PairingHandlers {
+  /** Unidades idénticas (coincidencia exacta). */
+  exact(oldIndex: number, newIndex: number): void;
+  /** Unidades parecidas emparejadas dentro de un hueco, con sus palabras comunes. */
+  paired(oldIndex: number, newIndex: number, tokenPairs: Array<[number, number]>): void;
+  /** Unidad actual sin contraparte. */
+  added(newIndex: number): void;
+  /** Unidad original sin contraparte. */
+  removed(oldIndex: number): void;
+}
+
+/**
+ * Empareja las unidades originales con las actuales: coincidencias exactas por
+ * bloque (Myers) y, dentro de cada hueco, emparejado en orden por similitud de
+ * palabras. Informa de cada resultado a `handlers`.
+ */
+function walkPairing(
+  oldUnits: readonly Unit[],
+  newUnits: readonly Unit[],
+  handlers: PairingHandlers,
+): void {
+  const exact = matchSequences(
+    oldUnits.map((unit) => unit.key),
+    newUnits.map((unit) => unit.key),
+  );
+
+  const pairGap = (oldFrom: number, oldTo: number, newFrom: number, newTo: number) => {
+    const withinBudget = (oldTo - oldFrom) * (newTo - newFrom) <= MAX_PAIR_CHECKS;
+    let pointer = oldFrom;
+    const usedOld = new Set<number>();
+
+    for (let n = newFrom; n < newTo; n++) {
+      const newUnit = newUnits[n] as Unit;
+      let paired = false;
+      if (withinBudget && !newUnit.isLeaf) {
+        for (let o = pointer; o < oldTo; o++) {
+          const oldUnit = oldUnits[o] as Unit;
+          if (oldUnit.typeName !== newUnit.typeName) continue;
+          const pairs = matchSequences(
+            oldUnit.tokens.map((token) => token.key),
+            newUnit.tokens.map((token) => token.key),
+            300,
+          );
+          if (
+            similarity(pairs.length, oldUnit.tokens.length, newUnit.tokens.length) >=
+            SIMILARITY_THRESHOLD
+          ) {
+            handlers.paired(o, n, pairs);
+            usedOld.add(o);
+            pointer = o + 1;
+            paired = true;
+            break;
+          }
+        }
+      }
+      if (!paired) handlers.added(n);
+    }
+
+    for (let o = oldFrom; o < oldTo; o++) {
+      if (!usedOld.has(o)) handlers.removed(o);
+    }
+  };
+
+  let oldIndex = 0;
+  let newIndex = 0;
+  for (const [i, j] of [...exact, [oldUnits.length, newUnits.length] as [number, number]]) {
+    pairGap(oldIndex, i, newIndex, j);
+    if (i < oldUnits.length && j < newUnits.length) handlers.exact(i, j);
+    oldIndex = i + 1;
+    newIndex = j + 1;
+  }
+}
+
+/**
+ * Correspondencia entre las unidades originales y las actuales, en orden de
+ * documento: `[índice original, índice actual]` para cada pareja (idénticas o
+ * parecidas). Es la base de la sincronización del desplazamiento.
+ */
+export function pairUnits(
+  originalUnits: readonly Unit[],
+  currentUnits: readonly Unit[],
+): Array<[number, number]> {
+  const pairs: Array<[number, number]> = [];
+  walkPairing(originalUnits, currentUnits, {
+    exact: (i, j) => pairs.push([i, j]),
+    paired: (i, j) => pairs.push([i, j]),
+    added: () => undefined,
+    removed: () => undefined,
+  });
+  return pairs.sort((a, b) => a[0] - b[0]);
+}
+
 /**
  * Compara el documento original (ya reducido a unidades) con el actual y
  * calcula qué resaltar en el actual (ver research §5): coincidencias exactas por
@@ -180,12 +272,7 @@ export function diffDocs(
   originalUnits: readonly Unit[],
   current: CollectedUnits,
 ): DocDiff {
-  const oldUnits = originalUnits;
   const newUnits = current.units;
-  const exact = matchSequences(
-    oldUnits.map((unit) => unit.key),
-    newUnits.map((unit) => unit.key),
-  );
 
   const marks: Array<[number, number]> = [];
   const blocks: Array<[number, number]> = [];
@@ -224,50 +311,15 @@ export function diffDocs(
     });
   };
 
-  const pairGap = (oldFrom: number, oldTo: number, newFrom: number, newTo: number) => {
-    const withinBudget = (oldTo - oldFrom) * (newTo - newFrom) <= MAX_PAIR_CHECKS;
-    let pointer = oldFrom;
-    const usedOld = new Set<number>();
-
-    for (let n = newFrom; n < newTo; n++) {
-      const newUnit = newUnits[n] as Unit;
-      let paired = false;
-      if (withinBudget && !newUnit.isLeaf) {
-        for (let o = pointer; o < oldTo; o++) {
-          const oldUnit = oldUnits[o] as Unit;
-          if (oldUnit.typeName !== newUnit.typeName) continue;
-          const pairs = matchSequences(
-            oldUnit.tokens.map((token) => token.key),
-            newUnit.tokens.map((token) => token.key),
-            300,
-          );
-          if (
-            similarity(pairs.length, oldUnit.tokens.length, newUnit.tokens.length) >=
-            SIMILARITY_THRESHOLD
-          ) {
-            markPaired(oldUnit, newUnit, pairs);
-            usedOld.add(o);
-            pointer = o + 1;
-            paired = true;
-            break;
-          }
-        }
-      }
-      if (!paired) markAdded(newUnit);
-    }
-
-    for (let o = oldFrom; o < oldTo; o++) {
-      if (!usedOld.has(o)) changed = true;
-    }
-  };
-
-  let oldIndex = 0;
-  let newIndex = 0;
-  for (const [i, j] of [...exact, [oldUnits.length, newUnits.length] as [number, number]]) {
-    pairGap(oldIndex, i, newIndex, j);
-    oldIndex = i + 1;
-    newIndex = j + 1;
-  }
+  walkPairing(originalUnits, newUnits, {
+    exact: () => undefined,
+    paired: (o, n, pairs) =>
+      markPaired(originalUnits[o] as Unit, newUnits[n] as Unit, pairs),
+    added: (n) => markAdded(newUnits[n] as Unit),
+    removed: () => {
+      changed = true;
+    },
+  });
 
   for (const container of current.containers) {
     if (container.total > 0 && container.added === container.total) {

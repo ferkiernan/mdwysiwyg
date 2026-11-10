@@ -11,7 +11,7 @@ import {
   type KeyboardEvent,
   type MouseEvent,
 } from "react";
-import { useEditor, useEditorState } from "@tiptap/react";
+import { useEditor, useEditorState, type Editor } from "@tiptap/react";
 import { getMarkRange, type Range } from "@tiptap/core";
 import { TextSelection } from "@tiptap/pm/state";
 import {
@@ -36,7 +36,12 @@ import {
 import { diffText, type DiffSummary } from "./compare/textDiff";
 import { CompareBar } from "./compare/CompareBar";
 import { OriginalPane } from "./compare/OriginalPane";
+import { useCompareScrollSync } from "./compare/scrollSync/useCompareScrollSync";
 import { HighlightedSource } from "./compare/HighlightedSource";
+import { historyReducer } from "./history/versionHistory";
+import { useVersionHistory } from "./history/useVersionHistory";
+import { HistoryBar } from "./history/HistoryBar";
+import { VersionList, formatVersionTime } from "./history/VersionList";
 import { RenderedView } from "./views/RenderedView";
 import { TableCellTrigger } from "./views/TableCellTrigger";
 import { ToolbarSlot } from "./views/ToolbarSlot";
@@ -130,9 +135,15 @@ export const MarkdownEditor = forwardRef<
     compareOrientation,
     compareContent,
     onCompareDecision,
+    historyUndo = false,
+    compareSyncScroll = true,
   },
   ref,
 ) {
+  // Contenido que tenía el documento al abrir el modo historial (o `null`):
+  // si empieza una comparación con el modo historial abierto, el original es ese
+  // contenido y no la versión que se esté mostrando.
+  const historyEntryRef = useRef<string | null>(null);
   // El modo de comparación solo se activa con orientación y contenido nuevo.
   const requestedContent =
     mode === "compare" &&
@@ -152,10 +163,24 @@ export const MarkdownEditor = forwardRef<
   let currentCompare = compareState;
   if (compareState.key !== requestedContent) {
     // Derivado de las props durante el render (patrón admitido por React).
-    currentCompare = nextCompareState(compareState, requestedContent, source);
+    currentCompare = nextCompareState(
+      compareState,
+      requestedContent,
+      historyEntryRef.current ?? source,
+    );
     setCompareState(currentCompare);
   }
   const session = currentCompare.session;
+  const historyAvailable = historyUndo && !onlyView && session === null;
+  const { state: history, dispatch: dispatchHistory } = useVersionHistory({
+    recording: historyAvailable,
+    source,
+  });
+  historyEntryRef.current = history.entry;
+  const historyOpen =
+    history.viewed !== null && historyAvailable && showToolbar;
+  const historyRef = useRef(history);
+  historyRef.current = history;
   const descriptionId = useId();
   const [providedCanonical, setProvidedCanonical] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("wysiwyg");
@@ -168,6 +193,9 @@ export const MarkdownEditor = forwardRef<
   // menú de columna/fila.
   const [hoveredCell, setHoveredCell] = useState<HTMLElement | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  // Panel original (modo comparación) y su editor, para sincronizar el desplazamiento.
+  const originalPaneRef = useRef<HTMLDivElement>(null);
+  const [originalEditor, setOriginalEditor] = useState<Editor | null>(null);
   // Valor con el que se montó el componente: referencia para reset()/
   // isModified() (FR-015, FR-016).
   const originalContentRef = useRef(initialContent);
@@ -207,7 +235,13 @@ export const MarkdownEditor = forwardRef<
   const editor = useEditor(
     {
       extensions,
-      content: markdownToEditorContent(sourceRef.current),
+      // Si el modo historial está a punto de cerrarse a la fuerza, un editor
+      // recreado (p. ej. por `onlyView`) nace ya con el contenido previo.
+      content: markdownToEditorContent(
+        history.viewed !== null && !historyOpen && history.entry !== null
+          ? history.entry
+          : sourceRef.current,
+      ),
       editable: !onlyView,
       editorProps: {
         attributes: {
@@ -319,6 +353,102 @@ export const MarkdownEditor = forwardRef<
     else editor?.view.focus();
   };
 
+  // --- Historial de versiones -------------------------------------------
+
+  /** Abre el modo historial mostrando la versión más reciente. */
+  const openHistory = () => {
+    dispatchHistory({
+      type: "open",
+      markdown: sourceRef.current,
+      now: Date.now(),
+    });
+  };
+
+  /** Muestra la versión anterior (-1) o siguiente (1) sin notificar a `onChange`. */
+  const moveVersion = (direction: -1 | 1) => {
+    const current = historyRef.current;
+    if (current.viewed === null) return;
+    const target = current.versions[current.viewed + direction];
+    if (target === undefined) return;
+    dispatchHistory({ type: direction < 0 ? "undo" : "redo" });
+    loadContent(target.markdown);
+  };
+
+  /** Muestra la versión elegida en la lista sin notificar a `onChange`. */
+  const selectVersion = (index: number) => {
+    const current = historyRef.current;
+    if (current.viewed === null || index === current.viewed) return;
+    const target = current.versions[index];
+    if (target === undefined) return;
+    dispatchHistory({ type: "select", index });
+    loadContent(target.markdown);
+  };
+
+  /**
+   * Cierra el modo historial devolviendo el documento al contenido que tenía al
+   * abrirlo. Sin notificar a `onChange`. Es el cierre de "Cancel (back to last
+   * version)" y de todos los cierres forzados.
+   */
+  const closeHistory = () => {
+    const current = historyRef.current;
+    if (current.viewed === null) return;
+    if (current.entry !== null && current.entry !== sourceRef.current) {
+      loadContent(current.entry);
+    }
+    // Editable antes de que se desmonte la barra: el foco vuelve al documento.
+    editor?.setEditable(!onlyView, false);
+    historyRef.current = historyReducer(current, { type: "close" });
+    dispatchHistory({ type: "close" });
+  };
+  const closeHistoryRef = useRef(closeHistory);
+  closeHistoryRef.current = closeHistory;
+
+  /** Conserva la versión mostrada y cierra el modo historial. */
+  const confirmHistory = () => {
+    const current = historyRef.current;
+    if (current.viewed === null) return;
+    const viewed = current.versions[current.viewed];
+    const changed = viewed !== undefined && viewed.markdown !== current.entry;
+    editor?.setEditable(!onlyView, false);
+    const action = { type: "confirm", now: Date.now() } as const;
+    historyRef.current = historyReducer(current, action);
+    dispatchHistory(action);
+    if (changed) onChangeRef.current?.(viewed.markdown);
+  };
+
+  // Cierre forzado: si el modo historial ya no puede estar abierto (propiedad
+  // desactivada, solo lectura, comparación o barra oculta) se restaura el
+  // contenido previo sin aplicar nada. Va antes de los efectos de comparación
+  // para que el original de una comparación sea el contenido previo.
+  const historyVersionCount = history.versions.length;
+  useLayoutEffect(() => {
+    if (history.viewed !== null && !historyOpen) closeHistoryRef.current();
+    if (!historyUndo && historyVersionCount > 0) {
+      dispatchHistory({ type: "reset" });
+    }
+    // `dispatchHistory` es estable; `closeHistoryRef` siempre apunta al último.
+  }, [history.viewed, historyOpen, historyUndo, historyVersionCount, editor, dispatchHistory]);
+
+  // El documento es de solo lectura mientras se recorre el historial.
+  useLayoutEffect(() => {
+    if (editor === null) return;
+    const editable = !onlyView && !historyOpen;
+    if (editor.isEditable !== editable) editor.setEditable(editable, false);
+  }, [editor, onlyView, historyOpen]);
+
+  const handleHistoryKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!event.ctrlKey && !event.metaKey) return;
+    const key = event.key.toLowerCase();
+    let direction: -1 | 1 | null = null;
+    if (key === "z") direction = event.shiftKey ? 1 : -1;
+    else if (key === "y" && !event.shiftKey) direction = 1;
+    if (direction === null) return;
+    // En captura, antes que el deshacer de texto del editor o del textarea.
+    event.preventDefault();
+    event.stopPropagation();
+    moveVersion(direction);
+  };
+
   // Al empezar una sesión o cambiar su contenido nuevo, el panel editable pasa
   // a mostrarlo; `providedCanonical` es su serialización (para saber si el
   // usuario lo ha dejado igual a mano).
@@ -351,6 +481,20 @@ export const MarkdownEditor = forwardRef<
     if (editor === null) return;
     setCompareOriginal(editor, originalMarkdown);
   }, [editor, originalMarkdown]);
+
+  // Los dos paneles de la comparación se mantienen sobre el mismo contenido.
+  useCompareScrollSync({
+    active: session !== null,
+    enabled: compareSyncScroll,
+    viewMode: effectiveViewMode,
+    orientation: compareOrientation ?? "side-to-side",
+    originalRoot: originalPaneRef,
+    currentRoot: contentRef,
+    originalEditor,
+    currentEditor: editor,
+    originalMarkdown: originalMarkdown ?? "",
+    source,
+  });
 
   const renderedSummary =
     useEditorState({
@@ -414,6 +558,7 @@ export const MarkdownEditor = forwardRef<
     ref,
     () => ({
       reset() {
+        closeHistoryRef.current();
         if (sessionRef.current !== null) {
           // En comparación, reset() equivale a "Restaurar".
           restoreRef.current(false);
@@ -427,17 +572,19 @@ export const MarkdownEditor = forwardRef<
         });
       },
       isModified() {
+        // Con el modo historial abierto cuenta el contenido previo, no la versión mostrada.
+        const content = historyRef.current.entry ?? sourceRef.current;
         const current = sessionRef.current;
         if (current !== null) {
-          const content = sourceRef.current;
           return (
             content !== current.provided &&
             content !== providedCanonicalRef.current
           );
         }
-        return sourceRef.current !== originalContentRef.current;
+        return content !== originalContentRef.current;
       },
       insertMarkdown(markdown: string) {
+        closeHistoryRef.current();
         const textarea = textareaRef.current;
         if (effectiveViewMode === "markdown" && textarea) {
           const start = textarea.selectionStart;
@@ -453,6 +600,7 @@ export const MarkdownEditor = forwardRef<
           .run();
       },
       setMarkdown(markdown: string) {
+        closeHistoryRef.current();
         sourceRef.current = markdown;
         setSource(markdown);
         editor?.commands.setContent(markdownToEditorContent(markdown), {
@@ -475,7 +623,10 @@ export const MarkdownEditor = forwardRef<
   };
 
   const tableTriggerEnabled =
-    editor !== null && !onlyView && effectiveViewMode === "wysiwyg";
+    editor !== null &&
+    !onlyView &&
+    !historyOpen &&
+    effectiveViewMode === "wysiwyg";
 
   // El hover no sobrevive a un cambio de vista ni a la eliminación de la celda.
   useEffect(() => {
@@ -591,6 +742,7 @@ export const MarkdownEditor = forwardRef<
     <div
       className={rootClassName}
       style={{ width: toCssSize(width), height: toCssSize(height) }}
+      {...(historyOpen ? { onKeyDownCapture: handleHistoryKeyDown } : {})}
     >
       {showToolbar && (
         <ToolbarSlot onFocusLost={() => editor?.view.focus()}>
@@ -602,6 +754,25 @@ export const MarkdownEditor = forwardRef<
             sanitizeEmbeddedHtml={sanitizeEmbeddedHtml}
             onlyView={onlyView}
             {...(onlyViewNotice !== undefined ? { onlyViewNotice } : {})}
+            historyEnabled={historyAvailable}
+            historyOpen={historyOpen}
+            onToggleHistory={historyOpen ? closeHistory : openHistory}
+            locked={historyOpen}
+          />
+        </ToolbarSlot>
+      )}
+      {historyOpen && (
+        <ToolbarSlot onFocusLost={focusNewPane}>
+          <HistoryBar
+            canUndo={history.viewed !== null && history.viewed > 0}
+            canRedo={
+              history.viewed !== null &&
+              history.viewed < history.versions.length - 1
+            }
+            onUndo={() => moveVersion(-1)}
+            onRedo={() => moveVersion(1)}
+            onConfirm={confirmHistory}
+            onBack={closeHistory}
           />
         </ToolbarSlot>
       )}
@@ -617,6 +788,15 @@ export const MarkdownEditor = forwardRef<
         </ToolbarSlot>
       )}
       <div
+        className={
+          historyOpen
+            ? [styles["historyLayout"], styles["historyLayoutOpen"]]
+                .filter(Boolean)
+                .join(" ")
+            : styles["historyLayout"]
+        }
+      >
+      <div
         className={panesClassName}
         {...(session !== null
           ? { "data-compare-orientation": orientation }
@@ -624,6 +804,8 @@ export const MarkdownEditor = forwardRef<
       >
         {session !== null && (
           <OriginalPane
+            ref={originalPaneRef}
+            onEditor={setOriginalEditor}
             markdown={session.original}
             viewMode={effectiveViewMode}
             sanitizeEmbeddedHtml={sanitizeEmbeddedHtml}
@@ -641,7 +823,12 @@ export const MarkdownEditor = forwardRef<
                   : "Contenido nuevo (editable)",
                 "aria-describedby": descriptionId,
               }
-            : {})}
+            : historyOpen
+              ? {
+                  role: "group",
+                  "aria-label": "Historial: contenido en solo lectura",
+                }
+              : {})}
           onMouseOver={handleContentMouseOver}
           onMouseOut={handleContentMouseOut}
           onKeyDown={handleContentKeyDown}
@@ -653,7 +840,7 @@ export const MarkdownEditor = forwardRef<
               ref={textareaRef}
               value={source}
               onChange={handleSourceChange}
-              readOnly={onlyView}
+              readOnly={onlyView || historyOpen}
               ranges={session !== null ? (textDiff?.ranges ?? []) : null}
             />
           )}
@@ -676,11 +863,27 @@ export const MarkdownEditor = forwardRef<
           </span>
         )}
       </div>
+      {historyOpen && history.viewed !== null && (
+        <span role="status" className={styles["visuallyHidden"]}>
+          {`Versión ${history.viewed + 1} de ${history.versions.length}`}
+          {history.versions[history.viewed] !== undefined
+            ? ` — ${formatVersionTime(history.versions[history.viewed]?.savedAt ?? 0)}`
+            : ""}
+        </span>
+      )}
+      {historyOpen && history.viewed !== null && (
+        <VersionList
+          versions={history.versions}
+          viewed={history.viewed}
+          onSelect={selectVersion}
+        />
+      )}
+      </div>
       {linkPopover !== null && (
         <FloatingPanel anchor={linkPopover.anchor} autoFocus>
           <LinkPopover
             url={linkPopover.url}
-            onlyView={onlyView}
+            onlyView={onlyView || historyOpen}
             onNavigate={() => {
               window.open(linkPopover.url, "_blank", "noopener,noreferrer");
               closeLinkPopover();

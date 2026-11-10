@@ -21,6 +21,7 @@ import {
   IconLink,
   IconImage,
   IconHr,
+  IconHistory,
 } from "./buttons/icons";
 import styles from "../MarkdownEditor.module.css";
 
@@ -35,6 +36,13 @@ export interface ToolbarProps {
   sanitizeEmbeddedHtml: boolean;
   onlyView?: boolean;
   onlyViewNotice?: string;
+  /** Muestra el icono del historial de versiones al final de la barra. */
+  historyEnabled?: boolean;
+  /** El modo historial está abierto. */
+  historyOpen?: boolean;
+  onToggleHistory?: () => void;
+  /** Desactiva los controles que modifican el documento (modo historial). */
+  locked?: boolean;
 }
 
 export function Toolbar({
@@ -45,6 +53,10 @@ export function Toolbar({
   sanitizeEmbeddedHtml,
   onlyView = false,
   onlyViewNotice = "Edición desactivada",
+  historyEnabled = false,
+  historyOpen = false,
+  onToggleHistory,
+  locked = false,
 }: ToolbarProps) {
   const [, forceUpdate] = useReducer((count: number) => count + 1, 0);
   const [openDialog, setOpenDialog] = useState<
@@ -83,7 +95,7 @@ export function Toolbar({
     );
   }
 
-  const canFormat = viewMode === "wysiwyg" && editor !== null;
+  const canFormat = viewMode === "wysiwyg" && editor !== null && !locked;
 
   const activeHeading = canFormat
     ? (HEADING_LEVELS.find((level) =>
@@ -266,6 +278,16 @@ export function Toolbar({
       >
         <span className={styles["htmlIcon"]}>HTML</span>
       </ToolbarButton>
+
+      {historyEnabled && (
+        <ToolbarButton
+          label="Historial de versiones"
+          pressed={historyOpen}
+          onClick={onToggleHistory}
+        >
+          <IconHistory />
+        </ToolbarButton>
+      )}
 
       <div className={styles["spacer"]}>
         <ExportMenu source={source} sanitize={sanitizeEmbeddedHtml} />

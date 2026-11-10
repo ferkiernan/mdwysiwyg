@@ -50,6 +50,18 @@ export interface MarkdownEditorProps {
    * al modo `"default"` mostrando `markdown`.
    */
   onCompareDecision?: (result: CompareDecision) => void;
+  /**
+   * Activa el historial de versiones: se guarda una versión tras 3 s sin cambios y un icono tras el botón HTML
+   * de la barra abre el modo historial (Undo / Redo / Confirm / Cancel (back to last version) y una lista de versiones con su
+   * hora). Solo en modo `"default"` y sin `onlyView`. Se puede cambiar en cualquier momento. Default: false.
+   */
+  historyUndo?: boolean;
+  /**
+   * En modo `"compare"`, mantiene los dos paneles sobre el mismo contenido al desplazarse: el panel que se movió
+   * en último lugar guía y el otro lo sigue por contenido coincidente (los tramos que solo existen en un lado se
+   * recorren proporcionalmente). Solo desplazamiento vertical. Se puede cambiar en cualquier momento. Default: true.
+   */
+  compareSyncScroll?: boolean;
   /** Identificador de documento de uso libre para la app consumidora. */
   documentId?: string;
   /** Nombre de archivo de uso libre para la app consumidora. */

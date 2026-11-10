@@ -23,6 +23,27 @@ All notable changes to this project are documented in this file.
   `CompareDecision`; new custom property `--mdw-compare-highlight-bg`. No new dependencies; default mode is
   unchanged.
 
+- **Version history** (`historyUndo`, default `false`): saves a version of the document after 3 s without
+  changes (deduplicated, max 200, in memory) and adds a clock icon right after the HTML button of the toolbar (default
+  mode only). It opens a history mode with a bar under the toolbar ("← Undo", "Redo →", "Confirm", "Back to
+  default") and a right-hand list of versions with their time; clicking an entry jumps to that version. The document is read-only while browsing and
+  `onChange` is not called; Confirm keeps the shown version (one `onChange` if it differs from the content at
+  entry, appended as the newest version) and Cancel (back to last version) restores the content at entry.
+  `Ctrl/Cmd+Z` / `Ctrl/Cmd+Shift+Z` / `Ctrl+Y` act as Undo / Redo while it is open. It closes without applying
+  anything when the prop turns off, `onlyView` or compare mode starts, or the toolbar is hidden. No new
+  dependencies; with the prop off nothing changes.
+
+- **Compare scroll sync** (`compareSyncScroll`, default `true`): in `mode="compare"` scrolling either pane
+  scrolls the other to the matching content, so added or removed blocks before the viewed passage no longer
+  misalign them. The pane scrolled last leads (wheel, scrollbar, keyboard or caret-follow); the top edge of
+  the viewport is the matched point. Matching reuses the compare diff (paired blocks in the rendered view,
+  identical lines measured with wrapping in the Markdown view); passages present on one side only are crossed
+  proportionally, with a proportional fallback when nothing is shared and top/bottom mapped to top/bottom.
+  Works in both orientations and views, vertical only, no animation, and re-aligns when content, view,
+  orientation or layout change. Typing in the new pane never moves it. `compareSyncScroll={false}` keeps the
+  panes independent; turning it on aligns them again. No new dependencies; outside compare mode nothing
+  changes.
+
 ### Changed
 
 - **Table column/row menu now opens from a corner triangle.** Hovering a table cell shows a small
