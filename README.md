@@ -85,8 +85,24 @@ export default function App() {
 }
 ```
 
-That's it — no configuration required. Full API reference, all props, theming variables, and
-usage examples live in the [component documentation](./src/components/MarkdownEditor/README.md).
+That's it — no configuration required. Every prop is documented in the code itself (hover it in your editor to
+see what it does, its default and how it relates to other props).
+
+- **All props, API and examples**: [component documentation](./src/components/MarkdownEditor/README.md)
+- **Styling it for your app** (dark theme, brand colors, fonts — every CSS variable, recipes, troubleshooting):
+  [How to style mdwysiwyg in your host](https://github.com/ferkiernan/mdwysiwyg/blob/master/docs/THEMING.md) (Spanish)
+- **Try every prop and build your theme live**: [playground](https://ferkiernan.github.io/mdwysiwyg/)
+
+To match your product's look, declare `--mdw-*` variables on a class and pass it in `className` (or declare them on any
+ancestor / `:root` for every editor on the page):
+
+```css
+.my-editor { --mdw-bg: #0b1220; --mdw-fg: #e5e7eb; --mdw-accent: #60a5fa; }
+```
+
+```tsx
+<MarkdownEditor className="my-editor" />
+```
 
 ### Cloning the repository instead
 
@@ -122,13 +138,13 @@ Try it in your browser, no install required: **[ferkiernan.github.io/mdwysiwyg](
 | Diagrams | ` ```mermaid ` blocks render as live diagrams; pasted Mermaid syntax is auto-detected on HTML insert. Lazy-loaded, `securityLevel: strict` |
 | Export | Copy as Markdown or as HTML, one click |
 | Modes | Full editor (default) or read-only viewer (`onlyView`, with a configurable notice via `onlyViewNotice`) |
-| Sizing | Fixed (`width`/`height` props) or user-resizable (`resizable`, default on) |
-| Toolbar | Shown by default; hide/show it at runtime with `showToolbar` (no content, caret or undo loss) |
+| Sizing | Fixed (`width`/`height` props), user-resizable (`resizable`, default on) or growing with its content (`autoHeight`: no inner vertical scrollbar, `height` becomes the minimum) |
+| Toolbar | Shown by default; hide/show it at runtime with `showToolbar` (no content, caret or undo loss), or only while the editor has focus with `autoHideBar` |
 | Version history | Opt-in `historyUndo`: a version is saved after 3 s without changes; a clock icon right after the HTML button opens a history mode with ← Undo / Redo →, Confirm / Cancel (back to last version) and a right-hand list of versions with their time (click one to jump to it; document read-only while browsing; `Ctrl+Z` / `Ctrl+Shift+Z` map to Undo / Redo) |
 | Compare mode | `mode="compare"` + `compareOrientation` (`side-to-side` / `up-and-down`) + `compareContent`: read-only original next to an editable new version with changed words highlighted in yellow, and a second bar to accept, reject or restore the change (`onCompareDecision`) |
 | Compare scroll sync | In compare mode the two panes follow each other by matching content (top edge ↔ top edge; added/removed passages are crossed proportionally; vertical only). On by default; turn it off with `compareSyncScroll={false}` |
-| Theming | CSS Custom Properties for toolbar colors/gradient/font, per-view content color & font, table header, code block & Mermaid-diagram-area backgrounds, scrollbar colors (including the toolbar's own auto-scroll), and content-area background (solid color, gradient, or image) |
-| Imperative API | `ref` exposing `reset()` and `isModified()` for discard-changes / unsaved-warning flows |
+| Theming | 47 CSS Custom Properties (`--mdw-*`) covering toolbar, content, tables, code and syntax highlighting, quotes, menus/dialogs, compare highlight and scrollbars; declare them on your class, a wrapper or `:root`, in any load order — see the [theming guide](https://github.com/ferkiernan/mdwysiwyg/blob/master/docs/THEMING.md) |
+| Imperative API | `ref` exposing `reset()`, `isModified()`, `insertMarkdown()` and `setMarkdown()` |
 
 ## Tech under the hood
 

@@ -1,38 +1,62 @@
 .root {
-  --mdw-border: #d0d4da;
-  --mdw-bg: #ffffff;
-  --mdw-fg: #1f2328;
-  --mdw-muted: #f6f7f9;
-  --mdw-accent: #3d6fd8;
-  --mdw-toolbar-gradient-from: #eeeeee;
-  --mdw-toolbar-gradient-via: #dcdcdc;
-  --mdw-toolbar-gradient-to: #cfcfcf;
-  --mdw-toolbar-fg: #222222;
-  --mdw-toolbar-font-family: Arial, sans-serif;
-  --mdw-toolbar-select-bg: #e9e9e9;
-  --mdw-button-active-bg: #c8c8c8;
-  --mdw-button-hover-gradient-from: #ffffff;
-  --mdw-button-hover-gradient-to: #d8d8d8;
-  --mdw-content-bg: var(--mdw-bg);
-  --mdw-content-markdown-fg: var(--mdw-fg);
-  --mdw-content-markdown-font-family: ui-monospace, Consolas, monospace;
-  --mdw-content-wysiwyg-fg: var(--mdw-fg);
-  --mdw-content-wysiwyg-font-family: inherit;
-  --mdw-scrollbar-thumb: #c1c1c1;
-  --mdw-scrollbar-track: transparent;
-  --mdw-table-header-bg: var(--mdw-muted);
-  --mdw-code-block-bg: var(--mdw-muted);
-  --mdw-mermaid-bg: var(--mdw-muted);
-  --mdw-table-menu-trigger-size: 0.7em;
-  --mdw-table-menu-trigger-color: var(--mdw-scrollbar-thumb);
-  --mdw-compare-highlight-bg: #fff176;
+  /* Tokens privados: cada uno toma el valor público (--mdw-*) que declare el host
+     (en la clase del control o en cualquier ancestro) o, si no hay, el default.
+     El control nunca declara las variables públicas: así el host siempre gana,
+     en cualquier orden de carga y sin !important. Ver docs/THEMING.md. */
+  --_mdw-border: var(--mdw-border, #d0d4da);
+  --_mdw-bg: var(--mdw-bg, #ffffff);
+  --_mdw-fg: var(--mdw-fg, #1f2328);
+  --_mdw-muted: var(--mdw-muted, #f6f7f9);
+  --_mdw-accent: var(--mdw-accent, #3d6fd8);
+  --_mdw-toolbar-gradient-from: var(--mdw-toolbar-gradient-from, #eeeeee);
+  --_mdw-toolbar-gradient-via: var(--mdw-toolbar-gradient-via, #dcdcdc);
+  --_mdw-toolbar-gradient-to: var(--mdw-toolbar-gradient-to, #cfcfcf);
+  --_mdw-toolbar-fg: var(--mdw-toolbar-fg, #222222);
+  --_mdw-toolbar-font-family: var(--mdw-toolbar-font-family, Arial, sans-serif);
+  --_mdw-toolbar-select-bg: var(--mdw-toolbar-select-bg, #e9e9e9);
+  --_mdw-button-active-bg: var(--mdw-button-active-bg, #c8c8c8);
+  --_mdw-button-hover-gradient-from: var(--mdw-button-hover-gradient-from, #ffffff);
+  --_mdw-button-hover-gradient-to: var(--mdw-button-hover-gradient-to, #d8d8d8);
+  --_mdw-content-bg: var(--mdw-content-bg, var(--_mdw-bg));
+  --_mdw-content-markdown-fg: var(--mdw-content-markdown-fg, var(--_mdw-fg));
+  --_mdw-content-markdown-font-family: var(--mdw-content-markdown-font-family, ui-monospace, Consolas, monospace);
+  --_mdw-content-wysiwyg-fg: var(--mdw-content-wysiwyg-fg, var(--_mdw-fg));
+  --_mdw-content-wysiwyg-font-family: var(--mdw-content-wysiwyg-font-family, inherit);
+  --_mdw-scrollbar-thumb: var(--mdw-scrollbar-thumb, #c1c1c1);
+  --_mdw-scrollbar-track: var(--mdw-scrollbar-track, transparent);
+  --_mdw-table-header-bg: var(--mdw-table-header-bg, var(--_mdw-muted));
+  --_mdw-code-block-bg: var(--mdw-code-block-bg, var(--_mdw-muted));
+  --_mdw-mermaid-bg: var(--mdw-mermaid-bg, var(--_mdw-muted));
+  --_mdw-table-menu-trigger-size: var(--mdw-table-menu-trigger-size, 0.7em);
+  --_mdw-table-menu-trigger-color: var(--mdw-table-menu-trigger-color, var(--_mdw-scrollbar-thumb));
+  --_mdw-compare-highlight-bg: var(--mdw-compare-highlight-bg, #fff176);
+  --_mdw-code-keyword: var(--mdw-code-keyword, #a626a4);
+  --_mdw-code-string: var(--mdw-code-string, #50a14f);
+  --_mdw-code-comment: var(--mdw-code-comment, #a0a1a7);
+  --_mdw-code-number: var(--mdw-code-number, #986801);
+  --_mdw-code-title: var(--mdw-code-title, #4078f2);
+  --_mdw-blockquote-fg: var(--mdw-blockquote-fg, #57606a);
+  --_mdw-blockquote-border: var(--mdw-blockquote-border, var(--_mdw-border));
+  --_mdw-control-border: var(--mdw-control-border, #999);
+  --_mdw-control-highlight: var(--mdw-control-highlight, #fff);
+  --_mdw-control-shadow: var(--mdw-control-shadow, rgba(0, 0, 0, 0.15));
+  --_mdw-control-pressed-shadow: var(--mdw-control-pressed-shadow, rgba(0, 0, 0, 0.25));
+  --_mdw-separator-color: var(--mdw-separator-color, #aaa);
+  --_mdw-popover-bg: var(--mdw-popover-bg, var(--_mdw-bg));
+  --_mdw-popover-shadow: var(--mdw-popover-shadow, 0 4px 12px rgba(0, 0, 0, 0.12));
+  --_mdw-menu-hover-bg: var(--mdw-menu-hover-bg, #e4e7eb);
+  --_mdw-danger-fg: var(--mdw-danger-fg, #b42318);
+  --_mdw-danger-hover-fg: var(--mdw-danger-hover-fg, #8c1c11);
+  --_mdw-table-picker-selected-bg: var(--mdw-table-picker-selected-bg, #dbe4f8);
+  --_mdw-link-fg: var(--mdw-link-fg, #0000ee);
+  --_mdw-link-visited-fg: var(--mdw-link-visited-fg, #551a8b);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--mdw-border);
+  border: 1px solid var(--_mdw-border);
   border-radius: 6px;
-  background: var(--mdw-bg);
-  color: var(--mdw-fg);
+  background: var(--_mdw-bg);
+  color: var(--_mdw-fg);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: 14px;
   overflow: hidden;
@@ -83,11 +107,11 @@
 }
 
 .sideToSide > .paneOriginal {
-  border-right: 1px solid var(--mdw-border);
+  border-right: 1px solid var(--_mdw-border);
 }
 
 .upAndDown > .paneOriginal {
-  border-bottom: 1px solid var(--mdw-border);
+  border-bottom: 1px solid var(--_mdw-border);
 }
 
 /* Texto solo para tecnologías de asistencia. */
@@ -105,17 +129,17 @@
 
 /* Resaltado de diferencias en el panel nuevo. */
 .compareMark {
-  background: var(--mdw-compare-highlight-bg);
+  background: var(--_mdw-compare-highlight-bg);
   color: inherit;
   border-radius: 2px;
 }
 
 .compareBlock {
-  background: var(--mdw-compare-highlight-bg);
+  background: var(--_mdw-compare-highlight-bg);
 }
 
 .content :global(.ProseMirror pre).compareBlock {
-  background: var(--mdw-compare-highlight-bg);
+  background: var(--_mdw-compare-highlight-bg);
 }
 
 .content {
@@ -125,21 +149,21 @@
   overflow: auto;
   display: flex;
   flex-direction: column;
-  background: var(--mdw-content-bg);
-  scrollbar-color: var(--mdw-scrollbar-thumb) var(--mdw-scrollbar-track);
+  background: var(--_mdw-content-bg);
+  scrollbar-color: var(--_mdw-scrollbar-thumb) var(--_mdw-scrollbar-track);
 }
 
 .content::-webkit-scrollbar-thumb,
 .source::-webkit-scrollbar-thumb,
 .toolbar::-webkit-scrollbar-thumb {
-  background: var(--mdw-scrollbar-thumb);
+  background: var(--_mdw-scrollbar-thumb);
   border-radius: 4px;
 }
 
 .content::-webkit-scrollbar-track,
 .source::-webkit-scrollbar-track,
 .toolbar::-webkit-scrollbar-track {
-  background: var(--mdw-scrollbar-track);
+  background: var(--_mdw-scrollbar-track);
 }
 
 .content > div {
@@ -154,8 +178,8 @@
   outline: none;
   white-space: pre-wrap;
   word-wrap: break-word;
-  color: var(--mdw-content-wysiwyg-fg);
-  font-family: var(--mdw-content-wysiwyg-font-family);
+  color: var(--_mdw-content-wysiwyg-fg);
+  font-family: var(--_mdw-content-wysiwyg-font-family);
 }
 
 .content :global(.ProseMirror p) {
@@ -163,8 +187,8 @@
 }
 
 .content :global(.ProseMirror pre) {
-  background: var(--mdw-code-block-bg);
-  border: 1px solid var(--mdw-border);
+  background: var(--_mdw-code-block-bg);
+  border: 1px solid var(--_mdw-border);
   border-radius: 4px;
   padding: 8px 12px;
   font-family: ui-monospace, Consolas, monospace;
@@ -175,29 +199,29 @@
 .content :global(.hljs-keyword),
 .content :global(.hljs-selector-tag),
 .content :global(.hljs-literal) {
-  color: #a626a4;
+  color: var(--_mdw-code-keyword);
 }
 
 .content :global(.hljs-string),
 .content :global(.hljs-attr) {
-  color: #50a14f;
+  color: var(--_mdw-code-string);
 }
 
 .content :global(.hljs-comment),
 .content :global(.hljs-quote) {
-  color: #a0a1a7;
+  color: var(--_mdw-code-comment);
   font-style: italic;
 }
 
 .content :global(.hljs-number),
 .content :global(.hljs-built_in) {
-  color: #986801;
+  color: var(--_mdw-code-number);
 }
 
 .content :global(.hljs-title),
 .content :global(.hljs-title.function_),
 .content :global(.hljs-title.class_) {
-  color: #4078f2;
+  color: var(--_mdw-code-title);
 }
 
 .content :global(.ProseMirror table) {
@@ -207,13 +231,13 @@
 
 .content :global(.ProseMirror th),
 .content :global(.ProseMirror td) {
-  border: 1px solid var(--mdw-border);
+  border: 1px solid var(--_mdw-border);
   padding: 4px 8px;
   min-width: 3em;
 }
 
 .content :global(.ProseMirror th) {
-  background: var(--mdw-table-header-bg);
+  background: var(--_mdw-table-header-bg);
 }
 
 /* Disparador del menú de tabla: botón superpuesto (fuera del documento) sobre
@@ -226,9 +250,9 @@
   font-size: inherit;
   /* Triángulo rectángulo con el ángulo recto en la esquina superior derecha;
      los catetos miden ~la mitad de la altura del cursor de texto (0.7em). */
-  width: var(--mdw-table-menu-trigger-size);
-  height: var(--mdw-table-menu-trigger-size);
-  background: var(--mdw-table-menu-trigger-color);
+  width: var(--_mdw-table-menu-trigger-size);
+  height: var(--_mdw-table-menu-trigger-size);
+  background: var(--_mdw-table-menu-trigger-color);
   clip-path: polygon(0 0, 100% 0, 100% 100%);
   cursor: pointer;
   /* `left` es el borde derecho de la celda: el botón se extiende hacia dentro. */
@@ -238,17 +262,17 @@
 /* clip-path recorta también el contorno: el foco se marca con un halo. */
 .tableMenuTrigger:focus-visible {
   outline: none;
-  filter: drop-shadow(0 0 2px var(--mdw-accent));
+  filter: drop-shadow(0 0 2px var(--_mdw-accent));
 }
 
 /* Cursor de hueco entre bloques: hereda el color del texto del tema. */
 .content :global(.ProseMirror-gapcursor:after) {
-  border-top-color: var(--mdw-content-wysiwyg-fg);
+  border-top-color: var(--_mdw-content-wysiwyg-fg);
 }
 
 .content :global(.ProseMirror hr) {
   border: none;
-  border-top: 2px solid var(--mdw-border);
+  border-top: 2px solid var(--_mdw-border);
   margin: 1em 0;
 }
 
@@ -256,11 +280,19 @@
   max-width: 100%;
 }
 
+.content :global(.ProseMirror a:link) {
+  color: var(--_mdw-link-fg);
+}
+
+.content :global(.ProseMirror a:visited) {
+  color: var(--_mdw-link-visited-fg);
+}
+
 .content :global(.ProseMirror blockquote) {
-  border-left: 3px solid var(--mdw-border);
+  border-left: 3px solid var(--_mdw-blockquote-border);
   margin: 0.6em 0;
   padding-left: 12px;
-  color: #57606a;
+  color: var(--_mdw-blockquote-fg);
 }
 
 .content :global(.ProseMirror ul[data-type="taskList"]) {
@@ -278,14 +310,14 @@
 }
 
 .content :global(.ProseMirror div[data-html-block]) {
-  border: 1px dashed var(--mdw-border);
+  border: 1px dashed var(--_mdw-border);
   border-radius: 4px;
   padding: 6px 10px;
   margin: 0.6em 0;
 }
 
 .content :global(.ProseMirror div[data-mermaid-block]) {
-  background: var(--mdw-mermaid-bg);
+  background: var(--_mdw-mermaid-bg);
   border-radius: 4px;
   padding: 8px 12px;
 }
@@ -297,12 +329,12 @@
   resize: none;
   outline: none;
   padding: 12px 16px;
-  font-family: var(--mdw-content-markdown-font-family);
+  font-family: var(--_mdw-content-markdown-font-family);
   font-size: 13px;
   line-height: 1.5;
-  color: var(--mdw-content-markdown-fg);
+  color: var(--_mdw-content-markdown-fg);
   background: transparent;
-  scrollbar-color: var(--mdw-scrollbar-thumb) var(--mdw-scrollbar-track);
+  scrollbar-color: var(--_mdw-scrollbar-thumb) var(--_mdw-scrollbar-track);
 }
 
 /* Área de texto con capa de resaltado detrás (vista Markdown en comparación):
@@ -332,7 +364,7 @@
   pointer-events: none;
   white-space: pre-wrap;
   overflow-wrap: break-word;
-  font-family: var(--mdw-content-markdown-font-family);
+  font-family: var(--_mdw-content-markdown-font-family);
   font-size: 13px;
   line-height: 1.5;
   color: transparent;
@@ -352,25 +384,25 @@
   gap: 2px;
   background: linear-gradient(
     to bottom,
-    var(--mdw-toolbar-gradient-from) 0%,
-    var(--mdw-toolbar-gradient-via) 45%,
-    var(--mdw-toolbar-gradient-to) 100%
+    var(--_mdw-toolbar-gradient-from) 0%,
+    var(--_mdw-toolbar-gradient-via) 45%,
+    var(--_mdw-toolbar-gradient-to) 100%
   );
-  color: var(--mdw-toolbar-fg);
-  font-family: var(--mdw-toolbar-font-family);
-  border-bottom: 1px solid #999;
+  color: var(--_mdw-toolbar-fg);
+  font-family: var(--_mdw-toolbar-font-family);
+  border-bottom: 1px solid var(--_mdw-control-border);
   box-shadow:
-    inset 0 1px 0 #fff,
-    0 1px 2px rgba(0, 0, 0, 0.15);
+    inset 0 1px 0 var(--_mdw-control-highlight),
+    0 1px 2px var(--_mdw-control-shadow);
   overflow-x: auto;
   overflow-y: visible;
-  scrollbar-color: var(--mdw-scrollbar-thumb) var(--mdw-scrollbar-track);
+  scrollbar-color: var(--_mdw-scrollbar-thumb) var(--_mdw-scrollbar-track);
 }
 
 /* Segunda barra (comparación o historial): bajo la principal, con una línea de separación. */
 .compareBar,
 .historyBar {
-  border-top: 1px solid #fff;
+  border-top: 1px solid var(--_mdw-control-highlight);
 }
 
 /* Undo/Redo no disponibles: se mantienen enfocables (aria-disabled, no disabled). */
@@ -408,10 +440,10 @@
   width: 8.5em;
   min-height: 0;
   overflow-y: auto;
-  border-left: 1px solid var(--mdw-border);
-  background: var(--mdw-muted);
-  color: var(--mdw-fg);
-  scrollbar-color: var(--mdw-scrollbar-thumb) var(--mdw-scrollbar-track);
+  border-left: 1px solid var(--_mdw-border);
+  background: var(--_mdw-muted);
+  color: var(--_mdw-fg);
+  scrollbar-color: var(--_mdw-scrollbar-thumb) var(--_mdw-scrollbar-track);
 }
 
 .versionItems {
@@ -443,17 +475,17 @@
 }
 
 .versionItem:hover {
-  background: var(--mdw-button-hover-gradient-to);
+  background: var(--_mdw-button-hover-gradient-to);
 }
 
 .versionItem:focus-visible {
-  outline: 2px solid var(--mdw-accent);
+  outline: 2px solid var(--_mdw-accent);
   outline-offset: -2px;
 }
 
 .versionCurrent {
   font-weight: 700;
-  background: var(--mdw-button-active-bg);
+  background: var(--_mdw-button-active-bg);
 }
 
 .versionMarker {
@@ -466,8 +498,8 @@
   padding: 0 8px;
   font-size: 13px;
   font-style: italic;
-  color: var(--mdw-toolbar-fg);
-  font-family: var(--mdw-toolbar-font-family);
+  color: var(--_mdw-toolbar-fg);
+  font-family: var(--_mdw-toolbar-font-family);
 }
 
 .toolbar > .button,
@@ -479,8 +511,8 @@
   width: 1px;
   height: 25px;
   margin: 0 3px;
-  background: #aaa;
-  box-shadow: 1px 0 0 #fff;
+  background: var(--_mdw-separator-color);
+  box-shadow: 1px 0 0 var(--_mdw-control-highlight);
 }
 
 .spacer {
@@ -498,8 +530,8 @@
   border: 1px solid transparent;
   border-radius: 2px;
   background: transparent;
-  color: var(--mdw-toolbar-fg);
-  font-family: var(--mdw-toolbar-font-family);
+  color: var(--_mdw-toolbar-fg);
+  font-family: var(--_mdw-toolbar-font-family);
   font-size: 15px;
   cursor: pointer;
 }
@@ -517,24 +549,24 @@
 .button:hover:not(:disabled) {
   background: linear-gradient(
     to bottom,
-    var(--mdw-button-hover-gradient-from),
-    var(--mdw-button-hover-gradient-to)
+    var(--_mdw-button-hover-gradient-from),
+    var(--_mdw-button-hover-gradient-to)
   );
-  border-color: #999;
+  border-color: var(--_mdw-control-border);
   box-shadow:
-    inset 0 1px 0 #fff,
-    0 1px 1px rgba(0, 0, 0, 0.15);
+    inset 0 1px 0 var(--_mdw-control-highlight),
+    0 1px 1px var(--_mdw-control-shadow);
 }
 
 .button:active:not(:disabled),
 .button[aria-pressed="true"] {
-  background: var(--mdw-button-active-bg);
-  border-color: #999;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+  background: var(--_mdw-button-active-bg);
+  border-color: var(--_mdw-control-border);
+  box-shadow: inset 0 1px 2px var(--_mdw-control-pressed-shadow);
 }
 
 .button:focus-visible {
-  outline: 2px solid var(--mdw-accent);
+  outline: 2px solid var(--_mdw-accent);
   outline-offset: 1px;
 }
 
@@ -579,17 +611,17 @@
   width: 118px;
   height: 29px;
   padding: 0 25px 0 9px;
-  border: 1px solid #999;
+  border: 1px solid var(--_mdw-control-border);
   border-radius: 2px;
-  background-color: var(--mdw-toolbar-select-bg);
+  background-color: var(--_mdw-toolbar-select-bg);
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23222' stroke-width='1.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 8px center;
-  color: var(--mdw-toolbar-fg);
-  font-family: var(--mdw-toolbar-font-family);
+  color: var(--_mdw-toolbar-fg);
+  font-family: var(--_mdw-toolbar-font-family);
   font-size: 13px;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 #fff;
+  box-shadow: inset 0 1px 0 var(--_mdw-control-highlight);
   appearance: none;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -608,10 +640,10 @@
   width: 260px;
   max-width: calc(100vw - 24px);
   padding: 10px 12px;
-  border: 1px solid var(--mdw-border);
+  border: 1px solid var(--_mdw-border);
   border-radius: 6px;
-  background: var(--mdw-bg);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  background: var(--_mdw-popover-bg);
+  box-shadow: var(--_mdw-popover-shadow);
   box-sizing: border-box;
 }
 
@@ -626,7 +658,7 @@
 .dialogField textarea,
 .dialogField select {
   width: 100%;
-  border: 1px solid var(--mdw-border);
+  border: 1px solid var(--_mdw-border);
   border-radius: 4px;
   padding: 4px 6px;
   font: inherit;
@@ -668,22 +700,22 @@
 }
 
 .tablePickerGrid:focus-visible {
-  outline: 2px solid var(--mdw-accent);
+  outline: 2px solid var(--_mdw-accent);
   outline-offset: 2px;
 }
 
 .tablePickerCell {
   width: 16px;
   height: 16px;
-  border: 1px solid #999;
+  border: 1px solid var(--_mdw-control-border);
   border-radius: 2px;
-  background: var(--mdw-bg);
+  background: var(--_mdw-bg);
   cursor: pointer;
 }
 
 .tablePickerCell[data-selected="true"] {
-  background: #dbe4f8;
-  border-color: var(--mdw-accent);
+  background: var(--_mdw-table-picker-selected-bg);
+  border-color: var(--_mdw-accent);
 }
 
 .menu {
@@ -691,10 +723,10 @@
   flex-direction: column;
   min-width: 190px;
   padding: 4px;
-  border: 1px solid var(--mdw-border);
+  border: 1px solid var(--_mdw-border);
   border-radius: 6px;
-  background: var(--mdw-bg);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  background: var(--_mdw-popover-bg);
+  box-shadow: var(--_mdw-popover-shadow);
 }
 
 .menuItem {
@@ -711,14 +743,14 @@
 
 .menuItem:hover,
 .menuItem:focus-visible {
-  background: #e4e7eb;
+  background: var(--_mdw-menu-hover-bg);
   outline: none;
 }
 
 .menuSeparator {
   height: 1px;
   margin: 4px 2px;
-  background: var(--mdw-border);
+  background: var(--_mdw-border);
   border: none;
 }
 
@@ -726,7 +758,7 @@
   align-self: flex-start;
   border: none;
   background: transparent;
-  color: #b42318;
+  color: var(--_mdw-danger-fg);
   font: inherit;
   font-size: 12px;
   text-decoration: underline;
@@ -736,6 +768,33 @@
 
 .dangerLink:hover,
 .dangerLink:focus-visible {
-  color: #8c1c11;
+  color: var(--_mdw-danger-hover-fg);
   outline: none;
+}
+
+/* Alto automático (`autoHeight`): el componente crece con su contenido; `height`
+   es el mínimo. Las áreas de contenido llenan ese mínimo y nunca se encogen por
+   debajo de su contenido, así que no aparece barra de desplazamiento vertical. */
+.autoHeight .content,
+.autoHeight .panesCompare,
+.autoHeight .historyLayoutOpen {
+  flex: 1 0 auto;
+}
+
+.autoHeight .upAndDown > .content {
+  flex: 1 0 auto;
+}
+
+.autoHeight .sourceWrap,
+.autoHeight .source {
+  flex: 1 0 auto;
+}
+
+.autoHeight .sourceWrap > .source {
+  overflow-y: hidden;
+}
+
+/* La lista de versiones no impone su alto: se estira a la fila y se desplaza. */
+.autoHeight .versionList {
+  contain: size;
 }

@@ -8,6 +8,25 @@ function injectStyle(css: string): () => void {
   return () => style.remove();
 }
 
+/**
+ * Valor efectivo de una variable pública de theming: la declarada por el host o,
+ * si no hay, el default con el que el control la lee (fallback de su token
+ * privado `--_mdw-*`). Las referencias internas se devuelven con nombre público.
+ */
+function tokenValue(style: CSSStyleDeclaration, name: string): string {
+  const declared = style.getPropertyValue(name).trim();
+  if (declared !== "") return declared;
+  const privateValue = style
+    .getPropertyValue(name.replace("--mdw-", "--_mdw-"))
+    .trim();
+  const comma = privateValue.indexOf(",");
+  if (comma === -1) return "";
+  return privateValue
+    .slice(comma + 1, privateValue.length - 1)
+    .trim()
+    .replace(/--_mdw-/g, "--mdw-");
+}
+
 describe("US3: personalización visual de la toolbar (CSS Custom Properties)", () => {
   it("conserva el aspecto por defecto sin personalización", () => {
     render(<MarkdownEditor />);
@@ -15,7 +34,7 @@ describe("US3: personalización visual de la toolbar (CSS Custom Properties)", (
       name: "Barra de herramientas",
     });
     const style = getComputedStyle(toolbar);
-    expect(style.getPropertyValue("--mdw-toolbar-fg").trim()).toBe(
+    expect(tokenValue(style, "--mdw-toolbar-fg")).toBe(
       "#222222",
     );
   });
@@ -32,11 +51,11 @@ describe("US3: personalización visual de la toolbar (CSS Custom Properties)", (
         name: "Barra de herramientas",
       });
       const style = getComputedStyle(toolbar);
-      expect(style.getPropertyValue("--mdw-toolbar-fg").trim()).toBe(
+      expect(tokenValue(style, "--mdw-toolbar-fg")).toBe(
         "#ff00ff",
       );
       expect(
-        style.getPropertyValue("--mdw-toolbar-gradient-from").trim(),
+        tokenValue(style, "--mdw-toolbar-gradient-from"),
       ).toBe("#eeeeee");
     } finally {
       cleanup();
@@ -58,10 +77,10 @@ describe("US3: personalización visual de la toolbar (CSS Custom Properties)", (
       });
       const style = getComputedStyle(toolbar);
       expect(
-        style.getPropertyValue("--mdw-toolbar-gradient-from").trim(),
+        tokenValue(style, "--mdw-toolbar-gradient-from"),
       ).toBe("#1e293b");
       expect(
-        style.getPropertyValue("--mdw-toolbar-gradient-to").trim(),
+        tokenValue(style, "--mdw-toolbar-gradient-to"),
       ).toBe("#020617");
     } finally {
       cleanup();
@@ -75,7 +94,7 @@ describe("US3: personalización visual de la toolbar (CSS Custom Properties)", (
       "div > div:last-child",
     ) as HTMLElement;
     const contentStyle = getComputedStyle(content);
-    expect(contentStyle.getPropertyValue("--mdw-content-bg").trim()).toBe(
+    expect(tokenValue(contentStyle, "--mdw-content-bg")).toBe(
       "var(--mdw-bg)",
     );
   });
@@ -96,7 +115,7 @@ describe("US3: personalización visual de la toolbar (CSS Custom Properties)", (
       ) as HTMLElement;
       const style = getComputedStyle(content);
       expect(
-        style.getPropertyValue("--mdw-content-bg").trim().replace(/\s+/g, ""),
+        tokenValue(style, "--mdw-content-bg").replace(/\s+/g, ""),
       ).toBe("linear-gradient(135deg,#fef3c7,#fde68a)");
     } finally {
       cleanup();

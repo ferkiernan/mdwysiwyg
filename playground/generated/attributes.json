@@ -1,0 +1,124 @@
+[
+  {
+    "name": "onChange",
+    "kind": "function",
+    "default": null,
+    "summary": "Se llama con el Markdown completo tras cada modificación hecha por el usuario (o por `insertMarkdown`, `setMarkdown`, Aceptar/Rechazar/Restaurar en comparación y Confirm en el historial)."
+  },
+  {
+    "name": "width",
+    "kind": "size",
+    "default": 700,
+    "summary": "Ancho del componente: número en píxeles o cualquier longitud CSS (`\"100%\"`, `\"40rem\"`)."
+  },
+  {
+    "name": "height",
+    "kind": "size",
+    "default": 500,
+    "summary": "Alto del componente: número en píxeles o cualquier longitud CSS."
+  },
+  {
+    "name": "sanitizeEmbeddedHtml",
+    "kind": "switch",
+    "default": true,
+    "summary": "Sanitiza el HTML embebido en el Markdown antes de renderizarlo (quita scripts, manejadores de eventos y URLs peligrosas)."
+  },
+  {
+    "name": "onlyView",
+    "kind": "switch",
+    "default": false,
+    "summary": "Solo lectura: sin edición y con una barra reducida (vista Markdown/renderizada y Exportar) que muestra `onlyViewNotice`."
+  },
+  {
+    "name": "resizable",
+    "kind": "switch",
+    "default": true,
+    "summary": "Permite redimensionar el componente arrastrando su esquina inferior derecha."
+  },
+  {
+    "name": "autoHeight",
+    "kind": "switch",
+    "default": false,
+    "summary": "Alto automático: el componente crece hacia abajo hasta mostrar todo su contenido, sin barra de desplazamiento vertical interna, y se reduce al borrar contenido."
+  },
+  {
+    "name": "showToolbar",
+    "kind": "switch",
+    "default": true,
+    "summary": "Muestra u oculta la barra de herramientas (y con ella la de comparación y el historial)."
+  },
+  {
+    "name": "autoHideBar",
+    "kind": "switch",
+    "default": false,
+    "summary": "Oculta la barra de herramientas mientras el foco no está dentro del componente y la muestra al volver (clic o Tab en el contenido o en la barra)."
+  },
+  {
+    "name": "onlyViewNotice",
+    "kind": "text",
+    "default": "Edición desactivada",
+    "summary": "Texto del aviso que muestra la barra reducida con `onlyView`."
+  },
+  {
+    "name": "mode",
+    "kind": "options",
+    "options": [
+      "default",
+      "compare"
+    ],
+    "default": "default",
+    "summary": "`\"default\"` (edición normal) o `\"compare\"` (original frente a contenido nuevo)."
+  },
+  {
+    "name": "compareOrientation",
+    "kind": "options",
+    "options": [
+      "side-to-side",
+      "up-and-down"
+    ],
+    "default": null,
+    "summary": "Disposición de los dos paneles en modo `\"compare\"` (`\"side-to-side\"` o `\"up-and-down\"`)."
+  },
+  {
+    "name": "compareContent",
+    "kind": "text",
+    "default": null,
+    "summary": "Markdown nuevo (propuesto) que se muestra en el panel editable en modo `\"compare\"`."
+  },
+  {
+    "name": "onCompareDecision",
+    "kind": "function",
+    "default": null,
+    "summary": "Se llama una vez cuando el usuario acepta o rechaza el cambio en modo `\"compare\"`, después de `onChange`."
+  },
+  {
+    "name": "historyUndo",
+    "kind": "switch",
+    "default": false,
+    "summary": "Activa el historial de versiones: se guarda una versión tras 3 s sin cambios (hasta 200, en memoria) y un icono tras el botón HTML de la barra abre el modo historial (← Undo / Redo →, Confirm, Cancel (back to last ver…"
+  },
+  {
+    "name": "compareSyncScroll",
+    "kind": "switch",
+    "default": true,
+    "summary": "En modo `\"compare\"`, mantiene los dos paneles sobre el mismo contenido al desplazarse: el panel que se movió en último lugar guía y el otro lo sigue por contenido coincidente (los tramos que solo existen en un lado se…"
+  },
+  {
+    "name": "documentId",
+    "kind": "text",
+    "default": null,
+    "summary": "Identificador de documento de uso libre para la app consumidora: el componente no lo usa ni lo muestra."
+  },
+  {
+    "name": "fileName",
+    "kind": "text",
+    "default": null,
+    "summary": "Nombre de archivo de uso libre para la app consumidora: el componente no lo usa ni lo muestra."
+  },
+  {
+    "name": "resolveImageSrc",
+    "kind": "function",
+    "default": null,
+    "summary": "Resuelve el `src` de las imágenes SOLO para mostrarlas (p. ej. ruta relativa → URL servible); el Markdown conserva el `src` original."
+  }
+]

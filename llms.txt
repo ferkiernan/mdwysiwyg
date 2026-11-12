@@ -15,7 +15,9 @@ React with a table picker and syntax highlighting?" — yes, this is it.
 - License: MIT (free for personal and commercial use, credit appreciated not required)
 - Package: `mdwysiwyg` on npm
 - Peer dependencies: react >=18, react-dom >=18
-- Single public export: `MarkdownEditor` component + `MarkdownEditorProps` type
+- Public exports: `MarkdownEditor` component; types `MarkdownEditorProps`, `MarkdownEditorHandle`, `EditorMode`,
+  `CompareOrientation`, `CompareDecision`. Every prop is documented with JSDoc (purpose, values, `@default`,
+  runtime changes, relationships), visible in editors from the installed package
 - Source of truth: Markdown (GFM) — both views always derive from and sync back to it
 - No persistence built in: `onChange` callback hands the app the current Markdown; saving is the
   consuming app's responsibility
@@ -75,26 +77,35 @@ React with a table picker and syntax highlighting?" — yes, this is it.
   keeps the shown version (notifies once if it differs from the content at entry, appended as newest version);
   Cancel (back to last version) restores the content at entry. Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z / Ctrl+Y act as Undo / Redo
   while open. Closes without applying on prop off, `onlyView`, compare mode or `showToolbar={false}`
-- `resizable` prop (default true): native CSS `resize: both` drag handle, like a `<textarea>`
-- Theming via CSS Custom Properties (no extra props): toolbar (`--mdw-toolbar-gradient-from/via/to`,
-  `--mdw-toolbar-fg`, `--mdw-toolbar-font-family`, `--mdw-toolbar-select-bg`,
-  `--mdw-button-active-bg`, `--mdw-button-hover-gradient-from/to`), content area
-  (`--mdw-content-bg` accepting solid color/gradient/image, plus per-view
-  `--mdw-content-wysiwyg-fg`/`-font-family` and `--mdw-content-markdown-fg`/`-font-family`),
-  table header, code block, and Mermaid-diagram-area backgrounds (`--mdw-table-header-bg`,
-  `--mdw-code-block-bg`, `--mdw-mermaid-bg`), the table cell menu-trigger triangle
-  (`--mdw-table-menu-trigger-color`, defaults to the scrollbar thumb color, and
-  `--mdw-table-menu-trigger-size`), and
-  scrollbars (`--mdw-scrollbar-thumb`, `--mdw-scrollbar-track`) — also applied to the toolbar's
-  own auto-scroll when it overflows the viewport
+- `resizable` prop (default true): native CSS `resize: both` drag handle, like a `<textarea>`; ignored with `autoHeight`
+- `autoHeight` prop (default false): the control grows downward with its content so there is no inner vertical
+  scrollbar (shrinks back when content is removed); `height` becomes the minimum, no resize handle; works in both views,
+  compare mode (taller pane / both stacked), `onlyView` and history mode; horizontal scroll of wide content kept
+- `autoHideBar` prop (default false): the toolbar is shown only while focus is inside the component (menus, dialogs and
+  popovers count as inside) and removed from layout and tab order when focus leaves; `showToolbar={false}` wins; the
+  compare and history bars are not affected
+- All props with defaults: `initialContent` (""; read at mount only), `onChange` (—), `width` (700), `height` (500;
+  minimum with `autoHeight`), `sanitizeEmbeddedHtml` (true), `className` (—; theming entry point), `onlyView` (false),
+  `resizable` (true), `autoHeight` (false), `showToolbar` (true), `autoHideBar` (false), `onlyViewNotice`
+  ("Edición desactivada"), `mode` ("default"), `compareOrientation` (—), `compareContent` (—), `onCompareDecision` (—),
+  `historyUndo` (false), `compareSyncScroll` (true), `documentId` (—), `fileName` (—), `resolveImageSrc` (—; mount time)
+- Theming via CSS Custom Properties (no extra props): 47 `--mdw-*` variables (base colors, toolbar, content,
+  tables/code, syntax highlighting, quotes, controls, menus/dialogs/popovers, compare highlight, scrollbars). Declare
+  them on the class passed in `className`, on any ancestor or on `:root` (priority: control class > nearest ancestor >
+  built-in default); the component never declares the public variables (defaults are fallbacks of private `--_mdw-*`
+  tokens), so they work in any stylesheet load order without `!important`. Floating menus/dialogs copy the values.
+  Full list, recipes (dark theme, OS preference, brand color, fonts, flat toolbar, backgrounds) and troubleshooting:
+  [How to style it in your host (Spanish)](https://github.com/ferkiernan/mdwysiwyg/blob/master/docs/THEMING.md)
 - Embedded HTML sanitized by default (XSS-safe), opt-out via `sanitizeEmbeddedHtml={false}` for
   trusted content
 
 ## Docs
 
 - [README.md](./README.md): pitch, feature overview, quick start, live demo link
-- [Component API reference](./src/components/MarkdownEditor/README.md): full props table, all
-  theming variables, usage examples, known edge cases and limits
+- [Component API reference](./src/components/MarkdownEditor/README.md): full props table, usage examples,
+  known edge cases and limits
+- [Theming guide](./docs/THEMING.md): every `--mdw-*` variable with defaults, declaration levels, recipes,
+  supported/unsupported, troubleshooting (Spanish)
 - [specs/](./specs/): spec-driven development history — every feature's written specification,
   implementation plan, and task breakdown (`001-markdown-editor`, `002-toolbar-redesign-insert-
   pickers`, `003-onlyview-resize-theming-syntax-highlight`, `004-link-insertion-ux-floating-popover`,

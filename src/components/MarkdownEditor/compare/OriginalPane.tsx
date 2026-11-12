@@ -17,6 +17,8 @@ export interface OriginalPaneProps {
   resolveImageSrc?: () => ((src: string) => string) | undefined;
   /** Recibe el editor del panel (o `null` al destruirse) para la sincronización del desplazamiento. */
   onEditor?: (editor: Editor | null) => void;
+  /** Ajusta el área de texto de la vista Markdown a su contenido (`autoHeight`). */
+  autoSize?: boolean;
 }
 
 function noop(): void {
@@ -30,7 +32,14 @@ function noop(): void {
  */
 export const OriginalPane = forwardRef<HTMLDivElement, OriginalPaneProps>(
   function OriginalPane(
-    { markdown, viewMode, sanitizeEmbeddedHtml, resolveImageSrc, onEditor },
+    {
+      markdown,
+      viewMode,
+      sanitizeEmbeddedHtml,
+      resolveImageSrc,
+      onEditor,
+      autoSize = false,
+    },
     ref,
   ) {
     const hasImageResolver = resolveImageSrc !== undefined;
@@ -84,6 +93,7 @@ export const OriginalPane = forwardRef<HTMLDivElement, OriginalPaneProps>(
             onChange={noop}
             readOnly
             ariaLabel="Código fuente Markdown original (solo lectura)"
+            autoSize={autoSize}
           />
         )}
       </div>

@@ -2,6 +2,46 @@
 
 All notable changes to this project are documented in this file.
 
+## Unreleased
+
+### Added
+
+- **`autoHeight` prop** (default `false`): the control grows downward with its content so the content area never shows
+  a vertical scrollbar, and shrinks back when content is removed. `height` becomes the minimum height and the resize
+  handle is not offered while it is on. Works in the rendered and Markdown views (the textareas size to their wrapped
+  lines), in compare mode (taller pane side by side, both panes stacked) and in history mode (the version list scrolls
+  on its own). Horizontal scrolling of wide content is kept. Can change at any time.
+- **`autoHideBar` prop** (default `false`): the toolbar is visible only while the focus is inside the component
+  (its menus, dialogs and popovers count as inside) and is removed from the layout and the tab order when the focus
+  leaves. `showToolbar={false}` wins; the compare and history bars are not affected. Can change at any time.
+- **20 new theming variables** for values that were fixed: syntax highlighting (`--mdw-code-keyword`, `-string`,
+  `-comment`, `-number`, `-title`), quotes (`--mdw-blockquote-fg`, `-border`), controls (`--mdw-control-border`,
+  `-highlight`, `-shadow`, `-pressed-shadow`, `--mdw-separator-color`), floating panels (`--mdw-popover-bg`,
+  `-shadow`, `--mdw-menu-hover-bg`, `--mdw-danger-fg`, `-hover-fg`) `--mdw-table-picker-selected-bg` and links (`--mdw-link-fg`, `--mdw-link-visited-fg`, defaults = the browser's). Defaults are
+  today's values; a full dark theme no longer leaves light-colored parts.
+- **Theming guide** `docs/THEMING.md` (Spanish, shipped in the package): every variable with its default, where to
+  declare them, recipes (dark theme, OS preference, light/dark switch, brand color, fonts, flat toolbar, backgrounds),
+  supported vs. unsupported, CSS strategies and troubleshooting.
+- **Self-documented API**: every prop, callback, `ref` method and exported type has JSDoc with values, `@default`,
+  runtime behavior, relationships and examples, available in editors from the installed package.
+- **Playground configuration builder**: a section «Seleccioná los atributos de tu control» (every prop, generated from
+  the JSDoc, with defaults, summaries and dependency notes) and a reworked «Theming» section (all 47 variables, presets,
+  scope: this control / a section / the whole page, OS dark variant) drive one shared sticky preview. «Copiar
+  atributos» copies the non-default props as JSX or a props object; «Crear CSS» copies the final CSS shown live in the
+  output panel, with instructions. Choices are remembered in the browser. Links «Cómo implementar estilos en tu host»
+  open the theming guide.
+- `npm run check:docs`: non-blocking documentation checks (undocumented props, props missing from the docs, theming
+  variables missing from the guide); also printed at the end of `prepublishOnly`.
+
+### Changed
+
+- **Theming variables can be declared on any ancestor** (a wrapper or `:root`), not only on the control's class, and
+  work in any stylesheet load order without `!important`: the component no longer declares the public `--mdw-*`
+  variables; its defaults are fallbacks. Priority: control class > nearest ancestor > default. Default appearance is
+  unchanged. Menus, dialogs and popovers (rendered in `document.body`) now receive per-control and wrapper themes too.
+- Documentation refreshed: component README, README and `llms.txt` list every prop with its default and link the
+  theming guide.
+
 ## 0.4.0
 
 ### Added

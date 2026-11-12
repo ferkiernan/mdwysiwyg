@@ -29,6 +29,10 @@ function App() {
 
 Sin `initialContent` el editor comienza vacío. Sin `width`/`height` usa 700×500px.
 
+Cada prop está documentada en el propio código (JSDoc): al pasar el cursor sobre ella en tu editor ves qué hace, sus
+valores, su default, si se puede cambiar en caliente y cómo se relaciona con las demás. Para el aspecto visual, ver
+[Cómo implementar estilos en tu host](../../../docs/THEMING.md).
+
 ## API (props)
 
 | Prop | Tipo | Default | Descripción |
@@ -47,13 +51,15 @@ Sin `initialContent` el editor comienza vacío. Sin `width`/`height` usa 700×50
 | `onCompareDecision` | `(result: { decision: "accepted" \| "rejected"; markdown: string }) => void` | — | Se invoca una vez cuando el usuario acepta o rechaza el cambio; `markdown` es el contenido resultante. El componente vuelve por sí mismo al modo normal. |
 | `historyUndo` | `boolean` | `false` | Activa el historial de versiones: se guarda una versión tras 3 s sin cambios y un icono tras el botón HTML de la barra abre el modo historial (Undo / Redo / Confirm / Cancel (back to last version) y una lista de versiones con su hora). Solo en modo `"default"` y sin `onlyView`. Se puede cambiar en cualquier momento. Ver [Historial de versiones](#historial-de-versiones). |
 | `compareSyncScroll` | `boolean` | `true` | En modo `"compare"`, mantiene los dos paneles sobre el mismo contenido al desplazarse (ver «Desplazamiento sincronizado»). Con `false` se desplazan por separado. Se puede cambiar en cualquier momento. |
-| `resizable` | `boolean` | `true` | Permite redimensionar el componente arrastrando su esquina inferior derecha (como un `<textarea>` nativo). Con `false`, el tamaño queda fijo. |
+| `resizable` | `boolean` | `true` | Permite redimensionar el componente arrastrando su esquina inferior derecha (como un `<textarea>` nativo). Con `false`, el tamaño queda fijo. Se ignora con `autoHeight`. |
+| `autoHeight` | `boolean` | `false` | Alto automático: el componente crece hacia abajo con su contenido, sin barra de desplazamiento vertical interna (ver «Alto automático»). `height` pasa a ser el mínimo y no hay tirador de redimensionar. Se puede cambiar en cualquier momento. |
+| `autoHideBar` | `boolean` | `false` | Oculta la barra de herramientas mientras el foco está fuera del componente y la muestra al volver (ver «Ocultar la barra al perder el foco»). `showToolbar={false}` tiene prioridad. Se puede cambiar en cualquier momento. |
 | `onlyViewNotice` | `string` | `"Edición desactivada"` | Texto del aviso mostrado en la barra con `onlyView` activo. Útil para mostrar, por ejemplo, el nombre del archivo. |
 | `documentId` | `string` | — | Identificador de documento de uso libre para la app consumidora. El componente lo acepta sin darle un uso propio. |
 | `resolveImageSrc` | `(src: string) => string` | — | Resuelve el `src` de las imágenes **solo para mostrarlas** (p. ej. ruta relativa → URL servible). El Markdown conserva el `src` original. Debe pasarse desde el montaje (activarlo o no después no tiene efecto). |
 | `fileName` | `string` | — | Nombre de archivo de uso libre para la app consumidora. No se usa automáticamente como `onlyViewNotice`: pasalo explícitamente si lo querés ahí. |
 
-Tipos exportados: `MarkdownEditorProps`, `MarkdownEditorHandle`.
+Tipos exportados: `MarkdownEditorProps`, `MarkdownEditorHandle`, `EditorMode`, `CompareOrientation`, `CompareDecision`.
 
 ## API imperativa (`ref`)
 
@@ -117,6 +123,42 @@ si un control de la barra tenía el foco, este pasa al editor. Contenido, cursor
 deshacer y vista (renderizada/Markdown) no cambian, y alternar la prop nunca dispara `onChange`. Los
 atajos de teclado, los menús de tabla, el popover de enlaces y la API imperativa siguen funcionando.
 Mientras está oculta no hay botón de vista Markdown ni Export.
+
+### Ocultar la barra al perder el foco
+
+Con `autoHideBar` (por defecto `false`) la barra solo se ve mientras el usuario trabaja en el componente:
+
+```tsx
+<MarkdownEditor autoHideBar />
+```
+
+- Empieza oculta si el foco no está dentro; aparece al hacer clic o tabular hacia el contenido y desaparece cuando el
+  foco sale (clic en otro lugar, Tab a otro campo, cambio de ventana).
+- Moverse entre el contenido, la barra y sus menús, diálogos o popovers **no** la oculta: cuentan como "dentro".
+- Oculta = fuera del layout (el contenido ocupa su espacio) y fuera del orden de tabulación: con Tab se entra al
+  contenido y, ya visible, Shift+Tab llega a la barra. Al salir tabulando, el foco sigue el orden normal de la página.
+- `showToolbar={false}` manda (nunca la muestra). La barra de comparación y la del historial no se ocultan: llevan
+  decisiones pendientes.
+- Cambiar la prop no toca contenido, cursor ni historial y nunca dispara `onChange`.
+
+### Alto automático
+
+Con `autoHeight` (por defecto `false`) el componente crece hacia abajo hasta mostrar todo su contenido, sin barra de
+desplazamiento vertical interna, y empuja hacia abajo lo que hay debajo en la página:
+
+```tsx
+<MarkdownEditor autoHeight height={240} />
+```
+
+- `height` pasa a ser el alto **mínimo**: con poco contenido el control conserva ese alto; al borrar vuelve a él.
+- Sin tope: un documento largo hace crecer el control y se desplaza la página. Si querés un máximo, limitá el
+  contenedor del host (por ejemplo `max-height` + `overflow: auto` en un padre).
+- Funciona en ambas vistas (en la Markdown, el área de texto se ajusta a sus líneas, incluidas las ajustadas), en
+  comparación (lado a lado: alto del panel más alto; arriba y abajo: ambos completos), con `onlyView` y en el
+  historial (la lista de versiones se desplaza por su cuenta y no agranda el control).
+- No se ofrece el tirador de redimensionar (`resizable` se ignora) mientras esté activo.
+- Solo desaparece la barra vertical: tablas anchas o líneas de código largas siguen con desplazamiento horizontal.
+- Se puede cambiar en cualquier momento sin perder contenido, cursor ni historial.
 
 ### Modo comparación
 
@@ -287,83 +329,24 @@ En modo `onlyView` el panel solo ofrece "Ir a la url" y "Copiar url" — sin edi
 
 ## Theming (CSS Custom Properties)
 
-El aspecto visual de la barra de herramientas y del fondo del área de contenido se personaliza
-con CSS estándar, sin agregar props al componente. Sobreescribí cualquier subconjunto de estas
-variables en un selector que apunte al `className` que le pases:
-
-**Barra de herramientas:**
-
-| Variable | Default | Controla |
-| --- | --- | --- |
-| `--mdw-toolbar-gradient-from` | `#eeeeee` | Color inicial del degradado de la barra |
-| `--mdw-toolbar-gradient-via` | `#dcdcdc` | Color intermedio del degradado |
-| `--mdw-toolbar-gradient-to` | `#cfcfcf` | Color final del degradado |
-| `--mdw-toolbar-fg` | `#222222` | Color de texto e iconos de la barra |
-| `--mdw-toolbar-font-family` | `Arial, sans-serif` | Fuente tipográfica de la barra |
-| `--mdw-toolbar-select-bg` | `#e9e9e9` | Fondo del selector de nivel de encabezado |
-| `--mdw-button-active-bg` | `#c8c8c8` | Fondo de un botón presionado o activo |
-| `--mdw-button-hover-gradient-from` | `#ffffff` | Color inicial del degradado de un botón en hover |
-| `--mdw-button-hover-gradient-to` | `#d8d8d8` | Color final del degradado de un botón en hover |
-
-**Área de contenido:**
-
-| Variable | Default | Controla |
-| --- | --- | --- |
-| `--mdw-content-bg` | `var(--mdw-bg)` (blanco) | Fondo del área de contenido (ambas vistas): admite color sólido, degradado o imagen |
-| `--mdw-content-wysiwyg-fg` | `var(--mdw-fg)` | Color de texto de la vista renderizada |
-| `--mdw-content-wysiwyg-font-family` | `inherit` | Fuente de la vista renderizada |
-| `--mdw-content-markdown-fg` | `var(--mdw-fg)` | Color de texto de la vista Markdown |
-| `--mdw-content-markdown-font-family` | `ui-monospace, Consolas, monospace` | Fuente de la vista Markdown |
-
-**Tablas y código:**
-
-| Variable | Default | Controla |
-| --- | --- | --- |
-| `--mdw-table-header-bg` | `var(--mdw-muted)` | Fondo de los encabezados (`th`) de tablas en la vista renderizada |
-| `--mdw-table-menu-trigger-color` | `var(--mdw-scrollbar-thumb)` | Color del triángulo que abre el menú de columna/fila en cada celda |
-| `--mdw-table-menu-trigger-size` | `0.7em` | Longitud de cada cateto del triángulo (≈ mitad de la altura del cursor de texto) |
-| `--mdw-code-block-bg` | `var(--mdw-muted)` | Fondo de los bloques de código en la vista renderizada |
-| `--mdw-mermaid-bg` | `var(--mdw-muted)` | Fondo del contenedor donde se renderiza un diagrama Mermaid |
-| `--mdw-compare-highlight-bg` | `#fff176` | Fondo del resaltado de diferencias en el modo comparación |
-
-**Scroll:**
-
-| Variable | Default | Controla |
-| --- | --- | --- |
-| `--mdw-scrollbar-thumb` | `#c1c1c1` | Color del "pulgar" de la barra de scroll |
-| `--mdw-scrollbar-track` | `transparent` | Color del riel de la barra de scroll |
-
-Los colores de scroll se aplican donde el navegador lo permite (`scrollbar-color` y los
-pseudo-elementos `::-webkit-scrollbar-*`), incluyendo el scroll horizontal que aparece
-automáticamente en la barra de herramientas cuando es más ancha que el contenedor; en
-navegadores sin soporte se ignoran silenciosamente.
-
-`--mdw-content-bg` acepta cualquier valor válido de la propiedad CSS `background` (shorthand
-completo: color, `linear-gradient(...)`, o `url(...)` con capas y transparencia combinadas), ya
-que se aplica directamente como `background: var(--mdw-content-bg)`.
+El aspecto se personaliza con CSS estándar declarando variables `--mdw-*`, sin props de estilo:
 
 ```css
-.mi-editor-oscuro {
-  --mdw-toolbar-gradient-from: #1e293b;
-  --mdw-toolbar-gradient-via: #0f172a;
-  --mdw-toolbar-gradient-to: #020617;
-  --mdw-toolbar-fg: #f8fafc;
-  --mdw-toolbar-font-family: "Inter", sans-serif;
-  --mdw-content-bg: #0b1220;
-}
-
-.mi-editor-con-marca-de-agua {
-  --mdw-content-bg:
-    url("/marca-de-agua.png") center / 200px no-repeat,
-    #ffffff;
-}
+.mi-editor { --mdw-bg: #0b1220; --mdw-fg: #e5e7eb; --mdw-accent: #60a5fa; }
 ```
 
 ```tsx
-<MarkdownEditor className="mi-editor-oscuro" />
+<MarkdownEditor className="mi-editor" />
 ```
 
-Cualquier variable que no sobreescribas conserva su valor por defecto.
+- Se pueden declarar en la clase del control, en cualquier contenedor o en `:root` (prioridad: clase del control >
+  ancestro > default). Funcionan en cualquier orden de carga de las hojas y sin `!important`.
+- Hay variables para barra, contenido, tablas, código y resaltado de sintaxis, citas, botones, menús y popovers,
+  comparación y scroll (47 en total).
+
+La lista completa con defaults, recetas (tema oscuro, preferencia del sistema, color de marca, fuentes, barra plana,
+fondo), qué está soportado y la resolución de problemas están en
+**[Cómo implementar estilos en tu host](../../../docs/THEMING.md)**.
 
 ## Ejemplos
 

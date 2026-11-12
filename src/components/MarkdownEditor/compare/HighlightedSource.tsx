@@ -11,6 +11,8 @@ export interface HighlightedSourceProps {
    * resaltado (modo normal).
    */
   ranges: ReadonlyArray<readonly [number, number]> | null;
+  /** Ajusta el alto al contenido (ver `MarkdownSourceView`). */
+  autoSize?: boolean;
 }
 
 function segments(value: string, ranges: HighlightedSourceProps["ranges"]): ReactNode[] {
@@ -42,7 +44,7 @@ function segments(value: string, ranges: HighlightedSourceProps["ranges"]): Reac
 export const HighlightedSource = forwardRef<
   HTMLTextAreaElement,
   HighlightedSourceProps
->(function HighlightedSource({ value, onChange, readOnly, ranges }, ref) {
+>(function HighlightedSource({ value, onChange, readOnly, ranges, autoSize }, ref) {
   const layerRef = useRef<HTMLDivElement>(null);
 
   const syncScroll = (event: UIEvent<HTMLDivElement>) => {
@@ -69,6 +71,7 @@ export const HighlightedSource = forwardRef<
         value={value}
         onChange={onChange}
         {...(readOnly !== undefined ? { readOnly } : {})}
+        {...(autoSize !== undefined ? { autoSize } : {})}
       />
     </div>
   );

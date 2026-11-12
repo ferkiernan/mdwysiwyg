@@ -128,7 +128,9 @@ export const MarkdownEditor = forwardRef<
     className,
     onlyView = false,
     showToolbar = true,
+    autoHideBar = false,
     resizable = true,
+    autoHeight = false,
     onlyViewNotice,
     resolveImageSrc,
     mode = "default",
@@ -717,15 +719,50 @@ export const MarkdownEditor = forwardRef<
     closeLinkPopover();
   };
 
+  // `autoHideBar`: ¿está el foco dentro del componente? Los eventos de foco de
+  // React recorren el árbol de componentes, así que los paneles flotantes (en
+  // portal) cuentan como "dentro". Una salida se confirma en la siguiente tarea:
+  // si llega antes un foco interno (moverse entre partes), se cancela.
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [focusInside, setFocusInside] = useState(false);
+  const focusOutTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleFocusIn = () => {
+    if (focusOutTimer.current !== null) {
+      clearTimeout(focusOutTimer.current);
+      focusOutTimer.current = null;
+    }
+    setFocusInside(true);
+  };
+  const handleFocusOut = () => {
+    if (focusOutTimer.current !== null) clearTimeout(focusOutTimer.current);
+    focusOutTimer.current = setTimeout(() => {
+      focusOutTimer.current = null;
+      setFocusInside(false);
+    }, 0);
+  };
+  useLayoutEffect(() => {
+    if (!autoHideBar) return;
+    const root = rootRef.current;
+    setFocusInside(root !== null && root.contains(document.activeElement));
+  }, [autoHideBar]);
+  useEffect(
+    () => () => {
+      if (focusOutTimer.current !== null) clearTimeout(focusOutTimer.current);
+    },
+    [],
+  );
+
   const rootClassName = [
     styles["root"],
-    resizable ? styles["resizable"] : undefined,
+    resizable && !autoHeight ? styles["resizable"] : undefined,
+    autoHeight ? styles["autoHeight"] : undefined,
     className,
   ]
     .filter(Boolean)
     .join(" ");
 
   const orientation = compareOrientation ?? "side-to-side";
+  const toolbarVisible = showToolbar && (!autoHideBar || focusInside);
   const panesClassName = [
     styles["panes"],
     session !== null ? styles["panesCompare"] : undefined,
@@ -741,10 +778,16 @@ export const MarkdownEditor = forwardRef<
   return (
     <div
       className={rootClassName}
-      style={{ width: toCssSize(width), height: toCssSize(height) }}
+      style={
+        autoHeight
+          ? { width: toCssSize(width), minHeight: toCssSize(height) }
+          : { width: toCssSize(width), height: toCssSize(height) }
+      }
       {...(historyOpen ? { onKeyDownCapture: handleHistoryKeyDown } : {})}
+      {...(autoHideBar ? { onFocus: handleFocusIn, onBlur: handleFocusOut } : {})}
+      ref={rootRef}
     >
-      {showToolbar && (
+      {toolbarVisible && (
         <ToolbarSlot onFocusLost={() => editor?.view.focus()}>
           <Toolbar
             editor={editor}
@@ -806,6 +849,7 @@ export const MarkdownEditor = forwardRef<
           <OriginalPane
             ref={originalPaneRef}
             onEditor={setOriginalEditor}
+            autoSize={autoHeight}
             markdown={session.original}
             viewMode={effectiveViewMode}
             sanitizeEmbeddedHtml={sanitizeEmbeddedHtml}
@@ -842,6 +886,7 @@ export const MarkdownEditor = forwardRef<
               onChange={handleSourceChange}
               readOnly={onlyView || historyOpen}
               ranges={session !== null ? (textDiff?.ranges ?? []) : null}
+              autoSize={autoHeight}
             />
           )}
           {tableTriggerEnabled &&

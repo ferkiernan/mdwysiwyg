@@ -45,17 +45,22 @@
     "./styles.css": "./dist/index.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "docs"
   ],
   "scripts": {
     "build": "tsup",
+    "gen:playground": "node scripts/gen-playground-attributes.mjs",
+    "predev": "npm run gen:playground",
     "dev": "vite playground",
+    "prebuild:demo": "npm run gen:playground",
     "build:demo": "vite build playground",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "verify:dist": "node scripts/verify-dist.mjs",
-    "prepublishOnly": "npm run typecheck && npm test && npm run build && npm run verify:dist"
+    "check:docs": "node scripts/check-docs.mjs",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build && npm run verify:dist && npm run check:docs"
   },
   "peerDependencies": {
     "react": ">=18",

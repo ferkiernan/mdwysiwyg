@@ -9,6 +9,25 @@ function injectStyle(css: string): () => void {
   return () => style.remove();
 }
 
+/**
+ * Valor efectivo de una variable pública de theming: la declarada por el host o,
+ * si no hay, el default con el que el control la lee (fallback de su token
+ * privado `--_mdw-*`). Las referencias internas se devuelven con nombre público.
+ */
+function tokenValue(style: CSSStyleDeclaration, name: string): string {
+  const declared = style.getPropertyValue(name).trim();
+  if (declared !== "") return declared;
+  const privateValue = style
+    .getPropertyValue(name.replace("--mdw-", "--_mdw-"))
+    .trim();
+  const comma = privateValue.indexOf(",");
+  if (comma === -1) return "";
+  return privateValue
+    .slice(comma + 1, privateValue.length - 1)
+    .trim()
+    .replace(/--_mdw-/g, "--mdw-");
+}
+
 function rootOf(container: HTMLElement): HTMLElement {
   return container.firstElementChild as HTMLElement;
 }
@@ -39,7 +58,7 @@ describe("US5: theming extendido (CSS Custom Properties)", () => {
     (variable, expected) => {
       const { container } = render(<MarkdownEditor />);
       const style = getComputedStyle(rootOf(container));
-      expect(style.getPropertyValue(variable).trim()).toBe(expected);
+      expect(tokenValue(style, variable)).toBe(expected);
     },
   );
 
@@ -53,7 +72,7 @@ describe("US5: theming extendido (CSS Custom Properties)", () => {
       );
       const style = getComputedStyle(rootOf(container));
       expect(
-        style.getPropertyValue("--mdw-table-menu-trigger-color").trim(),
+        tokenValue(style, "--mdw-table-menu-trigger-color"),
       ).toBe("#ff0000");
     } finally {
       cleanup();
@@ -70,7 +89,7 @@ describe("US5: theming extendido (CSS Custom Properties)", () => {
       );
       const style = getComputedStyle(rootOf(container));
       expect(
-        style.getPropertyValue("--mdw-content-wysiwyg-font-family").trim(),
+        tokenValue(style, "--mdw-content-wysiwyg-font-family"),
       ).toBe('"Georgia",serif');
     } finally {
       cleanup();
@@ -90,11 +109,11 @@ describe("US5: theming extendido (CSS Custom Properties)", () => {
         screen.getByRole("button", { name: "Ver código Markdown" }),
       );
       const style = getComputedStyle(rootOf(container));
-      expect(style.getPropertyValue("--mdw-content-markdown-fg").trim()).toBe(
+      expect(tokenValue(style, "--mdw-content-markdown-fg")).toBe(
         "#123456",
       );
       // La vista renderizada conserva su propio default, independiente.
-      expect(style.getPropertyValue("--mdw-content-wysiwyg-fg").trim()).toBe(
+      expect(tokenValue(style, "--mdw-content-wysiwyg-fg")).toBe(
         "var(--mdw-fg)",
       );
     } finally {
@@ -114,10 +133,10 @@ describe("US5: theming extendido (CSS Custom Properties)", () => {
         <MarkdownEditor className="mdw-table-code-theme" />,
       );
       const style = getComputedStyle(rootOf(container));
-      expect(style.getPropertyValue("--mdw-table-header-bg").trim()).toBe(
+      expect(tokenValue(style, "--mdw-table-header-bg")).toBe(
         "#dbeafe",
       );
-      expect(style.getPropertyValue("--mdw-code-block-bg").trim()).toBe(
+      expect(tokenValue(style, "--mdw-code-block-bg")).toBe(
         "#111827",
       );
     } finally {
@@ -134,7 +153,7 @@ describe("US5: theming extendido (CSS Custom Properties)", () => {
         <MarkdownEditor className="mdw-mermaid-theme" />,
       );
       const style = getComputedStyle(rootOf(container));
-      expect(style.getPropertyValue("--mdw-mermaid-bg").trim()).toBe(
+      expect(tokenValue(style, "--mdw-mermaid-bg")).toBe(
         "#ecfdf5",
       );
     } finally {
@@ -151,10 +170,10 @@ describe("US5: theming extendido (CSS Custom Properties)", () => {
         <MarkdownEditor className="mdw-scroll-theme" />,
       );
       const style = getComputedStyle(rootOf(container));
-      expect(style.getPropertyValue("--mdw-scrollbar-thumb").trim()).toBe(
+      expect(tokenValue(style, "--mdw-scrollbar-thumb")).toBe(
         "#94a3b8",
       );
-      expect(style.getPropertyValue("--mdw-scrollbar-track").trim()).toBe(
+      expect(tokenValue(style, "--mdw-scrollbar-track")).toBe(
         "transparent",
       );
     } finally {
@@ -176,17 +195,17 @@ describe("US5: theming extendido (CSS Custom Properties)", () => {
         <MarkdownEditor className="mdw-toolbar-theme" />,
       );
       const style = getComputedStyle(rootOf(container));
-      expect(style.getPropertyValue("--mdw-toolbar-select-bg").trim()).toBe(
+      expect(tokenValue(style, "--mdw-toolbar-select-bg")).toBe(
         "#ffffff",
       );
-      expect(style.getPropertyValue("--mdw-button-active-bg").trim()).toBe(
+      expect(tokenValue(style, "--mdw-button-active-bg")).toBe(
         "#cbd5e1",
       );
       expect(
-        style.getPropertyValue("--mdw-button-hover-gradient-from").trim(),
+        tokenValue(style, "--mdw-button-hover-gradient-from"),
       ).toBe("#f1f5f9");
       expect(
-        style.getPropertyValue("--mdw-button-hover-gradient-to").trim(),
+        tokenValue(style, "--mdw-button-hover-gradient-to"),
       ).toBe("#e2e8f0");
     } finally {
       cleanup();
@@ -202,13 +221,13 @@ describe("US5: theming extendido (CSS Custom Properties)", () => {
         <MarkdownEditor className="mdw-partial-theme" />,
       );
       const style = getComputedStyle(rootOf(container));
-      expect(style.getPropertyValue("--mdw-button-active-bg").trim()).toBe(
+      expect(tokenValue(style, "--mdw-button-active-bg")).toBe(
         "#000000",
       );
-      expect(style.getPropertyValue("--mdw-toolbar-select-bg").trim()).toBe(
+      expect(tokenValue(style, "--mdw-toolbar-select-bg")).toBe(
         "#e9e9e9",
       );
-      expect(style.getPropertyValue("--mdw-toolbar-fg").trim()).toBe("#222222");
+      expect(tokenValue(style, "--mdw-toolbar-fg")).toBe("#222222");
     } finally {
       cleanup();
     }

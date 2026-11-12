@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import styles from "../../MarkdownEditor.module.css";
+import { copyThemeTokens } from "../../theme/themeTokens";
 
 export interface FloatingPanelProps {
   /** Elemento ancla (normalmente el botón que abrió el panel). */
@@ -43,6 +44,18 @@ export function FloatingPanel({
       setStyle({ top: rect.bottom, left: rect.left });
     }
   }, [anchor, align]);
+
+  // El panel vive en `document.body`: no hereda los valores de tema que el host
+  // declaró en la clase del componente o en un contenedor. Se copian al abrir.
+  useLayoutEffect(() => {
+    const panel = panelRef.current;
+    const rootClass = styles["root"];
+    if (style === null || panel === null || anchor === null || rootClass === undefined) {
+      return;
+    }
+    const source = anchor.closest(`.${CSS.escape(rootClass)}`);
+    if (source !== null) copyThemeTokens(source, panel);
+  }, [style === null, anchor]);
 
   useLayoutEffect(() => {
     if (style === null || !autoFocus) return;
