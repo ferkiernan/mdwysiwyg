@@ -35,9 +35,9 @@ export function dependencyNotes(choices: AttributeChoices): Record<string, strin
   const mode = get("mode", "default");
   const orientation = String(get("compareOrientation", ""));
   const content = String(get("compareContent", ""));
-  if (mode === "compare" && (orientation === "" || content === "")) {
+  if (mode === "compare" && content === "") {
     notes["mode"] =
-      "La comparación solo se activa con compareOrientation y compareContent; mientras falte alguno se comporta como \"default\".";
+      "La comparación solo se activa con compareContent; mientras falte se comporta como \"default\".";
   }
   if (mode !== "compare") {
     if (orientation !== "") notes["compareOrientation"] = "Solo tiene efecto con mode=\"compare\".";

@@ -45,8 +45,8 @@ valores, su default, si se puede cambiar en caliente y cómo se relaciona con la
 | `className` | `string` | — | Clase adicional para el contenedor raíz. |
 | `onlyView` | `boolean` | `false` | Arranca en modo de solo lectura: ninguna vista es editable, la barra muestra "Edición desactivada" y conserva solo el control de exportar. |
 | `showToolbar` | `boolean` | `true` | Muestra u oculta la barra de herramientas (también la barra reducida de `onlyView`). Se puede cambiar en cualquier momento sin perder contenido, cursor ni historial. Oculta, no hay botón de vista Markdown ni Export. |
-| `mode` | `"default" \| "compare"` | `"default"` | `"compare"` muestra el contenido original y un contenido nuevo lado a lado (o arriba y abajo) con las diferencias resaltadas. Requiere también `compareOrientation` y `compareContent`; si falta alguno, se comporta como `"default"`. Ver [Modo comparación](#modo-comparación). |
-| `compareOrientation` | `"side-to-side" \| "up-and-down"` | — | Disposición de los paneles en modo `"compare"`: original a la izquierda/arriba y nuevo (editable) a la derecha/abajo, mitad y mitad. |
+| `mode` | `"default" \| "compare"` | `"default"` | `"compare"` muestra el contenido original y un contenido nuevo lado a lado (o arriba y abajo) con las diferencias resaltadas. Requiere también `compareContent` (si falta, se comporta como `"default"`); la orientación es `"side-to-side"` salvo que indiques `compareOrientation`. Ver [Modo comparación](#modo-comparación). |
+| `compareOrientation` | `"side-to-side" \| "up-and-down"` | `"side-to-side"` | Disposición de los paneles en modo `"compare"`: original a la izquierda/arriba y nuevo (editable) a la derecha/abajo, mitad y mitad. |
 | `compareContent` | `string` | — | Markdown nuevo (propuesto) del panel editable en modo `"compare"`. Es también la referencia de "Restaurar". |
 | `onCompareDecision` | `(result: { decision: "accepted" \| "rejected"; markdown: string }) => void` | — | Se invoca una vez cuando el usuario acepta o rechaza el cambio; `markdown` es el contenido resultante. El componente vuelve por sí mismo al modo normal. |
 | `historyUndo` | `boolean` | `false` | Activa el historial de versiones: se guarda una versión tras 3 s sin cambios y un icono tras el botón HTML de la barra abre el modo historial (Undo / Redo / Confirm / Cancel (back to last version) y una lista de versiones con su hora). Solo en modo `"default"` y sin `onlyView`. Se puede cambiar en cualquier momento. Ver [Historial de versiones](#historial-de-versiones). |
@@ -162,7 +162,7 @@ desplazamiento vertical interna, y empuja hacia abajo lo que hay debajo en la p�
 
 ### Modo comparación
 
-Con `mode="compare"`, `compareOrientation` y `compareContent`, el componente muestra el contenido
+Con `mode="compare"` y `compareContent` (y opcionalmente `compareOrientation`, por defecto `"side-to-side"`), el componente muestra el contenido
 **original** (el que tenía al empezar la comparación; en un montaje nuevo, `initialContent`) y el
 contenido **nuevo** que le pasas, para que el usuario decida qué hacer:
 

@@ -3,7 +3,8 @@
  *
  * - `"default"`: edición normal de un único documento.
  * - `"compare"`: muestra el contenido original (solo lectura) frente a un contenido nuevo (editable) con las
- *   diferencias resaltadas. Requiere además `compareOrientation` y `compareContent`.
+ *   diferencias resaltadas. Requiere además `compareContent` (`compareOrientation` es opcional, por defecto
+ *   `"side-to-side"`).
  *
  * @see README del componente, sección «Modo comparación»
  */
@@ -150,7 +151,7 @@ export interface MarkdownEditorProps {
 
   /**
    * `"default"` (edición normal) o `"compare"` (original frente a contenido nuevo). La comparación solo se
-   * activa si también se indican `compareOrientation` y `compareContent`; si falta alguno se comporta como
+   * activa si también se indica `compareContent`; si falta se comporta como
    * `"default"`. El original es el contenido que tenía el componente al entrar en comparación. Se puede cambiar
    * en cualquier momento.
    *
@@ -168,10 +169,10 @@ export interface MarkdownEditorProps {
   mode?: EditorMode;
 
   /**
-   * Disposición de los dos paneles en modo `"compare"` (`"side-to-side"` o `"up-and-down"`). Obligatoria para
-   * que la comparación se active. Cambiarla conserva las ediciones del panel nuevo.
+   * Disposición de los dos paneles en modo `"compare"` (`"side-to-side"`: original a la izquierda; `"up-and-down"`:
+   * original arriba). Cambiarla conserva las ediciones del panel nuevo.
    *
-   * @default undefined (sin comparación)
+   * @default "side-to-side"
    */
   compareOrientation?: CompareOrientation;
 

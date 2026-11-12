@@ -195,15 +195,15 @@ describe("US1: sin modo de comparación el comportamiento no cambia", () => {
     expect(screen.queryByRole("group", { name: /Contenido/ })).toBeNull();
   });
 
-  it("compare sin orientación se comporta como default", async () => {
+  it("compare sin orientación usa side-to-side por defecto", async () => {
     render(
       <MarkdownEditor mode="compare" compareContent="nuevo" initialContent="viejo" />,
     );
-    const textbox = await screen.findByRole("textbox", TEXTBOX);
+    const original = await screen.findByRole("group", { name: "Contenido original (solo lectura)" });
 
-    expect(textbox).toHaveTextContent("viejo");
-    expect(screen.queryByRole("group", { name: /Contenido/ })).toBeNull();
-    expect(screen.queryByRole("toolbar", { name: "Barra de comparación" })).toBeNull();
+    expect(original.parentElement).toHaveAttribute("data-compare-orientation", "side-to-side");
+    expect(original).toHaveTextContent("viejo");
+    expect(screen.getByRole("toolbar", { name: "Barra de comparación" })).toBeInTheDocument();
   });
 
   it("compare sin contenido nuevo se comporta como default", async () => {

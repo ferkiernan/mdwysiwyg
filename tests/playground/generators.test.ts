@@ -111,7 +111,7 @@ describe("validación y dependencias", () => {
     const notes = dependencyNotes({ historyUndo: true, onlyView: true, autoHeight: true, mode: "compare" });
     expect(notes["historyUndo"]).toMatch(/onlyView/);
     expect(notes["height"]).toMatch(/mínimo/);
-    expect(notes["mode"]).toMatch(/compareOrientation/);
+    expect(notes["mode"]).toMatch(/compareContent/);
   });
 });
 

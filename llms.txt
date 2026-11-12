@@ -58,7 +58,7 @@ React with a table picker and syntax highlighting?" — yes, this is it.
 - `documentId` / `fileName` props: passive identifiers the consuming app can attach to the editor
 - `showToolbar` prop (default true): show/hide the toolbar (including the reduced `onlyView` bar) at runtime
   without losing content, caret, undo history or view mode; toggling never fires onChange
-- Compare mode: `mode="compare"` plus `compareOrientation` (`"side-to-side"` | `"up-and-down"`) and
+- Compare mode: `mode="compare"` plus optional `compareOrientation` (`"side-to-side"` default | `"up-and-down"`) and
   `compareContent` (new Markdown) shows the original (read-only) and the new content (editable) in two
   panes with changed/added words highlighted yellow (`<mark>`, themable with `--mdw-compare-highlight-bg`)
   in both the rendered and Markdown views. A second bar offers "Rechazar cambio", "Aceptar cambio" and
@@ -87,7 +87,7 @@ React with a table picker and syntax highlighting?" — yes, this is it.
 - All props with defaults: `initialContent` (""; read at mount only), `onChange` (—), `width` (700), `height` (500;
   minimum with `autoHeight`), `sanitizeEmbeddedHtml` (true), `className` (—; theming entry point), `onlyView` (false),
   `resizable` (true), `autoHeight` (false), `showToolbar` (true), `autoHideBar` (false), `onlyViewNotice`
-  ("Edición desactivada"), `mode` ("default"), `compareOrientation` (—), `compareContent` (—), `onCompareDecision` (—),
+  ("Edición desactivada"), `mode` ("default"), `compareOrientation` ("side-to-side"), `compareContent` (—), `onCompareDecision` (—),
   `historyUndo` (false), `compareSyncScroll` (true), `documentId` (—), `fileName` (—), `resolveImageSrc` (—; mount time)
 - Theming via CSS Custom Properties (no extra props): 47 `--mdw-*` variables (base colors, toolbar, content,
   tables/code, syntax highlighting, quotes, controls, menus/dialogs/popovers, compare highlight, scrollbars). Declare

@@ -76,8 +76,8 @@
       "side-to-side",
       "up-and-down"
     ],
-    "default": null,
-    "summary": "Disposición de los dos paneles en modo `\"compare\"` (`\"side-to-side\"` o `\"up-and-down\"`)."
+    "default": "side-to-side",
+    "summary": "Disposición de los dos paneles en modo `\"compare\"` (`\"side-to-side\"`: original a la izquierda; `\"up-and-down\"`: original arriba)."
   },
   {
     "name": "compareContent",

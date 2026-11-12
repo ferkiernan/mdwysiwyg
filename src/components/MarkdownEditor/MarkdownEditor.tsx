@@ -146,11 +146,10 @@ export const MarkdownEditor = forwardRef<
   // si empieza una comparación con el modo historial abierto, el original es ese
   // contenido y no la versión que se esté mostrando.
   const historyEntryRef = useRef<string | null>(null);
-  // El modo de comparación solo se activa con orientación y contenido nuevo.
+  // El modo de comparación se activa con contenido nuevo (la orientación por
+  // defecto es "side-to-side").
   const requestedContent =
-    mode === "compare" &&
-    compareOrientation !== undefined &&
-    compareContent !== undefined
+    mode === "compare" && compareContent !== undefined
       ? compareContent
       : null;
   const [source, setSource] = useState(requestedContent ?? initialContent);
