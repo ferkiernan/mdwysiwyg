@@ -152,8 +152,9 @@ export interface MarkdownEditorProps {
   /**
    * `"default"` (edición normal) o `"compare"` (original frente a contenido nuevo). La comparación solo se
    * activa si también se indica `compareContent`; si falta se comporta como
-   * `"default"`. El original es el contenido que tenía el componente al entrar en comparación. Se puede cambiar
-   * en cualquier momento.
+   * `"default"`. El original es el contenido que tenía el componente al entrar en comparación y **solo cambia si
+   * el usuario acepta**: si la comparación termina sin decisión (vuelta a `"default"` o `compareContent`
+   * retirado), el editor vuelve al original. Se puede cambiar en cualquier momento.
    *
    * @default "default"
    * @example

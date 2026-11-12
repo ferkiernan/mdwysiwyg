@@ -4,6 +4,14 @@ All notable changes to this project are documented in this file.
 
 ## 0.6.0
 
+### Fixed
+
+- **Compare mode no longer overwrites the original without a decision.** When the comparison ended without the
+  user accepting (the host switched to `mode="default"` or removed `compareContent`, e.g. because the proposal was
+  cleared), the editor kept the new content and the next comparison used it as the original. Now the editor returns
+  to the original (`onChange` reports it if the new pane differed) and only «Aceptar cambio» changes it. The
+  playground no longer drops an empty `compareContent`.
+
 ### Changed
 
 - **`compareOrientation` defaults to `"side-to-side"`**: `mode="compare"` plus `compareContent` is now enough to

@@ -290,7 +290,7 @@ describe("US5: cambiar modo, orientación o contenido nuevo en tiempo real", () 
     expect(screen.queryByRole("button", { name: "Restaurar" })).toBeNull();
   });
 
-  it("de comparación a modo normal: el editor único muestra el contenido del panel nuevo", async () => {
+  it("de comparación a modo normal sin decidir: vuelve al original (el original solo cambia al aceptar)", async () => {
     const { update, onChange } = await setupCompare({
       initialContent: "A B C",
       compareContent: "A X C",
@@ -305,9 +305,55 @@ describe("US5: cambiar modo, orientación o contenido nuevo en tiempo real", () 
     expect(screen.queryByRole("group", { name: /Contenido/ })).toBeNull();
     expect(screen.queryByRole("toolbar", { name: "Barra de comparación" })).toBeNull();
     expect(screen.getAllByRole("textbox")).toHaveLength(1);
-    expect(screen.getByRole("textbox", TEXTBOX)).toHaveTextContent("A X C extra");
+    expect(screen.getByRole("textbox", TEXTBOX)).toHaveTextContent("A B C");
+    expect(screen.getByRole("textbox", TEXTBOX)).not.toHaveTextContent("extra");
     expect(document.querySelector("mark")).toBeNull();
-    expect(onChange).not.toHaveBeenCalled();
+    // El host recibía el panel nuevo por onChange: se le informa la vuelta al original.
+    expect(onChange).toHaveBeenLastCalledWith(expect.stringContaining("A B C"));
+    expect(onChange).not.toHaveBeenLastCalledWith(expect.stringContaining("extra"));
+  });
+
+  it("borrar todo compareContent (\"\") no pisa el original", async () => {
+    const { update, originalPane } = await setupCompare({
+      initialContent: "A B C",
+      compareContent: "A X C",
+    });
+
+    update({ compareContent: "" });
+
+    expect(screen.getByRole("group", { name: "Contenido original (solo lectura)" })).toHaveTextContent("A B C");
+    expect(originalPane).toHaveTextContent("A B C");
+    update({ compareContent: "nuevo" });
+    expect(screen.getByRole("group", { name: "Contenido original (solo lectura)" })).toHaveTextContent("A B C");
+  });
+
+  it("si el host retira compareContent y lo vuelve a pasar, el original sigue siendo el mismo", async () => {
+    const { update } = await setupCompare({
+      initialContent: "A B C",
+      compareContent: "A X C",
+    });
+
+    update({ compareContent: undefined });
+    expect(screen.getByRole("textbox", TEXTBOX)).toHaveTextContent("A B C");
+
+    update({ compareContent: "otra propuesta" });
+    const original = await screen.findByRole("group", { name: "Contenido original (solo lectura)" });
+    expect(original).toHaveTextContent("A B C");
+    expect(original).not.toHaveTextContent("A X C");
+  });
+
+  it("aceptar sí cambia el contenido: al volver a comparar, el original es lo aceptado", async () => {
+    const { update } = await setupCompare({
+      initialContent: "A B C",
+      compareContent: "A X C",
+    });
+    await userEvent.click(screen.getByRole("button", { name: "Aceptar cambio" }));
+    update({ mode: "default" });
+    expect(screen.getByRole("textbox", TEXTBOX)).toHaveTextContent("A X C");
+
+    update({ mode: "compare", compareContent: "A Y C" });
+    const original = await screen.findByRole("group", { name: "Contenido original (solo lectura)" });
+    expect(original).toHaveTextContent("A X C");
   });
 
   it("al cambiar onlyView en comparación el resaltado se mantiene", async () => {

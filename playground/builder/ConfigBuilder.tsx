@@ -89,7 +89,10 @@ function previewProps(choices: AttributeChoices): MarkdownEditorProps {
   const props: Record<string, unknown> = {};
   for (const spec of SPECS) {
     const value = choices[spec.name] ?? spec.default;
-    if (value === null || value === "") continue;
+    if (value === null) continue;
+    // Un compareContent vacío es una propuesta válida ("borrar todo"): no se
+    // descarta, para que la comparación siga activa con el mismo original.
+    if (value === "" && !(spec.name === "compareContent" && spec.name in choices)) continue;
     if (spec.kind === "function") {
       if (value === true && spec.name === "resolveImageSrc") props[spec.name] = (src: string) => src;
       continue;

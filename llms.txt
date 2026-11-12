@@ -64,7 +64,9 @@ React with a table picker and syntax highlighting?" — yes, this is it.
   in both the rendered and Markdown views. A second bar offers "Rechazar cambio", "Aceptar cambio" and
   "Restaurar" (only when the new pane differs from `compareContent`); accept/reject call `onChange` and
   `onCompareDecision({ decision: "accepted" | "rejected", markdown })` and the control returns to default
-  mode. The bar follows `showToolbar`. `reset()` = Restaurar, `isModified()` = Restaurar visible
+  mode. The original only changes when the user accepts: if the host leaves compare mode (or removes
+  `compareContent`) without a decision, the editor returns to the original (`onChange` reports it if it differed);
+  `compareContent=""` is a valid empty proposal. The bar follows `showToolbar`. `reset()` = Restaurar, `isModified()` = Restaurar visible
 - Compare scroll sync: `compareSyncScroll` prop (default true). In `mode="compare"` scrolling either pane scrolls
   the other to the matching content (top edge of the scrolled pane; the pane scrolled last leads). Matching reuses
   the diff: paired blocks in the rendered view, identical lines in the Markdown view; passages present on one side

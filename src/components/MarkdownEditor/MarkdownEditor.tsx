@@ -455,8 +455,19 @@ export const MarkdownEditor = forwardRef<
   // usuario lo ha dejado igual a mano).
   const appliedSessionRef = useRef<CompareSession | null>(session);
   const canonicalForRef = useRef<CompareSession | null>(null);
+  // `true` cuando la sesión terminó por una decisión del usuario (Aceptar /
+  // Rechazar). Si termina por otra causa (el host sale del modo o retira
+  // `compareContent`), el original NO se pisa: se vuelve a él.
+  const decidedRef = useRef(false);
   useLayoutEffect(() => {
     if (session === null) {
+      const ended = appliedSessionRef.current;
+      if (ended !== null && !decidedRef.current && editor !== null) {
+        const changed = sourceRef.current !== ended.original;
+        loadContent(ended.original);
+        if (changed) onChangeRef.current?.(ended.original);
+      }
+      decidedRef.current = false;
       appliedSessionRef.current = null;
       canonicalForRef.current = null;
       setProvidedCanonical(null);
@@ -521,6 +532,7 @@ export const MarkdownEditor = forwardRef<
 
   /** Termina la comparación sin cambiar lo solicitado: no se reinicia sola. */
   const endCompare = () => {
+    decidedRef.current = true;
     sessionRef.current = null;
     setCompareState((previous) => ({ ...previous, session: null }));
   };

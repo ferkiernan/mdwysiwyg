@@ -83,4 +83,21 @@ describe("constructor del playground", () => {
     const section = screen.getByRole("region", { name: "Seleccioná los atributos de tu control" });
     expect(within(section).getByText(/No tiene efecto con onlyView/)).toBeInTheDocument();
   });
+
+  it("borrar todo compareContent mantiene la comparación y el original", async () => {
+    render(<ConfigBuilder />);
+    await userEvent.selectOptions(screen.getByRole("combobox", { name: /^mode/ }), "compare");
+    const content = screen.getByRole("textbox", { name: /compareContent/ });
+    await userEvent.type(content, "propuesta");
+    const original = await screen.findByRole("group", { name: "Contenido original (solo lectura)" });
+    expect(original).toHaveTextContent("Documento de ejemplo");
+    await userEvent.clear(content);
+    expect(screen.getByRole("group", { name: "Contenido original (solo lectura)" })).toHaveTextContent(
+      "Documento de ejemplo",
+    );
+    await userEvent.type(content, "otra");
+    expect(screen.getByRole("group", { name: "Contenido original (solo lectura)" })).toHaveTextContent(
+      "Documento de ejemplo",
+    );
+  });
 });

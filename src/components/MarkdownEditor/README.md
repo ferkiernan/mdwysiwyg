@@ -201,8 +201,12 @@ contenido **nuevo** que le pasas, para que el usuario decida qué hacer:
   modo (`mode="default"`) y vuelva a entrar, o pase otro `compareContent`.
 - **En tiempo real**: puedes cambiar `mode`, `compareOrientation` o `compareContent` con el componente
   montado. Cambiar la orientación conserva el panel nuevo (con sus ediciones); otro `compareContent`
-  reemplaza el panel nuevo y descarta las ediciones, manteniendo el original; pasar a `"default"` deja el
-  contenido del panel nuevo en el editor. Ninguno de estos cambios dispara `onChange`.
+  (incluso `""`, "borrar todo") reemplaza el panel nuevo y descarta las ediciones, manteniendo el original.
+  Estos cambios no disparan `onChange`.
+- **El original solo cambia al aceptar**: si la comparación termina sin una decisión del usuario (el host pasa
+  a `mode="default"` o retira `compareContent`), el editor vuelve al contenido **original** y, si el panel
+  nuevo difería, `onChange` informa ese original. Al volver a comparar, el original sigue siendo el mismo.
+  Solo «Aceptar cambio» hace que el contenido nuevo pase a ser el contenido del componente.
 - **`onChange` y API imperativa**: en comparación `onChange` informa del Markdown del panel nuevo.
   `reset()` equivale a "Restaurar" e `isModified()` es `true` exactamente cuando "Restaurar" es visible.
 - **Tema**: `--mdw-compare-highlight-bg` (por defecto `#fff176`) es el color del resaltado.
