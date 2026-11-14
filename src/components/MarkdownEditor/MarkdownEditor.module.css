@@ -20,6 +20,7 @@
   --_mdw-content-bg: var(--mdw-content-bg, var(--_mdw-bg));
   --_mdw-content-padding: var(--mdw-content-padding, 12px 16px);
   --_mdw-content-zoom: var(--mdw-content-zoom, 1);
+  --_mdw-content-cursor: var(--mdw-content-cursor, url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='24' viewBox='0 0 16 24'><path d='M5 2h6M8 2v20M5 22h6' fill='none' stroke='%23ffffff' stroke-width='4' stroke-linecap='round'/><path d='M5 2h6M8 2v20M5 22h6' fill='none' stroke='%231f2328' stroke-width='2' stroke-linecap='round'/></svg>") 8 12, text);
   --_mdw-content-wysiwyg-font-size: var(--mdw-content-wysiwyg-font-size, 14px);
   --_mdw-content-markdown-font-size: var(--mdw-content-markdown-font-size, 13px);
   --_mdw-toolbar-scale: var(--mdw-toolbar-scale, 1);
@@ -187,6 +188,8 @@
   font-family: var(--_mdw-content-wysiwyg-font-family);
   /* Tamaño base del texto × zoom del contenido (spec 021). */
   font-size: calc(var(--_mdw-content-wysiwyg-font-size) * var(--_mdw-content-zoom));
+  /* Cursor de texto visible sobre cualquier fondo (el del sistema se pierde en fondos medios). */
+  cursor: var(--_mdw-content-cursor);
 }
 
 .content :global(.ProseMirror p) {
@@ -344,6 +347,7 @@
   line-height: 1.5;
   color: var(--_mdw-content-markdown-fg);
   background: transparent;
+  cursor: var(--_mdw-content-cursor);
   scrollbar-color: var(--_mdw-scrollbar-thumb) var(--_mdw-scrollbar-track);
 }
 

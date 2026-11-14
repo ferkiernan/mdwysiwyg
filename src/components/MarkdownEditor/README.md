@@ -375,7 +375,7 @@ El aspecto se personaliza con CSS estándar declarando variables `--mdw-*`, sin 
 - Se pueden declarar en la clase del control, en cualquier contenedor o en `:root` (prioridad: clase del control >
   ancestro > default). Funcionan en cualquier orden de carga de las hojas y sin `!important`.
 - Hay variables para barra, contenido (incluido su espaciado interior, `--mdw-content-padding`), tablas, código y resaltado de sintaxis, citas, botones, menús y popovers,
-  comparación y scroll (52 en total).
+  comparación y scroll (53 en total).
 
 La lista completa con defaults, recetas (tema oscuro, preferencia del sistema, color de marca, fuentes, barra plana,
 fondo), qué está soportado y la resolución de problemas están en

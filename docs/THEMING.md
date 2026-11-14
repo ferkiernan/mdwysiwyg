@@ -94,6 +94,7 @@ las declares: cambiando `--mdw-bg` cambian también el contenido y los paneles f
 | `--mdw-content-bg` | `var(--mdw-bg)` | `background` (color, degradado, imagen) | Fondo del área de contenido (color, degradado o imagen) |
 | `--mdw-content-padding` | `12px 16px` | `padding` (1 a 4 longitudes) | Espacio interior entre los bordes del área de contenido y el texto (ambas vistas y ambos paneles de comparación) |
 | `--mdw-content-zoom` | `1` | número (factor) | Zoom del contenido (factor). Con allowContentZoom el usuario lo cambia con Ctrl/Cmd + rueda o + / - / 0 y el valor se refleja aquí |
+| `--mdw-content-cursor` | barra en I propia (SVG), con `text` de respaldo | `cursor` | Cursor del mouse sobre el texto (ambas vistas). El cursor de texto del sistema se dibuja invirtiendo el fondo y casi no se ve sobre fondos medios; el default es una barra en I oscura con borde claro, visible sobre cualquier fondo. `text` vuelve al del sistema |
 | `--mdw-content-wysiwyg-font-size` | `14px` | longitud | Tamaño base del texto en la vista renderizada (al 100 % de zoom) |
 | `--mdw-content-markdown-font-size` | `13px` | longitud | Tamaño base del texto en la vista Markdown (al 100 % de zoom) |
 | `--mdw-content-wysiwyg-fg` | `var(--mdw-fg)` | color | Texto de la vista renderizada |

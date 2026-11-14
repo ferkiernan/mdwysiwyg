@@ -9,6 +9,7 @@ const PROPERTY_FOR_KIND: Record<ThemeTokenKind, string> = {
   length: "width",
   padding: "padding",
   number: "zoom",
+  cursor: "cursor",
 };
 
 /**
