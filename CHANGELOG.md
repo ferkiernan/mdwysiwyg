@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented in this file.
 
-## 0.7.0
+## 0.8.0
 
 ### Added
 
@@ -14,6 +14,10 @@ All notable changes to this project are documented in this file.
 - **Theming variables** `--mdw-content-zoom` (1), `--mdw-content-wysiwyg-font-size` (14px),
   `--mdw-content-markdown-font-size` (13px) — the content's base text size per view, multiplied by the zoom — and
   `--mdw-toolbar-scale` (1), which scales the toolbar, the compare/history bars and the floating menus independently.
+
+## 0.7.0
+
+### Added
 
 - **«Copiar como TXT»** in the Export menu (after «Copiar como HTML»): copies the document as plain text to the
   clipboard, without Markdown symbols or HTML tags. Blocks are separated by a blank line, list items use `-`, `1.` or
