@@ -2,7 +2,18 @@
 
 All notable changes to this project are documented in this file.
 
-## Unreleased
+## 0.7.0
+
+### Added
+
+- **«Copiar como TXT»** in the Export menu (after «Copiar como HTML»): copies the document as plain text to the
+  clipboard, without Markdown symbols or HTML tags. Blocks are separated by a blank line, list items use `-`, `1.` or
+  `[ ]`/`[x]` with two-space indentation per level, table cells are tab-separated (pastes as columns in spreadsheets),
+  links become `text (address)`, images their alt text, code blocks and diagrams their raw content.
+- **`--mdw-content-padding`** theming variable (default `12px 16px`, today's spacing): the inner padding of the content
+  area, as 1 to 4 lengths. Applies to the rendered and Markdown views and to both compare panes (the Markdown-view
+  highlight stays aligned); declare it on the control's class, a wrapper or `:root` like the other variables. Also
+  editable in the playground's theme section.
 
 ### Changed
 
@@ -12,15 +23,6 @@ All notable changes to this project are documented in this file.
   sentence is no longer painted whole), and the rendered and Markdown views now follow the same rule (Markdown syntax
   does not count). Code blocks and diagrams keep line-based highlighting; new elements and type/level changes are still
   painted whole.
-
-## 0.7.0
-
-### Added
-
-- **`--mdw-content-padding`** theming variable (default `12px 16px`, today's spacing): the inner padding of the content
-  area, as 1 to 4 lengths. Applies to the rendered and Markdown views and to both compare panes (the Markdown-view
-  highlight stays aligned); declare it on the control's class, a wrapper or `:root` like the other variables. Also
-  editable in the playground's theme section.
 
 ## 0.6.0
 

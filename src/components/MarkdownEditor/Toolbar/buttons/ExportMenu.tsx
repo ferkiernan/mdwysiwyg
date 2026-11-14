@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { markdownToHtml } from "../../markdown/pipeline";
+import { markdownToPlainText } from "../../markdown/plainText";
 import { IconDownload } from "./icons";
 import { FloatingPanel } from "./FloatingPanel";
 import styles from "../../MarkdownEditor.module.css";
@@ -65,6 +66,14 @@ export function ExportMenu({ source, sanitize }: ExportMenuProps) {
               onClick={() => copy(markdownToHtml(source, { sanitize }))}
             >
               Copiar como HTML
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              className={styles["menuItem"]}
+              onClick={() => copy(markdownToPlainText(source))}
+            >
+              Copiar como TXT
             </button>
           </div>
         </FloatingPanel>

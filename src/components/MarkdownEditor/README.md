@@ -103,7 +103,9 @@ function Editor() {
 - **`</>`**: alterna entre vista renderizada y vista Markdown. Alternar nunca modifica el
   contenido, y el cursor se reposiciona en el punto equivalente de la vista destino.
 - **Export** (icono de descarga, alineado al extremo derecho de la barra): copia al portapapeles
-  como Markdown o como HTML.
+  como Markdown, como HTML o como texto plano («Copiar como TXT»: sin símbolos Markdown ni etiquetas; bloques
+  separados por una línea en blanco, listas con `-`, `1.` o `[ ]`/`[x]`, celdas de tabla separadas por
+  tabuladores, enlaces como «texto (dirección)», imágenes como su texto alternativo y código tal cual).
 
 La barra se mantiene en una sola fila: si el espacio disponible es insuficiente, el selector de
 encabezado se encoge (hasta 30px de ancho mínimo) antes que cualquier otro control.

@@ -136,7 +136,7 @@ Try it in your browser, no install required: **[ferkiernan.github.io/mdwysiwyg](
 | Cursor between blocks | Click the free area to the right of a table (or the gap between two blocks) to put the cursor there; press Enter to add a blank line, or just type. When the document ends in a block (table, code, Mermaid, quote, list, rule, image) an empty line always follows it |
 | Code | Fenced code blocks with a language picker (JSON/SQL/TypeScript/JavaScript/Java/custom) and syntax highlighting |
 | Diagrams | ` ```mermaid ` blocks render as live diagrams; pasted Mermaid syntax is auto-detected on HTML insert. Lazy-loaded, `securityLevel: strict` |
-| Export | Copy as Markdown or as HTML, one click |
+| Export | Copy as Markdown, as HTML or as plain text (TXT: no Markdown symbols or tags, tab-separated tables), one click |
 | Modes | Full editor (default) or read-only viewer (`onlyView`, with a configurable notice via `onlyViewNotice`) |
 | Sizing | Fixed (`width`/`height` props), user-resizable (`resizable`, default on) or growing with its content (`autoHeight`: no inner vertical scrollbar, `height` becomes the minimum) |
 | Toolbar | Shown by default; hide/show it at runtime with `showToolbar` (no content, caret or undo loss), or only while the editor has focus with `autoHideBar` |

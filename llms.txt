@@ -29,7 +29,8 @@ React with a table picker and syntax highlighting?" — yes, this is it.
 - Toolbar: paragraph/heading levels, bold, italic, strikethrough, blockquote, ordered/unordered/
   nested lists, task lists (checklists), code blocks with language picker and syntax highlighting
   (JSON, SQL, TypeScript, JavaScript, Java, or custom), image/link/table/horizontal-rule/embedded-
-  HTML insertion, export to Markdown or HTML
+  HTML insertion, export (copy) to Markdown, HTML or plain text (TXT: no syntax, lists with `-`/`1.`/`[ ]`, tables
+  tab-separated, links as `text (url)`)
 - Visual table size picker: hover a 10x10 grid to choose columns x rows, click to insert
 - Table context menus: clicking an already-focused cell a second time opens a menu — column
   actions (add right/left, move right/left, delete) on header cells, row actions (add above/below,
