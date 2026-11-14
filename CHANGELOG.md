@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.8.1
+
+### Fixed
+
+- **Clicking a link never opens it directly.** Links in the original pane of compare mode and inside embedded HTML
+  blocks, Ctrl/Cmd/Shift + click, middle click and Enter on a focused link were followed by the browser; now a click
+  always shows the link options menu (read-only variant where the link cannot be edited) and the address only opens
+  from «Ir a la url». Right-click is unchanged.
+
 ## 0.8.0
 
 ### Added

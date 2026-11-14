@@ -355,6 +355,11 @@ Hacer clic sobre un enlace en la vista renderizada abre un panel con **Ir a la u
 url**, y **Editar url** (que muestra un campo con la URL actual, **Eliminar link**, y **Guardar**).
 En modo `onlyView` el panel solo ofrece "Ir a la url" y "Copiar url" — sin edición.
 
+**Un clic nunca abre la dirección**: ni en el panel original de la comparación, ni en enlaces dentro de HTML embebido,
+ni con Ctrl/Cmd o Shift + clic, ni con Enter sobre un enlace con foco; siempre aparece el panel (en el panel original y
+en el HTML embebido, la versión de solo lectura). El clic con el botón central no hace nada. La dirección solo se abre
+con **Ir a la url** (pestaña nueva, segura). El clic derecho sigue mostrando el menú del navegador.
+
 ## Theming (CSS Custom Properties)
 
 El aspecto se personaliza con CSS estándar declarando variables `--mdw-*`, sin props de estilo:
