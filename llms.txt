@@ -91,7 +91,7 @@ React with a table picker and syntax highlighting?" — yes, this is it.
   `resizable` (true), `autoHeight` (false), `showToolbar` (true), `autoHideBar` (false), `onlyViewNotice`
   ("Edición desactivada"), `mode` ("default"), `compareOrientation` ("side-to-side"), `compareContent` (—), `onCompareDecision` (—),
   `historyUndo` (false), `compareSyncScroll` (true), `documentId` (—), `fileName` (—), `resolveImageSrc` (—; mount time)
-- Theming via CSS Custom Properties (no extra props): 47 `--mdw-*` variables (base colors, toolbar, content,
+- Theming via CSS Custom Properties (no extra props): 48 `--mdw-*` variables (base colors, toolbar, content incl. `--mdw-content-padding` (default `12px 16px`),
   tables/code, syntax highlighting, quotes, controls, menus/dialogs/popovers, compare highlight, scrollbars). Declare
   them on the class passed in `className`, on any ancestor or on `:root` (priority: control class > nearest ancestor >
   built-in default); the component never declares the public variables (defaults are fallbacks of private `--_mdw-*`

@@ -91,6 +91,7 @@ las declares: cambiando `--mdw-bg` cambian también el contenido y los paneles f
 | Variable | Default | Tipo de valor | Controla |
 | --- | --- | --- | --- |
 | `--mdw-content-bg` | `var(--mdw-bg)` | `background` (color, degradado, imagen) | Fondo del área de contenido (color, degradado o imagen) |
+| `--mdw-content-padding` | `12px 16px` | `padding` (1 a 4 longitudes) | Espacio interior entre los bordes del área de contenido y el texto (ambas vistas y ambos paneles de comparación) |
 | `--mdw-content-wysiwyg-fg` | `var(--mdw-fg)` | color | Texto de la vista renderizada |
 | `--mdw-content-wysiwyg-font-family` | `inherit` | `font-family` | Fuente de la vista renderizada |
 | `--mdw-content-markdown-fg` | `var(--mdw-fg)` | color | Texto de la vista Markdown |
@@ -258,6 +259,17 @@ document.documentElement.dataset.theme = oscuro ? "dark" : "light";
   --mdw-content-markdown-font-family: "JetBrains Mono", ui-monospace, monospace;
 }
 ```
+
+### Espaciado del contenido
+
+```css
+.mi-editor-compacto { --mdw-content-padding: 4px 8px; }
+.mi-editor-documento { --mdw-content-padding: 32px 48px; }
+.mi-editor-sin-margen { --mdw-content-padding: 0; }
+```
+
+Se aplica a la vista renderizada y a la Markdown, y a los dos paneles de la comparación (el resaltado de diferencias se
+mantiene alineado). Acepta 1 a 4 longitudes como `padding`; un valor inválido deja el padding en 0.
 
 ### Barra plana (sin degradado)
 

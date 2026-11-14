@@ -93,8 +93,8 @@ describe("CSS final", () => {
     expect(css).toContain("@media (prefers-color-scheme: dark) {\n  .mi-editor {\n    --mdw-fg: #fff;\n  }\n}");
   });
 
-  it("incluir todo emite los 47 tokens", () => {
-    expect(Object.keys(themeValuesToEmit({}, true))).toHaveLength(47);
+  it("incluir todo emite los 48 tokens", () => {
+    expect(Object.keys(themeValuesToEmit({}, true))).toHaveLength(48);
   });
 });
 

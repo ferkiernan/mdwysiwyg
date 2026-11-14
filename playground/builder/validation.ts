@@ -7,6 +7,7 @@ const PROPERTY_FOR_KIND: Record<ThemeTokenKind, string> = {
   font: "font-family",
   shadow: "box-shadow",
   length: "width",
+  padding: "padding",
 };
 
 /**

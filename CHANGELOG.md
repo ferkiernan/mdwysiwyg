@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.7.0
+
+### Added
+
+- **`--mdw-content-padding`** theming variable (default `12px 16px`, today's spacing): the inner padding of the content
+  area, as 1 to 4 lengths. Applies to the rendered and Markdown views and to both compare panes (the Markdown-view
+  highlight stays aligned); declare it on the control's class, a wrapper or `:root` like the other variables. Also
+  editable in the playground's theme section.
+
 ## 0.6.0
 
 ### Fixed

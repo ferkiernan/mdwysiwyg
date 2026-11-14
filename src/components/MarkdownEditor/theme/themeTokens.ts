@@ -19,7 +19,7 @@ export type ThemeTokenGroup =
   | "scroll";
 
 /** Tipo de valor que acepta el token (para validar y elegir el control de edición). */
-export type ThemeTokenKind = "color" | "background" | "font" | "shadow" | "length";
+export type ThemeTokenKind = "color" | "background" | "font" | "shadow" | "length" | "padding";
 
 export interface ThemeToken {
   name: `--mdw-${string}`;
@@ -62,6 +62,7 @@ export const THEME_TOKENS: readonly ThemeToken[] = [
   { name: "--mdw-button-hover-gradient-to", group: "toolbar", kind: "color", default: "#d8d8d8", description: "Degradado de un botón en hover (fin)" },
 
   { name: "--mdw-content-bg", group: "content", kind: "background", default: "var(--mdw-bg)", description: "Fondo del área de contenido (color, degradado o imagen)" },
+  { name: "--mdw-content-padding", group: "content", kind: "padding", default: "12px 16px", description: "Espacio interior entre los bordes del área de contenido y el texto (ambas vistas y ambos paneles de comparación)" },
   { name: "--mdw-content-wysiwyg-fg", group: "content", kind: "color", default: "var(--mdw-fg)", description: "Texto de la vista renderizada" },
   { name: "--mdw-content-wysiwyg-font-family", group: "content", kind: "font", default: "inherit", description: "Fuente de la vista renderizada" },
   { name: "--mdw-content-markdown-fg", group: "content", kind: "color", default: "var(--mdw-fg)", description: "Texto de la vista Markdown" },

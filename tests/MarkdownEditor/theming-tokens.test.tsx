@@ -43,6 +43,16 @@ describe("015: los defaults son respaldo, el host siempre gana", () => {
     expect(body).not.toContain("var(--mdw-");
   });
 
+  it("el padding del contenido se lee del token en ambas vistas y en la capa de resaltado", () => {
+    const rules = [...css.matchAll(/([^{}]+)\{([^}]*)\}/g)]
+      .filter(([, , body]) => /padding:\s*var\(--_mdw-content-padding\)/.test(body ?? ""))
+      .map(([, selector]) => (selector ?? "").trim());
+    expect(rules.some((s) => s.includes(".ProseMirror"))).toBe(true);
+    expect(rules.some((s) => s === ".source")).toBe(true);
+    expect(rules.some((s) => s === ".sourceLayer")).toBe(true);
+    expect(css).not.toContain("padding: 12px 16px;");
+  });
+
   it("un valor en la clase del control llega aunque su CSS se cargue antes", () => {
     const cleanup = injectStyle(".mi-editor { --mdw-toolbar-fg: #ff0000; }");
     try {

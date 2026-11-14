@@ -18,6 +18,7 @@
   --_mdw-button-hover-gradient-from: var(--mdw-button-hover-gradient-from, #ffffff);
   --_mdw-button-hover-gradient-to: var(--mdw-button-hover-gradient-to, #d8d8d8);
   --_mdw-content-bg: var(--mdw-content-bg, var(--_mdw-bg));
+  --_mdw-content-padding: var(--mdw-content-padding, 12px 16px);
   --_mdw-content-markdown-fg: var(--mdw-content-markdown-fg, var(--_mdw-fg));
   --_mdw-content-markdown-font-family: var(--mdw-content-markdown-font-family, ui-monospace, Consolas, monospace);
   --_mdw-content-wysiwyg-fg: var(--mdw-content-wysiwyg-fg, var(--_mdw-fg));
@@ -174,7 +175,7 @@
 
 .content :global(.ProseMirror) {
   flex: 1;
-  padding: 12px 16px;
+  padding: var(--_mdw-content-padding);
   outline: none;
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -328,7 +329,7 @@
   border: none;
   resize: none;
   outline: none;
-  padding: 12px 16px;
+  padding: var(--_mdw-content-padding);
   font-family: var(--_mdw-content-markdown-font-family);
   font-size: 13px;
   line-height: 1.5;
@@ -358,7 +359,7 @@
 .sourceLayer {
   position: absolute;
   inset: 0;
-  padding: 12px 16px;
+  padding: var(--_mdw-content-padding);
   overflow: hidden;
   scrollbar-gutter: stable;
   pointer-events: none;
