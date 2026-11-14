@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented in this file.
 
+## Unreleased
+
+### Changed
+
+- **Compare highlight rule per sentence.** A sentence of the new content is painted whole only when it differs from
+  its original sentence by more than 50% ((words added + removed) ÷ (words of both versions)); otherwise only its new
+  or changed words are painted. Each sentence of a paragraph is judged on its own (a paragraph with one untouched
+  sentence is no longer painted whole), and the rendered and Markdown views now follow the same rule (Markdown syntax
+  does not count). Code blocks and diagrams keep line-based highlighting; new elements and type/level changes are still
+  painted whole.
+
 ## 0.7.0
 
 ### Added

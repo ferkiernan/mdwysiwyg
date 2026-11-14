@@ -185,10 +185,14 @@ contenido **nuevo** que le pasas, para que el usuario decida qué hacer:
   herramientas, atajos, menús de tabla y popover de enlaces); el original es de solo lectura. Con
   `onlyView` ambos lo son. El botón `</>` alterna ambos paneles entre vista renderizada y código Markdown.
 - **Diferencias**: lo que en el panel nuevo es nuevo o distinto respecto del original tiene fondo amarillo
-  (`<mark>`): a nivel de palabra dentro de párrafos, encabezados, celdas y elementos de lista (también un
-  cambio solo de formato, p. ej. una palabra en negrita); elementos enteramente nuevos (párrafo, elemento de
-  lista, fila de tabla, bloque de código) se resaltan completos; en bloques de código y Mermaid, las líneas
-  cambiadas. El resaltado se recalcula al editar. Lo eliminado no se marca (se ve en el panel original). El
+  (`<mark>`), con una **regla por frase** en párrafos, encabezados, celdas, elementos de lista y citas: una frase
+  se pinta **entera solo si difiere en más del 50 %** de su frase original — (palabras agregadas + quitadas) ÷
+  (palabras de ambas versiones) —; si no, se pintan solo sus palabras nuevas o cambiadas (también un cambio solo
+  de formato, p. ej. una palabra en negrita). Cada frase de un párrafo se juzga por separado; una frase termina
+  en `.`, `!`, `?` o `…` seguido de mayúscula o número, al final de línea o de celda. La regla es la misma en la
+  vista renderizada y en la Markdown (donde la sintaxis Markdown no cuenta). Elementos enteramente nuevos
+  (párrafo, elemento de lista, fila de tabla, bloque de código) o que cambian de tipo o nivel se resaltan
+  completos; en bloques de código y Mermaid, las líneas cambiadas. El resaltado se recalcula al editar. Lo eliminado no se marca (se ve en el panel original). El
   panel nuevo se describe para lectores de pantalla con el número de diferencias.
 - **Barra de comparación** (bajo la barra de herramientas): **Rechazar cambio**, **Aceptar cambio** (ambos
   deshabilitados si no hay diferencias) y **Restaurar**, que solo aparece cuando el panel nuevo difiere de

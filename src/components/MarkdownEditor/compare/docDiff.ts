@@ -1,6 +1,7 @@
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import { matchSequences } from "./diffSequences";
 import type { DiffSummary } from "./textDiff";
+import { paintRuns, sentenceIndexes, wholeSentences } from "./sentences";
 
 /** Palabra (o línea, en bloques de código) con su rango en el documento. */
 interface Token {
@@ -160,6 +161,40 @@ export function collectUnits(doc: ProseMirrorNode): CollectedUnits {
   return { units, containers: allContainers };
 }
 
+/** Texto visible de un token (sin la firma de marcas); vacío para nodos inline no textuales. */
+function wordOf(token: Token): string {
+  const separator = token.key.indexOf("§");
+  return separator === -1 ? "" : token.key.slice(separator + 1);
+}
+
+const sentenceCache = new WeakMap<Unit, number[]>();
+
+/** Índice de frase de cada token de un bloque de texto (en caché por unidad). */
+function sentencesOf(unit: Unit): number[] {
+  let indexes = sentenceCache.get(unit);
+  if (indexes === undefined) {
+    indexes = sentenceIndexes(unit.tokens.map(wordOf));
+    sentenceCache.set(unit, indexes);
+  }
+  return indexes;
+}
+
+/**
+ * ¿Alguna frase del bloque nuevo difiere en 50 % o menos de su contraparte del
+ * bloque original? Entonces los bloques se corresponden aunque el bloque entero
+ * difiera más (p. ej. un párrafo con una frase reescrita y otra apenas tocada).
+ */
+function hasSimilarSentence(
+  oldUnit: Unit,
+  newUnit: Unit,
+  pairs: Array<[number, number]>,
+): boolean {
+  if (oldUnit.isLeaf || newUnit.typeName === "codeBlock") return false;
+  const newSentences = sentencesOf(newUnit);
+  const whole = wholeSentences(sentencesOf(oldUnit), newSentences, pairs);
+  return whole.size < new Set(newSentences).size;
+}
+
 function similarity(
   matched: number,
   oldCount: number,
@@ -214,7 +249,8 @@ function walkPairing(
           );
           if (
             similarity(pairs.length, oldUnit.tokens.length, newUnit.tokens.length) >=
-            SIMILARITY_THRESHOLD
+              SIMILARITY_THRESHOLD ||
+            hasSimilarSentence(oldUnit, newUnit, pairs)
           ) {
             handlers.paired(o, n, pairs);
             usedOld.add(o);
@@ -293,22 +329,30 @@ export function diffDocs(
       return;
     }
     if (pairs.length < oldUnit.tokens.length) changed = true;
-    if (pairs.length === newUnit.tokens.length) return;
-    changed = true;
     const matched = new Set(pairs.map(([, j]) => j));
-    const isCode = newUnit.typeName === "codeBlock";
-    let open: [number, number] | null = null;
-    newUnit.tokens.forEach((token, index) => {
-      if (matched.has(index)) {
-        open = null;
-      } else if (open !== null && !isCode) {
-        open[1] = token.to;
-      } else {
-        open = [token.from, token.to];
-        marks.push(open);
+    if (newUnit.typeName === "codeBlock") {
+      // Código: se pintan las líneas cambiadas (sin regla de frase).
+      if (pairs.length === newUnit.tokens.length) return;
+      changed = true;
+      newUnit.tokens.forEach((token, index) => {
+        if (matched.has(index)) return;
+        marks.push([token.from, token.to]);
         count++;
-      }
-    });
+      });
+      return;
+    }
+    // Texto: la frase entera si difiere en más del 50 %; si no, sus palabras.
+    const oldSentence = sentencesOf(oldUnit);
+    const newSentence = sentencesOf(newUnit);
+    const whole = wholeSentences(oldSentence, newSentence, pairs);
+    for (const [first, last] of paintRuns(newSentence, matched, whole)) {
+      changed = true;
+      marks.push([
+        (newUnit.tokens[first] as Token).from,
+        (newUnit.tokens[last] as Token).to,
+      ]);
+      count++;
+    }
   };
 
   walkPairing(originalUnits, newUnits, {
