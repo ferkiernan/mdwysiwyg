@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.8.2
+
+### Fixed
+
+- **A plain click on a link in the editable content opened a new tab** as well as the options menu: Tiptap's StarterKit
+  v3 bundles its own Link extension with `openOnClick: true`, which ran alongside the editor's configured one. It is now
+  disabled (`StarterKit.configure({ link: false })`), so the address only opens from «Ir a la url».
+
 ## 0.8.1
 
 ### Fixed

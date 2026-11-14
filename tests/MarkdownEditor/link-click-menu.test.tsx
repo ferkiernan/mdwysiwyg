@@ -29,6 +29,14 @@ describe("US1: un clic en un enlace nunca abre la dirección", () => {
     }
   });
 
+  it("clic real (mousedown + mouseup) en el editor editable: no abre pestaña, solo el menú", async () => {
+    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+    const { pm } = await setupEditor({ initialContent: LINK_MD });
+    await userEvent.click(pm.querySelector("a") as HTMLElement);
+    expect(await screen.findByRole("menu", MENU)).toBeInTheDocument();
+    expect(openSpy).not.toHaveBeenCalled();
+  });
+
   it("clic con la rueda: no abre nada", async () => {
     const { pm } = await setupEditor({ initialContent: LINK_MD });
     const link = pm.querySelector("a") as HTMLElement;

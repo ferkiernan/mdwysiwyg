@@ -198,7 +198,7 @@ export function createEditorExtensions(
   options: EditorExtensionOptions,
 ): Extensions {
   return [
-    StarterKit.configure({ codeBlock: false }),
+    StarterKit.configure({ codeBlock: false, link: false }),
     CodeBlockWithMermaid.configure({ lowlight }),
     Table.configure({ resizable: false }),
     TableRow,
