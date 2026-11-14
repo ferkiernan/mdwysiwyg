@@ -61,6 +61,8 @@ interface LinkPopoverState {
   url: string;
   range: Range;
   anchor: HTMLElement;
+  /** Enlace que no se puede editar (panel original, HTML embebido): menú de solo lectura. */
+  readOnly?: boolean;
 }
 
 interface TableMenuState {
@@ -865,6 +867,63 @@ export const MarkdownEditor = forwardRef<
     };
   }, [allowContentZoom]);
 
+  // --- Enlaces: un clic nunca abre la dirección (spec 022) -----------------
+  // El editor principal ya muestra su menú; aquí se cubren el panel original de
+  // la comparación, los enlaces dentro de HTML embebido, los clics con Ctrl/Cmd/
+  // Shift y el botón central, y Enter sobre un enlace con foco.
+  useEffect(() => {
+    const root = rootRef.current;
+    const contentClass = styles["content"];
+    if (root === null || contentClass === undefined) return;
+    const linkIn = (target: EventTarget | null): HTMLAnchorElement | null => {
+      if (!(target instanceof Element)) return null;
+      const anchor = target.closest("a");
+      if (anchor === null || anchor.closest(`.${CSS.escape(contentClass)}`) === null) return null;
+      return anchor;
+    };
+    /** ¿Lo maneja el editor principal con su menú completo? */
+    const handledByEditor = (anchor: HTMLAnchorElement) => {
+      const dom = editor?.view.dom;
+      return dom !== undefined && dom.contains(anchor) && anchor.closest("[data-html-block]") === null;
+    };
+    const openReadOnlyMenu = (anchor: HTMLAnchorElement) => {
+      setLinkPopover({
+        url: anchor.getAttribute("href") ?? "",
+        range: { from: 0, to: 0 },
+        anchor,
+        readOnly: true,
+      });
+    };
+    const onClick = (event: globalThis.MouseEvent) => {
+      const anchor = linkIn(event.target);
+      if (anchor === null) return;
+      event.preventDefault();
+      if (!handledByEditor(anchor)) {
+        event.stopPropagation();
+        openReadOnlyMenu(anchor);
+      }
+    };
+    const onAuxClick = (event: globalThis.MouseEvent) => {
+      if (linkIn(event.target) !== null) event.preventDefault();
+    };
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== "Enter") return;
+      const anchor = linkIn(event.target);
+      if (anchor === null || event.target !== anchor) return;
+      event.preventDefault();
+      event.stopPropagation();
+      openReadOnlyMenu(anchor);
+    };
+    root.addEventListener("click", onClick, true);
+    root.addEventListener("auxclick", onAuxClick, true);
+    root.addEventListener("keydown", onKeyDown, true);
+    return () => {
+      root.removeEventListener("click", onClick, true);
+      root.removeEventListener("auxclick", onAuxClick, true);
+      root.removeEventListener("keydown", onKeyDown, true);
+    };
+  }, [editor]);
+
   const rootClassName = [
     styles["root"],
     resizable && !autoHeight ? styles["resizable"] : undefined,
@@ -1050,7 +1109,7 @@ export const MarkdownEditor = forwardRef<
         <FloatingPanel anchor={linkPopover.anchor} autoFocus>
           <LinkPopover
             url={linkPopover.url}
-            onlyView={onlyView || historyOpen}
+            onlyView={onlyView || historyOpen || linkPopover.readOnly === true}
             onNavigate={() => {
               window.open(linkPopover.url, "_blank", "noopener,noreferrer");
               closeLinkPopover();
