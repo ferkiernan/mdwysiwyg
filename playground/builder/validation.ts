@@ -8,6 +8,7 @@ const PROPERTY_FOR_KIND: Record<ThemeTokenKind, string> = {
   shadow: "box-shadow",
   length: "width",
   padding: "padding",
+  number: "zoom",
 };
 
 /**

@@ -54,6 +54,12 @@
     "summary": "Oculta la barra de herramientas mientras el foco no está dentro del componente y la muestra al volver (clic o Tab en el contenido o en la barra)."
   },
   {
+    "name": "allowContentZoom",
+    "kind": "switch",
+    "default": false,
+    "summary": "Permite al usuario hacer zoom sobre el contenido (texto, imágenes, tablas, código y diagramas) sin cambiar el tamaño del control ni de la barra: Ctrl/Cmd + rueda sobre el contenido, o Ctrl/Cmd + `+`, `-` y `0` (restab…"
+  },
+  {
     "name": "onlyViewNotice",
     "kind": "text",
     "default": "Edición desactivada",

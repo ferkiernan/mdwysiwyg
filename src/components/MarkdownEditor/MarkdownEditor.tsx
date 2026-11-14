@@ -8,6 +8,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent,
   type MouseEvent,
 } from "react";
@@ -82,6 +83,12 @@ interface CompareState {
 
 const NO_DIFFERENCES: DiffSummary = { changed: false, count: 0 };
 
+/** Zoom del contenido: límites, paso y desplazamiento de rueda por paso (spec 021). */
+const CONTENT_ZOOM_MIN = 0.5;
+const CONTENT_ZOOM_MAX = 3;
+const CONTENT_ZOOM_STEP = 0.1;
+const WHEEL_STEP_DELTA = 100;
+
 function toCssSize(value: number | string): string {
   return typeof value === "number" ? `${value}px` : value;
 }
@@ -129,6 +136,7 @@ export const MarkdownEditor = forwardRef<
     onlyView = false,
     showToolbar = true,
     autoHideBar = false,
+    allowContentZoom = false,
     resizable = true,
     autoHeight = false,
     onlyViewNotice,
@@ -763,6 +771,100 @@ export const MarkdownEditor = forwardRef<
     [],
   );
 
+  // --- Zoom del contenido (spec 021) ----------------------------------------
+  // El nivel elegido por el usuario se escribe en línea como `--mdw-content-zoom`
+  // en el elemento raíz; sin él vale el que declare el host (o 1).
+  const [zoomOverride, setZoomOverride] = useState<number | null>(null);
+  const [zoomAnnouncement, setZoomAnnouncement] = useState("");
+  const zoomOverrideRef = useRef(zoomOverride);
+  zoomOverrideRef.current = zoomOverride;
+  const announceZoomRef = useRef(false);
+  const hostZoom = (): number => {
+    const root = rootRef.current;
+    if (root === null) return 1;
+    const value = parseFloat(getComputedStyle(root).getPropertyValue("--mdw-content-zoom"));
+    return Number.isFinite(value) && value > 0 ? value : 1;
+  };
+  const stepZoom = (direction: 1 | -1) => {
+    const current = zoomOverrideRef.current ?? hostZoom();
+    const next = Math.min(
+      CONTENT_ZOOM_MAX,
+      Math.max(CONTENT_ZOOM_MIN, Math.round((current + direction * CONTENT_ZOOM_STEP) * 10) / 10),
+    );
+    if (next === current) return;
+    announceZoomRef.current = true;
+    // Al instante: varios pasos seguidos (rueda rápida) parten del último valor.
+    zoomOverrideRef.current = next;
+    setZoomOverride(next);
+  };
+  const resetZoom = () => {
+    announceZoomRef.current = true;
+    zoomOverrideRef.current = null;
+    setZoomOverride(null);
+  };
+  const stepZoomRef = useRef(stepZoom);
+  stepZoomRef.current = stepZoom;
+  const resetZoomRef = useRef(resetZoom);
+  resetZoomRef.current = resetZoom;
+
+  // Tras cada cambio del usuario se anuncia el nivel efectivo.
+  useEffect(() => {
+    if (!announceZoomRef.current) return;
+    announceZoomRef.current = false;
+    setZoomAnnouncement(`Zoom ${Math.round((zoomOverride ?? hostZoom()) * 100)} %`);
+    // `hostZoom` lee el estilo computado ya aplicado.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zoomOverride]);
+
+  // Desactivar el zoom vuelve al nivel del host.
+  useEffect(() => {
+    if (!allowContentZoom) {
+      setZoomOverride(null);
+      setZoomAnnouncement("");
+    }
+  }, [allowContentZoom]);
+
+  // Ctrl/Cmd + rueda sobre el contenido y Ctrl/Cmd + +/-/0 con el foco dentro.
+  useEffect(() => {
+    const root = rootRef.current;
+    const contentClass = styles["content"];
+    if (!allowContentZoom || root === null || contentClass === undefined) return;
+    const inContent = (target: EventTarget | null) =>
+      target instanceof Element && target.closest(`.${CSS.escape(contentClass)}`) !== null;
+    let accumulated = 0;
+    const onWheel = (event: WheelEvent) => {
+      if (!(event.ctrlKey || event.metaKey) || !inContent(event.target)) return;
+      event.preventDefault();
+      if (event.deltaMode !== 0) {
+        if (event.deltaY !== 0) stepZoomRef.current(event.deltaY < 0 ? 1 : -1);
+        return;
+      }
+      accumulated += event.deltaY;
+      if (Math.abs(accumulated) >= WHEEL_STEP_DELTA) {
+        stepZoomRef.current(accumulated < 0 ? 1 : -1);
+        accumulated = 0;
+      }
+    };
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (!(event.ctrlKey || event.metaKey) || event.altKey || !inContent(event.target)) return;
+      let handled = true;
+      if (event.key === "+" || event.key === "=") stepZoomRef.current(1);
+      else if (event.key === "-" || event.key === "_") stepZoomRef.current(-1);
+      else if (event.key === "0") resetZoomRef.current();
+      else handled = false;
+      if (handled) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
+    root.addEventListener("wheel", onWheel, { passive: false });
+    root.addEventListener("keydown", onKeyDown, true);
+    return () => {
+      root.removeEventListener("wheel", onWheel);
+      root.removeEventListener("keydown", onKeyDown, true);
+    };
+  }, [allowContentZoom]);
+
   const rootClassName = [
     styles["root"],
     resizable && !autoHeight ? styles["resizable"] : undefined,
@@ -790,9 +892,11 @@ export const MarkdownEditor = forwardRef<
     <div
       className={rootClassName}
       style={
-        autoHeight
-          ? { width: toCssSize(width), minHeight: toCssSize(height) }
-          : { width: toCssSize(width), height: toCssSize(height) }
+        {
+          width: toCssSize(width),
+          ...(autoHeight ? { minHeight: toCssSize(height) } : { height: toCssSize(height) }),
+          ...(zoomOverride !== null ? { "--mdw-content-zoom": String(zoomOverride) } : {}),
+        } as CSSProperties
       }
       {...(historyOpen ? { onKeyDownCapture: handleHistoryKeyDown } : {})}
       {...(autoHideBar ? { onFocus: handleFocusIn, onBlur: handleFocusOut } : {})}
@@ -861,6 +965,7 @@ export const MarkdownEditor = forwardRef<
             ref={originalPaneRef}
             onEditor={setOriginalEditor}
             autoSize={autoHeight}
+            refitKey={zoomOverride}
             markdown={session.original}
             viewMode={effectiveViewMode}
             sanitizeEmbeddedHtml={sanitizeEmbeddedHtml}
@@ -898,6 +1003,7 @@ export const MarkdownEditor = forwardRef<
               readOnly={onlyView || historyOpen}
               ranges={session !== null ? (textDiff?.ranges ?? []) : null}
               autoSize={autoHeight}
+              refitKey={zoomOverride}
             />
           )}
           {tableTriggerEnabled &&
@@ -919,6 +1025,11 @@ export const MarkdownEditor = forwardRef<
           </span>
         )}
       </div>
+      {allowContentZoom && (
+        <span role="status" className={styles["visuallyHidden"]}>
+          {zoomAnnouncement}
+        </span>
+      )}
       {historyOpen && history.viewed !== null && (
         <span role="status" className={styles["visuallyHidden"]}>
           {`Versión ${history.viewed + 1} de ${history.versions.length}`}

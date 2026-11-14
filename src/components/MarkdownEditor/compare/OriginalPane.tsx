@@ -19,6 +19,8 @@ export interface OriginalPaneProps {
   onEditor?: (editor: Editor | null) => void;
   /** Ajusta el área de texto de la vista Markdown a su contenido (`autoHeight`). */
   autoSize?: boolean;
+  /** Ver `MarkdownSourceView`. */
+  refitKey?: unknown;
 }
 
 function noop(): void {
@@ -39,6 +41,7 @@ export const OriginalPane = forwardRef<HTMLDivElement, OriginalPaneProps>(
       resolveImageSrc,
       onEditor,
       autoSize = false,
+      refitKey,
     },
     ref,
   ) {
@@ -94,6 +97,7 @@ export const OriginalPane = forwardRef<HTMLDivElement, OriginalPaneProps>(
             readOnly
             ariaLabel="Código fuente Markdown original (solo lectura)"
             autoSize={autoSize}
+            refitKey={refitKey}
           />
         )}
       </div>

@@ -143,6 +143,23 @@ export interface MarkdownEditorProps {
   autoHideBar?: boolean;
 
   /**
+   * Permite al usuario hacer zoom sobre el contenido (texto, imágenes, tablas, código y diagramas) sin cambiar el
+   * tamaño del control ni de la barra: Ctrl/Cmd + rueda sobre el contenido, o Ctrl/Cmd + `+`, `-` y `0` (restablecer)
+   * con el foco dentro. Rango 50–300 % en pasos de 10 %; no se muestran controles en pantalla y el zoom de la página no
+   * se activa. El nivel se refleja en la variable CSS `--mdw-content-zoom` del componente: el host puede declararla
+   * para fijar el zoom inicial y leerla para recordar la preferencia. Aplica a ambas vistas, a los dos paneles de
+   * comparación, a `onlyView` y al historial; no modifica el contenido ni llama a `onChange`. Al desactivarlo vuelve
+   * al nivel del host. Se puede cambiar en cualquier momento.
+   *
+   * @default false
+   * @example
+   * // CSS (opcional): .mi-editor { --mdw-content-zoom: 1.2; }
+   * <MarkdownEditor className="mi-editor" allowContentZoom />
+   * @see docs/THEMING.md (zoom, tamaño base del texto y tamaño de la barra)
+   */
+  allowContentZoom?: boolean;
+
+  /**
    * Texto del aviso que muestra la barra reducida con `onlyView`. Se puede cambiar en cualquier momento.
    *
    * @default "Edición desactivada"

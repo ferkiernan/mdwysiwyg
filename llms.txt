@@ -84,15 +84,18 @@ React with a table picker and syntax highlighting?" — yes, this is it.
 - `autoHeight` prop (default false): the control grows downward with its content so there is no inner vertical
   scrollbar (shrinks back when content is removed); `height` becomes the minimum, no resize handle; works in both views,
   compare mode (taller pane / both stacked), `onlyView` and history mode; horizontal scroll of wide content kept
+- `allowContentZoom` prop (default false): Ctrl/Cmd + wheel over the content or Ctrl/Cmd + `+`/`-`/`0` zooms the
+  content 50–300 % (10 % steps) without resizing the control or the toolbar; no on-screen controls; the level is written
+  as `--mdw-content-zoom` on the root (host sets the starting value via CSS and can read it); never fires onChange
 - `autoHideBar` prop (default false): the toolbar is shown only while focus is inside the component (menus, dialogs and
   popovers count as inside) and removed from layout and tab order when focus leaves; `showToolbar={false}` wins; the
   compare and history bars are not affected
 - All props with defaults: `initialContent` (""; read at mount only), `onChange` (—), `width` (700), `height` (500;
   minimum with `autoHeight`), `sanitizeEmbeddedHtml` (true), `className` (—; theming entry point), `onlyView` (false),
-  `resizable` (true), `autoHeight` (false), `showToolbar` (true), `autoHideBar` (false), `onlyViewNotice`
+  `resizable` (true), `autoHeight` (false), `showToolbar` (true), `autoHideBar` (false), `allowContentZoom` (false), `onlyViewNotice`
   ("Edición desactivada"), `mode` ("default"), `compareOrientation` ("side-to-side"), `compareContent` (—), `onCompareDecision` (—),
   `historyUndo` (false), `compareSyncScroll` (true), `documentId` (—), `fileName` (—), `resolveImageSrc` (—; mount time)
-- Theming via CSS Custom Properties (no extra props): 48 `--mdw-*` variables (base colors, toolbar, content incl. `--mdw-content-padding` (default `12px 16px`),
+- Theming via CSS Custom Properties (no extra props): 52 `--mdw-*` variables (base colors, toolbar incl. `--mdw-toolbar-scale` (default 1), content incl. `--mdw-content-padding` (default `12px 16px`), `--mdw-content-wysiwyg-font-size` (14px), `--mdw-content-markdown-font-size` (13px) and `--mdw-content-zoom` (1),
   tables/code, syntax highlighting, quotes, controls, menus/dialogs/popovers, compare highlight, scrollbars). Declare
   them on the class passed in `className`, on any ancestor or on `:root` (priority: control class > nearest ancestor >
   built-in default); the component never declares the public variables (defaults are fallbacks of private `--_mdw-*`

@@ -139,11 +139,12 @@ Try it in your browser, no install required: **[ferkiernan.github.io/mdwysiwyg](
 | Export | Copy as Markdown, as HTML or as plain text (TXT: no Markdown symbols or tags, tab-separated tables), one click |
 | Modes | Full editor (default) or read-only viewer (`onlyView`, with a configurable notice via `onlyViewNotice`) |
 | Sizing | Fixed (`width`/`height` props), user-resizable (`resizable`, default on) or growing with its content (`autoHeight`: no inner vertical scrollbar, `height` becomes the minimum) |
+| Content zoom | Opt-in `allowContentZoom`: Ctrl/Cmd + wheel or Ctrl/Cmd + `+`/`-`/`0` zooms the content (50–300 %) without resizing the control; the level is reflected in `--mdw-content-zoom` |
 | Toolbar | Shown by default; hide/show it at runtime with `showToolbar` (no content, caret or undo loss), or only while the editor has focus with `autoHideBar` |
 | Version history | Opt-in `historyUndo`: a version is saved after 3 s without changes; a clock icon right after the HTML button opens a history mode with ← Undo / Redo →, Confirm / Cancel (back to last version) and a right-hand list of versions with their time (click one to jump to it; document read-only while browsing; `Ctrl+Z` / `Ctrl+Shift+Z` map to Undo / Redo) |
 | Compare mode | `mode="compare"` + `compareContent` (+ optional `compareOrientation`: `side-to-side` by default, or `up-and-down`): read-only original next to an editable new version with changed words highlighted in yellow, and a second bar to accept, reject or restore the change (`onCompareDecision`) |
 | Compare scroll sync | In compare mode the two panes follow each other by matching content (top edge ↔ top edge; added/removed passages are crossed proportionally; vertical only). On by default; turn it off with `compareSyncScroll={false}` |
-| Theming | 48 CSS Custom Properties (`--mdw-*`) covering toolbar, content (including its padding), tables, code and syntax highlighting, quotes, menus/dialogs, compare highlight and scrollbars; declare them on your class, a wrapper or `:root`, in any load order — see the [theming guide](https://github.com/ferkiernan/mdwysiwyg/blob/master/docs/THEMING.md) |
+| Theming | 52 CSS Custom Properties (`--mdw-*`) covering toolbar (including its size), content (including its padding, base font size and zoom), tables, code and syntax highlighting, quotes, menus/dialogs, compare highlight and scrollbars; declare them on your class, a wrapper or `:root`, in any load order — see the [theming guide](https://github.com/ferkiernan/mdwysiwyg/blob/master/docs/THEMING.md) |
 | Imperative API | `ref` exposing `reset()`, `isModified()`, `insertMarkdown()` and `setMarkdown()` |
 
 ## Tech under the hood

@@ -53,6 +53,7 @@ valores, su default, si se puede cambiar en caliente y cómo se relaciona con la
 | `compareSyncScroll` | `boolean` | `true` | En modo `"compare"`, mantiene los dos paneles sobre el mismo contenido al desplazarse (ver «Desplazamiento sincronizado»). Con `false` se desplazan por separado. Se puede cambiar en cualquier momento. |
 | `resizable` | `boolean` | `true` | Permite redimensionar el componente arrastrando su esquina inferior derecha (como un `<textarea>` nativo). Con `false`, el tamaño queda fijo. Se ignora con `autoHeight`. |
 | `autoHeight` | `boolean` | `false` | Alto automático: el componente crece hacia abajo con su contenido, sin barra de desplazamiento vertical interna (ver «Alto automático»). `height` pasa a ser el mínimo y no hay tirador de redimensionar. Se puede cambiar en cualquier momento. |
+| `allowContentZoom` | `boolean` | `false` | Permite al usuario hacer zoom sobre el contenido con Ctrl/Cmd + rueda o Ctrl/Cmd + `+` / `-` / `0`, sin cambiar el tamaño del control ni de la barra (ver «Zoom del contenido»). El nivel se refleja en `--mdw-content-zoom`. |
 | `autoHideBar` | `boolean` | `false` | Oculta la barra de herramientas mientras el foco está fuera del componente y la muestra al volver (ver «Ocultar la barra al perder el foco»). `showToolbar={false}` tiene prioridad. Se puede cambiar en cualquier momento. |
 | `onlyViewNotice` | `string` | `"Edición desactivada"` | Texto del aviso mostrado en la barra con `onlyView` activo. Útil para mostrar, por ejemplo, el nombre del archivo. |
 | `documentId` | `string` | — | Identificador de documento de uso libre para la app consumidora. El componente lo acepta sin darle un uso propio. |
@@ -142,6 +143,23 @@ Con `autoHideBar` (por defecto `false`) la barra solo se ve mientras el usuario 
 - `showToolbar={false}` manda (nunca la muestra). La barra de comparación y la del historial no se ocultan: llevan
   decisiones pendientes.
 - Cambiar la prop no toca contenido, cursor ni historial y nunca dispara `onChange`.
+
+### Zoom del contenido
+
+Con `allowContentZoom` (por defecto `false`) el usuario agranda o achica el contenido —texto, imágenes, tablas, código
+y diagramas— sin que cambie el tamaño del control, la barra ni la página:
+
+- **Ctrl/Cmd + rueda** sobre el contenido (también el gesto de pellizco del trackpad), o **Ctrl/Cmd + `+` / `-`** y
+  **Ctrl/Cmd + `0`** (restablecer) con el foco en el contenido. El zoom del navegador no se activa.
+- Rango 50–300 %, pasos de 10 %. No hay controles en pantalla; cada cambio se anuncia al lector de pantalla
+  («Zoom 120 %»).
+- El nivel se refleja en la variable CSS `--mdw-content-zoom` del elemento raíz: declarala en la clase del control (o
+  en un ancestro) para fijar el zoom inicial, y leela para recordar la preferencia del usuario. Ctrl/Cmd + `0` vuelve a
+  tu valor; desactivar la prop también.
+- Aplica a ambas vistas, a los dos paneles de comparación, a `onlyView` y al historial; con `autoHeight` el control
+  crece con el zoom. No modifica el contenido ni llama a `onChange`.
+- El tamaño base del texto (`--mdw-content-wysiwyg-font-size`, `--mdw-content-markdown-font-size`) y el de la barra
+  (`--mdw-toolbar-scale`) se ajustan por CSS, independientes del zoom (ver [la guía](../../../docs/THEMING.md)).
 
 ### Alto automático
 
@@ -352,7 +370,7 @@ El aspecto se personaliza con CSS estándar declarando variables `--mdw-*`, sin 
 - Se pueden declarar en la clase del control, en cualquier contenedor o en `:root` (prioridad: clase del control >
   ancestro > default). Funcionan en cualquier orden de carga de las hojas y sin `!important`.
 - Hay variables para barra, contenido (incluido su espaciado interior, `--mdw-content-padding`), tablas, código y resaltado de sintaxis, citas, botones, menús y popovers,
-  comparación y scroll (48 en total).
+  comparación y scroll (52 en total).
 
 La lista completa con defaults, recetas (tema oscuro, preferencia del sistema, color de marca, fuentes, barra plana,
 fondo), qué está soportado y la resolución de problemas están en

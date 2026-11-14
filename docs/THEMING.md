@@ -81,6 +81,7 @@ las declares: cambiando `--mdw-bg` cambian también el contenido y los paneles f
 | `--mdw-toolbar-gradient-to` | `#cfcfcf` | color | Color final del degradado |
 | `--mdw-toolbar-fg` | `#222222` | color | Texto e iconos de la barra |
 | `--mdw-toolbar-font-family` | `Arial, sans-serif` | `font-family` | Fuente de la barra |
+| `--mdw-toolbar-scale` | `1` | número (factor) | Tamaño de la barra, de las barras de comparación e historial y de los menús (factor: 1.25 = 25 % más grande) |
 | `--mdw-toolbar-select-bg` | `#e9e9e9` | color | Fondo del selector de encabezado |
 | `--mdw-button-active-bg` | `#c8c8c8` | color | Fondo de un botón presionado o activo |
 | `--mdw-button-hover-gradient-from` | `#ffffff` | color | Degradado de un botón en hover (inicio) |
@@ -92,6 +93,9 @@ las declares: cambiando `--mdw-bg` cambian también el contenido y los paneles f
 | --- | --- | --- | --- |
 | `--mdw-content-bg` | `var(--mdw-bg)` | `background` (color, degradado, imagen) | Fondo del área de contenido (color, degradado o imagen) |
 | `--mdw-content-padding` | `12px 16px` | `padding` (1 a 4 longitudes) | Espacio interior entre los bordes del área de contenido y el texto (ambas vistas y ambos paneles de comparación) |
+| `--mdw-content-zoom` | `1` | número (factor) | Zoom del contenido (factor). Con allowContentZoom el usuario lo cambia con Ctrl/Cmd + rueda o + / - / 0 y el valor se refleja aquí |
+| `--mdw-content-wysiwyg-font-size` | `14px` | longitud | Tamaño base del texto en la vista renderizada (al 100 % de zoom) |
+| `--mdw-content-markdown-font-size` | `13px` | longitud | Tamaño base del texto en la vista Markdown (al 100 % de zoom) |
 | `--mdw-content-wysiwyg-fg` | `var(--mdw-fg)` | color | Texto de la vista renderizada |
 | `--mdw-content-wysiwyg-font-family` | `inherit` | `font-family` | Fuente de la vista renderizada |
 | `--mdw-content-markdown-fg` | `var(--mdw-fg)` | color | Texto de la vista Markdown |
@@ -270,6 +274,23 @@ document.documentElement.dataset.theme = oscuro ? "dark" : "light";
 
 Se aplica a la vista renderizada y a la Markdown, y a los dos paneles de la comparación (el resaltado de diferencias se
 mantiene alineado). Acepta 1 a 4 longitudes como `padding`; un valor inválido deja el padding en 0.
+
+### Tamaño de letra, zoom y tamaño de la barra
+
+```css
+.mi-editor {
+  --mdw-content-wysiwyg-font-size: 16px; /* texto base de la vista renderizada (100 % de zoom) */
+  --mdw-content-markdown-font-size: 15px; /* texto base de la vista Markdown */
+  --mdw-content-zoom: 1.2;                /* zoom inicial del contenido (factor) */
+  --mdw-toolbar-scale: 1.25;              /* barra, barras de comparación/historial y menús, 25 % más grandes */
+}
+```
+
+Son independientes: el zoom multiplica el tamaño base (16px al 120 % se ve a 19,2px) y la barra no cambia con el zoom.
+Con la prop `allowContentZoom` el usuario cambia el zoom con Ctrl/Cmd + rueda sobre el contenido o Ctrl/Cmd + `+`, `-`
+y `0`; el nivel elegido queda escrito en `--mdw-content-zoom` del elemento raíz del componente (se puede leer con
+`getComputedStyle(raíz).getPropertyValue("--mdw-content-zoom")` para recordarlo) y Ctrl/Cmd + `0` vuelve al valor que
+declares.
 
 ### Barra plana (sin degradado)
 

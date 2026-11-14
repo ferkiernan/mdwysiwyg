@@ -74,6 +74,7 @@ export function FloatingPanel({
     <div
       ref={panelRef}
       className={styles["root"]}
+      data-mdw-floating=""
       style={{
         position: "fixed",
         top: style.top,

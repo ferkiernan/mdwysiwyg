@@ -19,7 +19,7 @@ export type ThemeTokenGroup =
   | "scroll";
 
 /** Tipo de valor que acepta el token (para validar y elegir el control de edición). */
-export type ThemeTokenKind = "color" | "background" | "font" | "shadow" | "length" | "padding";
+export type ThemeTokenKind = "color" | "background" | "font" | "shadow" | "length" | "padding" | "number";
 
 export interface ThemeToken {
   name: `--mdw-${string}`;
@@ -56,6 +56,7 @@ export const THEME_TOKENS: readonly ThemeToken[] = [
   { name: "--mdw-toolbar-gradient-to", group: "toolbar", kind: "color", default: "#cfcfcf", description: "Color final del degradado" },
   { name: "--mdw-toolbar-fg", group: "toolbar", kind: "color", default: "#222222", description: "Texto e iconos de la barra" },
   { name: "--mdw-toolbar-font-family", group: "toolbar", kind: "font", default: "Arial, sans-serif", description: "Fuente de la barra" },
+  { name: "--mdw-toolbar-scale", group: "toolbar", kind: "number", default: "1", description: "Tamaño de la barra, de las barras de comparación e historial y de los menús (factor: 1.25 = 25 % más grande)" },
   { name: "--mdw-toolbar-select-bg", group: "toolbar", kind: "color", default: "#e9e9e9", description: "Fondo del selector de encabezado" },
   { name: "--mdw-button-active-bg", group: "toolbar", kind: "color", default: "#c8c8c8", description: "Fondo de un botón presionado o activo" },
   { name: "--mdw-button-hover-gradient-from", group: "toolbar", kind: "color", default: "#ffffff", description: "Degradado de un botón en hover (inicio)" },
@@ -63,6 +64,9 @@ export const THEME_TOKENS: readonly ThemeToken[] = [
 
   { name: "--mdw-content-bg", group: "content", kind: "background", default: "var(--mdw-bg)", description: "Fondo del área de contenido (color, degradado o imagen)" },
   { name: "--mdw-content-padding", group: "content", kind: "padding", default: "12px 16px", description: "Espacio interior entre los bordes del área de contenido y el texto (ambas vistas y ambos paneles de comparación)" },
+  { name: "--mdw-content-zoom", group: "content", kind: "number", default: "1", description: "Zoom del contenido (factor). Con allowContentZoom el usuario lo cambia con Ctrl/Cmd + rueda o + / - / 0 y el valor se refleja aquí" },
+  { name: "--mdw-content-wysiwyg-font-size", group: "content", kind: "length", default: "14px", description: "Tamaño base del texto en la vista renderizada (al 100 % de zoom)" },
+  { name: "--mdw-content-markdown-font-size", group: "content", kind: "length", default: "13px", description: "Tamaño base del texto en la vista Markdown (al 100 % de zoom)" },
   { name: "--mdw-content-wysiwyg-fg", group: "content", kind: "color", default: "var(--mdw-fg)", description: "Texto de la vista renderizada" },
   { name: "--mdw-content-wysiwyg-font-family", group: "content", kind: "font", default: "inherit", description: "Fuente de la vista renderizada" },
   { name: "--mdw-content-markdown-fg", group: "content", kind: "color", default: "var(--mdw-fg)", description: "Texto de la vista Markdown" },

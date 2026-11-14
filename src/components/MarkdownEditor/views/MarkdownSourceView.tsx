@@ -12,6 +12,8 @@ export interface MarkdownSourceViewProps {
    * vertical). Lo usa `autoHeight`. Default: false.
    */
   autoSize?: boolean;
+  /** Cambia cuando el tamaño del texto cambia (zoom): con `autoSize` se reajusta el alto. */
+  refitKey?: unknown;
 }
 
 /** Ajusta el alto de `textarea` a su contenido. */
@@ -30,6 +32,7 @@ export const MarkdownSourceView = forwardRef<
     readOnly = false,
     ariaLabel = "Código fuente Markdown",
     autoSize = false,
+    refitKey,
   },
   ref,
 ) {
@@ -42,7 +45,7 @@ export const MarkdownSourceView = forwardRef<
     if (textarea === null) return;
     if (autoSize) fitToContent(textarea);
     else textarea.style.height = "";
-  }, [autoSize, value]);
+  }, [autoSize, value, refitKey]);
 
   // Cambia el ancho (las líneas se reacomodan): también.
   useLayoutEffect(() => {

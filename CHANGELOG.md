@@ -6,6 +6,15 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
+- **`allowContentZoom` prop** (default `false`): the user zooms the content (text, images, tables, code, diagrams) with
+  Ctrl/Cmd + wheel over it or Ctrl/Cmd + `+`/`-`/`0`, 50–300 % in 10 % steps, without resizing the control or the toolbar
+  and without triggering the browser's page zoom. No on-screen controls; changes are announced to screen readers. The
+  level is reflected in `--mdw-content-zoom` on the component's root (the host sets the starting zoom via CSS and can
+  read it back).
+- **Theming variables** `--mdw-content-zoom` (1), `--mdw-content-wysiwyg-font-size` (14px),
+  `--mdw-content-markdown-font-size` (13px) — the content's base text size per view, multiplied by the zoom — and
+  `--mdw-toolbar-scale` (1), which scales the toolbar, the compare/history bars and the floating menus independently.
+
 - **«Copiar como TXT»** in the Export menu (after «Copiar como HTML»): copies the document as plain text to the
   clipboard, without Markdown symbols or HTML tags. Blocks are separated by a blank line, list items use `-`, `1.` or
   `[ ]`/`[x]` with two-space indentation per level, table cells are tab-separated (pastes as columns in spreadsheets),

@@ -19,6 +19,10 @@
   --_mdw-button-hover-gradient-to: var(--mdw-button-hover-gradient-to, #d8d8d8);
   --_mdw-content-bg: var(--mdw-content-bg, var(--_mdw-bg));
   --_mdw-content-padding: var(--mdw-content-padding, 12px 16px);
+  --_mdw-content-zoom: var(--mdw-content-zoom, 1);
+  --_mdw-content-wysiwyg-font-size: var(--mdw-content-wysiwyg-font-size, 14px);
+  --_mdw-content-markdown-font-size: var(--mdw-content-markdown-font-size, 13px);
+  --_mdw-toolbar-scale: var(--mdw-toolbar-scale, 1);
   --_mdw-content-markdown-fg: var(--mdw-content-markdown-fg, var(--_mdw-fg));
   --_mdw-content-markdown-font-family: var(--mdw-content-markdown-font-family, ui-monospace, Consolas, monospace);
   --_mdw-content-wysiwyg-fg: var(--mdw-content-wysiwyg-fg, var(--_mdw-fg));
@@ -181,6 +185,8 @@
   word-wrap: break-word;
   color: var(--_mdw-content-wysiwyg-fg);
   font-family: var(--_mdw-content-wysiwyg-font-family);
+  /* Tamaño base del texto × zoom del contenido (spec 021). */
+  font-size: calc(var(--_mdw-content-wysiwyg-font-size) * var(--_mdw-content-zoom));
 }
 
 .content :global(.ProseMirror p) {
@@ -193,7 +199,8 @@
   border-radius: 4px;
   padding: 8px 12px;
   font-family: ui-monospace, Consolas, monospace;
-  font-size: 13px;
+  /* Misma proporción que antes (13px sobre 14px). */
+  font-size: calc(13em / 14);
   overflow-x: auto;
 }
 
@@ -278,6 +285,7 @@
 }
 
 .content :global(.ProseMirror img) {
+  zoom: var(--_mdw-content-zoom);
   max-width: 100%;
 }
 
@@ -318,6 +326,7 @@
 }
 
 .content :global(.ProseMirror div[data-mermaid-block]) {
+  zoom: var(--_mdw-content-zoom);
   background: var(--_mdw-mermaid-bg);
   border-radius: 4px;
   padding: 8px 12px;
@@ -331,7 +340,7 @@
   outline: none;
   padding: var(--_mdw-content-padding);
   font-family: var(--_mdw-content-markdown-font-family);
-  font-size: 13px;
+  font-size: calc(var(--_mdw-content-markdown-font-size) * var(--_mdw-content-zoom));
   line-height: 1.5;
   color: var(--_mdw-content-markdown-fg);
   background: transparent;
@@ -366,7 +375,7 @@
   white-space: pre-wrap;
   overflow-wrap: break-word;
   font-family: var(--_mdw-content-markdown-font-family);
-  font-size: 13px;
+  font-size: calc(var(--_mdw-content-markdown-font-size) * var(--_mdw-content-zoom));
   line-height: 1.5;
   color: transparent;
 }
@@ -376,6 +385,8 @@
 }
 
 .toolbar {
+  /* Tamaño de la barra (spec 021): 1 = como siempre. */
+  zoom: var(--_mdw-toolbar-scale);
   position: relative;
   display: flex;
   flex-wrap: nowrap;
@@ -403,6 +414,7 @@
 /* Segunda barra (comparación o historial): bajo la principal, con una línea de separación. */
 .compareBar,
 .historyBar {
+  zoom: var(--_mdw-toolbar-scale);
   border-top: 1px solid var(--_mdw-control-highlight);
 }
 
@@ -798,4 +810,9 @@
 /* La lista de versiones no impone su alto: se estira a la fila y se desplaza. */
 .autoHeight .versionList {
   contain: size;
+}
+
+/* Paneles flotantes (menús, diálogos, popovers): siguen el tamaño de la barra. */
+.root[data-mdw-floating] > * {
+  zoom: var(--_mdw-toolbar-scale);
 }
