@@ -59,7 +59,7 @@ describe("015: los defaults son respaldo, el host siempre gana", () => {
       .map(([, selector]) => (selector ?? "").trim());
     expect(rules.some((s) => s.includes(".ProseMirror"))).toBe(true);
     expect(rules.some((s) => s === ".source")).toBe(true);
-    expect(css).toMatch(/--_mdw-content-cursor: var\(--mdw-content-cursor, url\("data:image\/svg\+xml,[^"]+"\) 8 12, text\);/);
+    expect(css).toMatch(/--_mdw-content-cursor: var\(--mdw-content-cursor, url\("data:image\/svg\+xml,[^"]+"\) 5 10, text\);/);
   });
 
   it("un valor en la clase del control llega aunque su CSS se cargue antes", () => {
