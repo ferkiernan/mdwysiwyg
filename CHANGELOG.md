@@ -6,10 +6,9 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
-- **`--mdw-content-cursor`** (content group): mouse cursor over the text in both views. The system text cursor (I-beam)
-  is drawn by inverting the background on Windows and is nearly invisible over mid-tone backgrounds; the default is now
-  a dark I-beam with a light outline (inline SVG, `text` as fallback) that stays visible on any background. Set it to
-  `text` to use the system cursor again.
+- **`--mdw-content-cursor`** (content group): mouse cursor over the text in both views. Default `text`, the operating
+  system's own I-beam, unchanged. Hosts with mid-tone or dark content backgrounds, where the inverted Windows I-beam is
+  hard to see, can declare their own cursor (see the recipe in the theming guide).
 
 ## 0.8.2
 

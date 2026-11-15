@@ -53,13 +53,14 @@ describe("015: los defaults son respaldo, el host siempre gana", () => {
     expect(css).not.toContain("padding: 12px 16px;");
   });
 
-  it("el cursor del texto se lee del token en ambas vistas, con una barra en I propia y text de respaldo", () => {
+  it("el cursor del texto se lee del token en ambas vistas y por defecto es el del sistema", () => {
     const rules = [...css.matchAll(/([^{}]+)\{([^}]*)\}/g)]
       .filter(([, , body]) => /cursor:\s*var\(--_mdw-content-cursor\)/.test(body ?? ""))
       .map(([, selector]) => (selector ?? "").trim());
     expect(rules.some((s) => s.includes(".ProseMirror"))).toBe(true);
     expect(rules.some((s) => s === ".source")).toBe(true);
-    expect(css).toMatch(/--_mdw-content-cursor: var\(--mdw-content-cursor, url\("data:image\/svg\+xml,[^"]+"\) 5 10, text\);/);
+    expect(css).toContain("--_mdw-content-cursor: var(--mdw-content-cursor, text);");
+    expect(css).not.toMatch(/cursor:[^;]*url\(/);
   });
 
   it("un valor en la clase del control llega aunque su CSS se cargue antes", () => {
