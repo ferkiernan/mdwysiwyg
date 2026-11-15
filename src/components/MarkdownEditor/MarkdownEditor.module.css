@@ -251,6 +251,15 @@
   background: var(--_mdw-table-header-bg);
 }
 
+/* Cambio de ancho de columna (spec 023): cursor de doble flecha sobre la mitad
+   inferior del borde derecho de un encabezado y durante el arrastre. */
+.content :global(.ProseMirror.mdw-column-resize),
+.content :global(.ProseMirror.mdw-column-resize *),
+:global(body.mdw-column-resize),
+:global(body.mdw-column-resize *) {
+  cursor: col-resize !important;
+}
+
 /* Disparador del menú de tabla: botón superpuesto (fuera del documento) sobre
    la esquina superior derecha de la celda. La forma triangular se define abajo. */
 .tableMenuTrigger {

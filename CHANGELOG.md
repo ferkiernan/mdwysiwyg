@@ -6,6 +6,11 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
+- **Column width by dragging** (spec 023): the lower half of a header cell's right border shows the resize cursor;
+  dragging widens or narrows the column (one change, one undo step). The width is stored in the Markdown as the number
+  of dashes of that column in the separator row (1 dash = 8 px, alignment colons kept). Dashes only count as a width
+  when there are more than 3 and they differ from the automatic padding, so existing tables are unchanged; explicit
+  widths survive later edits and view switches. Not available in read-only, compare panes or history.
 - **`--mdw-content-cursor`** (content group): mouse cursor over the text in both views. Default `text`, the operating
   system's own I-beam, unchanged. Hosts with mid-tone or dark content backgrounds, where the inverted Windows I-beam is
   hard to see, can declare their own cursor (see the recipe in the theming guide).

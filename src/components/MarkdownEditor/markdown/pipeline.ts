@@ -13,6 +13,7 @@ import { visit } from "unist-util-visit";
 import type { Root as MdastRoot, RootContent } from "mdast";
 import type { Root as HastRoot, Element, ElementContent } from "hast";
 import type { State } from "hast-util-to-mdast";
+import { applyColumnWidths, rehypeCollectColumnWidths, remarkColumnWidths } from "./columnWidths";
 import json from "highlight.js/lib/languages/json";
 import sql from "highlight.js/lib/languages/sql";
 import typescript from "highlight.js/lib/languages/typescript";
@@ -172,6 +173,7 @@ export function markdownToEditorHtml(markdown: string): string {
   const file = unified()
     .use(remarkParse)
     .use(remarkGfm)
+    .use(remarkColumnWidths)
     .use(embedRawHtml)
     .use(remarkRehype)
     .use(taskListsToTiptap)
@@ -182,8 +184,10 @@ export function markdownToEditorHtml(markdown: string): string {
 
 /** HTML emitido por Tiptap (`editor.getHTML()`) → Markdown (GFM). */
 export function editorHtmlToMarkdown(html: string): string {
+  const columnWidths: (number | null)[][] = [];
   const file = unified()
     .use(rehypeParse, { fragment: true })
+    .use(rehypeCollectColumnWidths(columnWidths))
     .use(tiptapTaskListsToGfm)
     .use(tightenListItems)
     .use(rehypeRemark, {
@@ -200,7 +204,7 @@ export function editorHtmlToMarkdown(html: string): string {
     .use(remarkGfm)
     .use(remarkStringify, STRINGIFY_OPTIONS)
     .processSync(html);
-  return String(file);
+  return applyColumnWidths(String(file), columnWidths);
 }
 
 /** Markdown (GFM) → HTML completo para exportación (FR-013, FR-017). */

@@ -32,6 +32,9 @@ React with a table picker and syntax highlighting?" — yes, this is it.
   HTML insertion, export (copy) to Markdown, HTML or plain text (TXT: no syntax, lists with `-`/`1.`/`[ ]`, tables
   tab-separated, links as `text (url)`)
 - Visual table size picker: hover a 10x10 grid to choose columns x rows, click to insert
+- Column width by dragging the lower half of a header cell's right border (resize cursor); stored in the Markdown as the
+  number of dashes in that column's separator cell (1 dash = 8 px). Dashes count only when > 3 and different from the
+  automatic padding, so existing tables are unchanged. Not in read-only, compare panes or history
 - Table context menus: clicking an already-focused cell a second time opens a menu — column
   actions (add right/left, move right/left, delete) on header cells, row actions (add above/below,
   move up/down, delete) on data cells. A click while a text selection is active never opens the

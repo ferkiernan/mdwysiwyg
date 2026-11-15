@@ -306,6 +306,17 @@ resultante. El color y el tamaño se personalizan con `--mdw-table-menu-trigger-
 defecto el de la scrollbar) y `--mdw-table-menu-trigger-size` (por defecto `0.7em`, ≈ la mitad
 de la altura del cursor de texto).
 
+**Ancho de columna.** Sobre la **mitad inferior del borde derecho** de una celda de encabezado
+el puntero cambia a la doble flecha (↔); arrastrar ensancha o angosta la columna (mínimo ≈ 3
+caracteres; una columna no baja de su palabra más larga). Al soltar, el ancho queda en el
+Markdown como la **cantidad de guiones** de esa columna en la fila separadora: **1 guion = 8 px**
+(`| ------------ |` = 96 px), conservando los `:` de alineación. Es un solo cambio (`onChange`
+una vez, se deshace con un Ctrl+Z). Los guiones solo cuentan como ancho cuando son más de 3 y
+difieren de los que pondría el relleno automático (el ancho de la celda más larga), así que las
+tablas existentes no cambian; también se puede escribir el ancho a mano en la vista Markdown.
+No disponible con `onlyView`, en los paneles de comparación ni en el historial. Otros
+renderizadores de Markdown ignoran estos anchos.
+
 ### Cursor y líneas entre bloques
 
 Un clic en el área libre **a la derecha de una tabla** (a la altura de cualquiera de sus filas),

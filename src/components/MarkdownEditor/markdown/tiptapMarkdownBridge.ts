@@ -7,6 +7,7 @@ import TableHeader from "@tiptap/extension-table-header";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import Link from "@tiptap/extension-link";
+import { ColumnResize } from "./columnResize";
 import Image from "@tiptap/extension-image";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { createLowlight } from "lowlight";
@@ -204,6 +205,7 @@ export function createEditorExtensions(
     TableRow,
     TableHeader,
     TableCell,
+    ColumnResize,
     TaskList,
     TaskItem.configure({ nested: true }),
     Link.configure({ openOnClick: false }),
