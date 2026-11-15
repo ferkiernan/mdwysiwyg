@@ -68,7 +68,7 @@ las declares: cambiando `--mdw-bg` cambian también el contenido y los paneles f
 | --- | --- | --- | --- |
 | `--mdw-border` | `#d0d4da` | color | Bordes del componente, tablas y paneles |
 | `--mdw-bg` | `#ffffff` | color | Fondo del componente; base del fondo del contenido y de los paneles flotantes |
-| `--mdw-fg` | `#1f2328` | color | Color de texto; base del texto del contenido |
+| `--mdw-fg` | `#1f2328` | color | Color de texto; base del texto del contenido y color del cursor de escritura (caret) |
 | `--mdw-muted` | `#f6f7f9` | color | Fondos suaves: encabezados de tabla, código, Mermaid, lista de versiones |
 | `--mdw-accent` | `#3d6fd8` | color | Anillos de foco y estados seleccionados |
 

@@ -57,6 +57,8 @@
   --_mdw-link-fg: var(--mdw-link-fg, #0000ee);
   --_mdw-link-visited-fg: var(--mdw-link-visited-fg, #551a8b);
   box-sizing: border-box;
+  /* Cursor de escritura (caret) siempre del color de --mdw-fg, en ambas vistas, campos y paneles flotantes. */
+  caret-color: var(--_mdw-fg);
   display: flex;
   flex-direction: column;
   border: 1px solid var(--_mdw-border);

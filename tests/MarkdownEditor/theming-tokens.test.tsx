@@ -63,6 +63,12 @@ describe("015: los defaults son respaldo, el host siempre gana", () => {
     expect(css).not.toMatch(/cursor:[^;]*url\(/);
   });
 
+  it("el caret siempre toma --mdw-fg, declarado una sola vez en el elemento raíz (se hereda)", () => {
+    const root = css.slice(css.indexOf(".root {"), css.indexOf("}", css.indexOf("box-sizing: border-box;")));
+    expect(root).toContain("caret-color: var(--_mdw-fg);");
+    expect(css.match(/caret-color:/g)).toHaveLength(1);
+  });
+
   it("un valor en la clase del control llega aunque su CSS se cargue antes", () => {
     const cleanup = injectStyle(".mi-editor { --mdw-toolbar-fg: #ff0000; }");
     try {

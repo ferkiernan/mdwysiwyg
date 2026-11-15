@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 ## Unreleased
 
+### Changed
+
+- **Caret color follows `--mdw-fg`** in both views, dialog fields and floating panels (`caret-color` on the root,
+  inherited). With the default theme nothing changes; a host that sets a different content text color now gets the
+  caret in `--mdw-fg`.
+
 ### Added
 
 - **Column width by dragging** (spec 023): the lower half of a header cell's right border shows the resize cursor;

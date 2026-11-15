@@ -47,7 +47,7 @@ export const THEME_TOKEN_GROUP_LABELS: Record<ThemeTokenGroup, string> = {
 export const THEME_TOKENS: readonly ThemeToken[] = [
   { name: "--mdw-border", group: "base", kind: "color", default: "#d0d4da", description: "Bordes del componente, tablas y paneles" },
   { name: "--mdw-bg", group: "base", kind: "color", default: "#ffffff", description: "Fondo del componente; base del fondo del contenido y de los paneles flotantes" },
-  { name: "--mdw-fg", group: "base", kind: "color", default: "#1f2328", description: "Color de texto; base del texto del contenido" },
+  { name: "--mdw-fg", group: "base", kind: "color", default: "#1f2328", description: "Color de texto; base del texto del contenido y color del cursor de escritura (caret)" },
   { name: "--mdw-muted", group: "base", kind: "color", default: "#f6f7f9", description: "Fondos suaves: encabezados de tabla, código, Mermaid, lista de versiones" },
   { name: "--mdw-accent", group: "base", kind: "color", default: "#3d6fd8", description: "Anillos de foco y estados seleccionados" },
 
