@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { MarkdownEditor } from "../src";
 import { ConfigBuilder } from "./builder/ConfigBuilder";
 import { GUIDE_URL } from "./builder/generators";
+import { DEMO } from "./sample";
 import { version } from "../package.json";
 import "./playground.css";
 import type {
@@ -127,48 +128,6 @@ function CompareDemo({
   );
 }
 
-const DEMO = [
-  "# Demo mdwysiwyg",
-  "",
-  "It's super easy, you can use **bold**, *italic* and ~~Strikethrough~~.",
-  "",
-  "- [ ] pending tasks",
-  "- [x] are done.",
-  "",
-  "Repeat [after](https://github.com/ferkiernan) me:",
-  "",
-  "> I refuse to learn Markdown.",
-  "",
-  "---",
-  "",
-  "After all... tables are looking good:",
-  "",
-  "| Col A | Col B | Col C       |",
-  "| ----- | ----- | ----------- |",
-  "| 1     | 2     | 3           |",
-  "| this  | *is*  | **example** |",
-  "",
-  "```javascript",
-  "const x = 1;",
-  "function greet(name) {",
-  "  return `Hola, ${name}!`;",
-  "}",
-  "// Yep, this code has some style.",
-  "```",
-  "",
-  "And mermaid diagrams render for real:",
-  "",
-  "```mermaid",
-  "graph TD",
-  "  A[Markdown] --> B[WYSIWYG]",
-  "  B --> A",
-  "```",
-  "Would you like to insert some",
-  '<div style="color: teal"><b>⚽embedded HTML? Yes please💙💛</b>',
-  "</div>",
-  "",
-].join("\n");
-
 interface Tab {
   id: string;
   label: string;
@@ -178,16 +137,16 @@ interface Tab {
 
 const TABS: Tab[] = [
   {
-    id: "configurador",
-    label: "Configurador",
-    title: "Configurá tu control",
-    lead: "Elegí atributos y aspecto, mirá el resultado en la vista previa y copiá los atributos y el CSS para tu host.",
-  },
-  {
     id: "demo-editor",
     label: "Editor",
     title: "Editor normal",
     lead: "Redimensionable por defecto. Al lado, el Markdown que emite onChange en cada cambio.",
+  },
+  {
+    id: "configurador",
+    label: "Configurador",
+    title: "Configurá tu control",
+    lead: "Elegí atributos y aspecto, mirá el resultado en la vista previa y copiá los atributos y el CSS para tu host.",
   },
   {
     id: "demo-compare",
@@ -219,7 +178,7 @@ const TABS: Tab[] = [
   },
 ];
 
-const HOME = "configurador";
+const HOME = "demo-editor";
 
 function tabFromHash(): string {
   const id = window.location.hash.slice(1);
@@ -233,6 +192,8 @@ function App() {
   const [modified, setModified] = useState<boolean | null>(null);
   const [showToolbar, setShowToolbar] = useState(true);
   const [historyUndo, setHistoryUndo] = useState(true);
+  const [readonlyAutoHideBar, setReadonlyAutoHideBar] = useState(false);
+  const [readonlyAutoHeight, setReadonlyAutoHeight] = useState(false);
 
   useEffect(() => {
     const onHash = () => setActive(tabFromHash());
@@ -341,8 +302,34 @@ function App() {
         )}
 
         {active === "demo-readonly" && (
-          <div className="pg-card">
-            <MarkdownEditor onlyView onlyViewNotice="demo-readme.md" initialContent={DEMO} height={520} width="100%" />
+          <div className="pg-card pg-demo">
+            <div className="pg-row pg-controls">
+              <label className="pg-check">
+                <input
+                  type="checkbox"
+                  checked={readonlyAutoHideBar}
+                  onChange={(event) => setReadonlyAutoHideBar(event.target.checked)}
+                />
+                autoHideBar
+              </label>
+              <label className="pg-check">
+                <input
+                  type="checkbox"
+                  checked={readonlyAutoHeight}
+                  onChange={(event) => setReadonlyAutoHeight(event.target.checked)}
+                />
+                autoHeight
+              </label>
+            </div>
+            <MarkdownEditor
+              onlyView
+              onlyViewNotice="demo-readme.md"
+              initialContent={DEMO}
+              autoHideBar={readonlyAutoHideBar}
+              autoHeight={readonlyAutoHeight}
+              height={520}
+              width="100%"
+            />
           </div>
         )}
 

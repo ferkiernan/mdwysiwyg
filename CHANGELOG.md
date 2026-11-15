@@ -24,6 +24,9 @@ All notable changes to this project are documented in this file.
   version, links and tabs (configurator and one tab per demo, linkable through the URL hash), attributes grouped by
   purpose, and a three-column builder (attributes | theming | sticky preview) from 1500 px wide. All options, presets,
   copy actions and demos are kept.
+- **Playground tweaks** (spec 025): the Editor tab comes first and is the landing tab (Configurador second); the Editor,
+  the Configurador preview and Solo lectura share one sample document, which now ends with an external image; Solo
+  lectura gets `autoHideBar` and `autoHeight` checkboxes.
 
 ## 0.8.2
 

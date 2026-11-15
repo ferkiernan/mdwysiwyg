@@ -105,14 +105,14 @@ describe("constructor del playground", () => {
     const content = screen.getByRole("textbox", { name: /compareContent/ });
     await userEvent.type(content, "propuesta");
     const original = await screen.findByRole("group", { name: "Contenido original (solo lectura)" });
-    expect(original).toHaveTextContent("Documento de ejemplo");
+    expect(original).toHaveTextContent("Demo mdwysiwyg");
     await userEvent.clear(content);
     expect(screen.getByRole("group", { name: "Contenido original (solo lectura)" })).toHaveTextContent(
-      "Documento de ejemplo",
+      "Demo mdwysiwyg",
     );
     await userEvent.type(content, "otra");
     expect(screen.getByRole("group", { name: "Contenido original (solo lectura)" })).toHaveTextContent(
-      "Documento de ejemplo",
+      "Demo mdwysiwyg",
     );
   });
 });

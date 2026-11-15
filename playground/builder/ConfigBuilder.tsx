@@ -12,6 +12,7 @@ import { dependencyNotes, isValidClassName, isValidCssValue } from "./validation
 import { DARK_VALUES, THEME_PRESETS } from "./presets";
 import { copyText } from "./clipboard";
 import { StylingGuideLink } from "./StylingGuideLink";
+import { DEMO } from "../sample";
 import type {
   AttributeChoices,
   AttributeSpec,
@@ -23,27 +24,7 @@ import type {
 const SPECS = attributeSpecs as AttributeSpec[];
 const STORAGE_KEY = "mdwysiwyg-playground-builder";
 
-const PREVIEW_CONTENT = [
-  "# Documento de ejemplo",
-  "",
-  "Texto con **negrita**, *cursiva* y un [enlace](https://example.com).",
-  "",
-  "> Una cita para ver su color.",
-  "",
-  "```typescript",
-  "// comentario",
-  'const saludo: string = "hola";',
-  "function sumar(a: number) { return a + 42; }",
-  "```",
-  "",
-  "| Columna | Valor |",
-  "| --- | --- |",
-  "| Uno | 1 |",
-  "",
-  "- Elemento de lista",
-  "- [ ] Tarea pendiente",
-  "",
-].join("\n");
+const PREVIEW_CONTENT = DEMO;
 
 const DEFAULT_THEME: ThemeChoices = {
   preset: "control-default",
