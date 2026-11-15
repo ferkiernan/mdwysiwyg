@@ -17,9 +17,13 @@ All notable changes to this project are documented in this file.
   of dashes of that column in the separator row (1 dash = 8 px, alignment colons kept). Dashes only count as a width
   when there are more than 3 and they differ from the automatic padding, so existing tables are unchanged; explicit
   widths survive later edits and view switches. Not available in read-only, compare panes or history.
-- **`--mdw-content-cursor`** (content group): mouse cursor over the text in both views. Default `text`, the operating
-  system's own I-beam, unchanged. Hosts with mid-tone or dark content backgrounds, where the inverted Windows I-beam is
-  hard to see, can declare their own cursor (see the recipe in the theming guide).
+- **`--mdw-content-cursor`** (content group): mouse cursor over the text in both views. Default: a black I-beam with a
+  thin white outline at the standard size (11×20 SVG, hotspot centered, `text` as fallback), so it stays visible with
+  any system pointer scheme (e.g. Windows' white pointer). Set it to `text` to use the operating system's I-beam.
+- **Playground redesign** (spec 024): page styling (type scale, spacing, palette, styled controls), a sticky header with
+  version, links and tabs (configurator and one tab per demo, linkable through the URL hash), attributes grouped by
+  purpose, and a three-column builder (attributes | theming | sticky preview) from 1500 px wide. All options, presets,
+  copy actions and demos are kept.
 
 ## 0.8.2
 

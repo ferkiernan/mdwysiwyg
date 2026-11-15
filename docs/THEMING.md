@@ -94,7 +94,7 @@ las declares: cambiando `--mdw-bg` cambian también el contenido y los paneles f
 | `--mdw-content-bg` | `var(--mdw-bg)` | `background` (color, degradado, imagen) | Fondo del área de contenido (color, degradado o imagen) |
 | `--mdw-content-padding` | `12px 16px` | `padding` (1 a 4 longitudes) | Espacio interior entre los bordes del área de contenido y el texto (ambas vistas y ambos paneles de comparación) |
 | `--mdw-content-zoom` | `1` | número (factor) | Zoom del contenido (factor). Con allowContentZoom el usuario lo cambia con Ctrl/Cmd + rueda o + / - / 0 y el valor se refleja aquí |
-| `--mdw-content-cursor` | `text` | `cursor` | Cursor del mouse sobre el texto (ambas vistas). Por defecto el cursor de texto del sistema; declararlo solo si se necesita otro (ver receta «Cursor de texto sobre fondos oscuros») |
+| `--mdw-content-cursor` | barra en I negra (SVG 11×20), `text` de respaldo | `cursor` | Cursor del mouse sobre el texto (ambas vistas). Por defecto una barra en I negra con borde claro del tamaño estándar, visible con cualquier esquema de puntero; `text` usa el del sistema (ver receta «Cursor de texto») |
 | `--mdw-content-wysiwyg-font-size` | `14px` | longitud | Tamaño base del texto en la vista renderizada (al 100 % de zoom) |
 | `--mdw-content-markdown-font-size` | `13px` | longitud | Tamaño base del texto en la vista Markdown (al 100 % de zoom) |
 | `--mdw-content-wysiwyg-fg` | `var(--mdw-fg)` | color | Texto de la vista renderizada |
@@ -324,15 +324,15 @@ declares.
 `--mdw-content-bg` se aplica como `background`, así que admite el shorthand completo (color, degradados, imágenes en
 capas).
 
-### Cursor de texto sobre fondos oscuros
+### Cursor de texto
 
-En Windows el cursor de texto del sistema se dibuja invirtiendo el fondo, así que sobre fondos grises medios u oscuros
-puede verse poco. El componente no lo reemplaza; si tu tema lo necesita, declará un cursor propio, por ejemplo una barra
-en I negra con borde blanco del tamaño estándar (11×20, punto activo en el centro):
+Sobre el contenido, el componente usa por defecto su propia barra en I negra con borde blanco, del tamaño estándar
+(11×20, punto activo en el centro), que se ve igual con cualquier esquema de puntero del sistema (por ejemplo, el
+puntero blanco de Windows). Para volver al cursor de texto del sistema:
 
 ```css
-.mi-editor-oscuro {
-  --mdw-content-cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='11' height='20' viewBox='0 0 11 20' shape-rendering='crispEdges'><path d='M2.5 1.5h6M5.5 1.5v17M2.5 18.5h6' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='square'/><path d='M2.5 1.5h6M5.5 1.5v17M2.5 18.5h6' fill='none' stroke='%23000000' stroke-width='1' stroke-linecap='square'/></svg>") 5 10, text;
+.mi-editor {
+  --mdw-content-cursor: text;
 }
 ```
 

@@ -20,7 +20,7 @@
   --_mdw-content-bg: var(--mdw-content-bg, var(--_mdw-bg));
   --_mdw-content-padding: var(--mdw-content-padding, 12px 16px);
   --_mdw-content-zoom: var(--mdw-content-zoom, 1);
-  --_mdw-content-cursor: var(--mdw-content-cursor, text);
+  --_mdw-content-cursor: var(--mdw-content-cursor, url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='11' height='20' viewBox='0 0 11 20' shape-rendering='crispEdges'><path d='M2.5 1.5h6M5.5 1.5v17M2.5 18.5h6' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='square'/><path d='M2.5 1.5h6M5.5 1.5v17M2.5 18.5h6' fill='none' stroke='%23000000' stroke-width='1' stroke-linecap='square'/></svg>") 5 10, text);
   --_mdw-content-wysiwyg-font-size: var(--mdw-content-wysiwyg-font-size, 14px);
   --_mdw-content-markdown-font-size: var(--mdw-content-markdown-font-size, 13px);
   --_mdw-toolbar-scale: var(--mdw-toolbar-scale, 1);
@@ -190,7 +190,7 @@
   font-family: var(--_mdw-content-wysiwyg-font-family);
   /* Tamaño base del texto × zoom del contenido (spec 021). */
   font-size: calc(var(--_mdw-content-wysiwyg-font-size) * var(--_mdw-content-zoom));
-  /* Cursor del sistema por defecto; el host puede declarar otro en --mdw-content-cursor. */
+  /* Barra en I negra con borde claro por defecto (se ve con cualquier esquema de puntero); el host puede declarar otro en --mdw-content-cursor (p. ej. text). */
   cursor: var(--_mdw-content-cursor);
 }
 

@@ -3,7 +3,7 @@ import { GUIDE_URL } from "./generators";
 /** Enlace a la guía «Cómo implementar estilos en tu host» (se abre en otra pestaña). */
 export function StylingGuideLink({ prefix }: { prefix?: string }) {
   return (
-    <span style={{ fontSize: 14 }}>
+    <span>
       {prefix !== undefined && <>{prefix} </>}
       <a href={GUIDE_URL} target="_blank" rel="noopener noreferrer">
         Cómo implementar estilos en tu host

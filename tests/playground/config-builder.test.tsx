@@ -1,7 +1,11 @@
 import { afterEach, describe, it, expect, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ConfigBuilder } from "../../playground/builder/ConfigBuilder";
+import { ConfigBuilder, groupAttributes } from "../../playground/builder/ConfigBuilder";
+import type { AttributeSpec } from "../../playground/builder/types";
+import attributeSpecs from "../../playground/generated/attributes.json";
+
+const SPECS = attributeSpecs as AttributeSpec[];
 
 afterEach(() => {
   window.localStorage.clear();
@@ -24,6 +28,17 @@ describe("constructor del playground", () => {
     expect(links[0]).toHaveAttribute("target", "_blank");
     expect(links[0]).toHaveAttribute("rel", "noopener noreferrer");
     expect(links[0]).toHaveAccessibleName(/se abre en una pestaña nueva/);
+    await screen.findByRole("textbox", { name: "Editor de texto enriquecido" });
+  });
+
+  it("agrupa los atributos por propósito: cada atributo aparece una sola vez y los nuevos caen en «Otros»", async () => {
+    const extra = { name: "nuevoAtributo", kind: "switch", default: false, summary: "" } as const;
+    const all = [...SPECS, extra];
+    const grouped = groupAttributes(all).flatMap(([, specs]) => specs.map((spec) => spec.name));
+    expect([...grouped].sort()).toEqual(all.map((spec) => spec.name).sort());
+    expect(groupAttributes(all).at(-1)).toEqual(["Otros", [extra]]);
+    render(<ConfigBuilder />);
+    expect(screen.getByRole("group", { name: "Comparación" })).toHaveTextContent("compareOrientation");
     await screen.findByRole("textbox", { name: "Editor de texto enriquecido" });
   });
 

@@ -53,14 +53,15 @@ describe("015: los defaults son respaldo, el host siempre gana", () => {
     expect(css).not.toContain("padding: 12px 16px;");
   });
 
-  it("el cursor del texto se lee del token en ambas vistas y por defecto es el del sistema", () => {
+  it("el cursor del texto se lee del token en ambas vistas, con una barra en I negra propia y text de respaldo", () => {
     const rules = [...css.matchAll(/([^{}]+)\{([^}]*)\}/g)]
       .filter(([, , body]) => /cursor:\s*var\(--_mdw-content-cursor\)/.test(body ?? ""))
       .map(([, selector]) => (selector ?? "").trim());
     expect(rules.some((s) => s.includes(".ProseMirror"))).toBe(true);
     expect(rules.some((s) => s === ".source")).toBe(true);
-    expect(css).toContain("--_mdw-content-cursor: var(--mdw-content-cursor, text);");
-    expect(css).not.toMatch(/cursor:[^;]*url\(/);
+    expect(css).toMatch(
+      /--_mdw-content-cursor: var\(--mdw-content-cursor, url\("data:image\/svg\+xml,[^"]+stroke='%23000000'[^"]+"\) 5 10, text\);/,
+    );
   });
 
   it("el caret siempre toma --mdw-fg, declarado una sola vez en el elemento raíz (se hereda)", () => {

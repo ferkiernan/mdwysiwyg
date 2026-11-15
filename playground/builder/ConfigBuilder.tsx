@@ -105,18 +105,32 @@ function previewProps(choices: AttributeChoices): MarkdownEditorProps {
   return props as MarkdownEditorProps;
 }
 
-const box = {
-  border: "1px solid #d0d4da",
-  borderRadius: 6,
-  padding: 12,
-} as const;
+/** Grupos de atributos por propósito; los que no figuran van a «Otros». */
+export const ATTRIBUTE_GROUPS: Array<[string, string[]]> = [
+  ["Tamaño", ["width", "height", "resizable", "autoHeight"]],
+  ["Barra y vista", ["showToolbar", "autoHideBar", "allowContentZoom"]],
+  ["Contenido", ["onChange", "sanitizeEmbeddedHtml", "resolveImageSrc"]],
+  ["Solo lectura", ["onlyView", "onlyViewNotice"]],
+  ["Comparación", ["mode", "compareOrientation", "compareContent", "compareSyncScroll", "onCompareDecision"]],
+  ["Historial de versiones", ["historyUndo", "documentId", "fileName"]],
+];
 
-const mono = { fontFamily: "ui-monospace, Consolas, monospace", fontSize: 12 } as const;
+/** Atributos agrupados según {@link ATTRIBUTE_GROUPS}, cada uno una sola vez. */
+export function groupAttributes(specs: AttributeSpec[]): Array<[string, AttributeSpec[]]> {
+  const listed = new Set(ATTRIBUTE_GROUPS.flatMap(([, names]) => names));
+  const groups: Array<[string, AttributeSpec[]]> = ATTRIBUTE_GROUPS.map(([label, names]) => [
+    label,
+    names.map((name) => specs.find((spec) => spec.name === name)).filter((spec): spec is AttributeSpec => spec !== undefined),
+  ]);
+  const others = specs.filter((spec) => !listed.has(spec.name));
+  if (others.length > 0) groups.push(["Otros", others]);
+  return groups.filter(([, items]) => items.length > 0);
+}
 
 function CopyFeedback({ status, text }: { status: "idle" | "copied" | "failed"; text: string }) {
   return (
     <>
-      <span role="status" aria-live="polite" style={{ marginLeft: 8, fontSize: 13 }}>
+      <span role="status" aria-live="polite" className="pg-status">
         {status === "copied" ? "¡Copiado!" : status === "failed" ? "No se pudo copiar automáticamente: seleccioná y copiá el texto." : ""}
       </span>
       {status === "failed" && (
@@ -125,7 +139,7 @@ function CopyFeedback({ status, text }: { status: "idle" | "copied" | "failed"; 
           value={text}
           aria-label="Texto para copiar"
           ref={(el) => el?.select()}
-          style={{ ...mono, width: "100%", height: 120, marginTop: 6 }}
+          style={{ width: "100%", height: 120 }}
         />
       )}
     </>
@@ -144,12 +158,10 @@ function useCopy() {
 
 function Field({ label, note, children }: { label: ReactNode; note?: string | undefined; children: ReactNode }) {
   return (
-    <div style={{ marginBottom: 10 }}>
+    <div className="pg-field">
       {children}
-      <div style={{ fontSize: 12, color: "#57606a", marginTop: 2 }}>{label}</div>
-      {note !== undefined && (
-        <div style={{ fontSize: 12, color: "#9a6700", marginTop: 2 }}>⚠ {note}</div>
-      )}
+      <div className="pg-field-help">{label}</div>
+      {note !== undefined && <div className="pg-field-note">⚠ {note}</div>}
     </div>
   );
 }
@@ -164,11 +176,11 @@ function AttributeInput({
   onChange: (value: AttributeChoices[string] | undefined) => void;
 }) {
   const id = `attr-${spec.name}`;
-  const name = <code style={mono}>{spec.name}</code>;
+  const name = <code className="pg-name">{spec.name}</code>;
   const current = value ?? spec.default;
   if (spec.kind === "switch" || spec.kind === "function") {
     return (
-      <label htmlFor={id} style={{ display: "flex", gap: 6, alignItems: "center" }}>
+      <label htmlFor={id} className="pg-field-control">
         <input
           id={id}
           type="checkbox"
@@ -176,13 +188,13 @@ function AttributeInput({
           onChange={(event) => onChange(event.target.checked)}
         />
         {name}
-        {spec.kind === "function" && <span style={{ fontSize: 12 }}>(incluir marcador para el host)</span>}
+        {spec.kind === "function" && <span className="pg-field-help">(incluir marcador para el host)</span>}
       </label>
     );
   }
   if (spec.kind === "options") {
     return (
-      <label htmlFor={id} style={{ display: "flex", gap: 6, alignItems: "center" }}>
+      <label htmlFor={id} className="pg-field-control">
         {name}
         <select
           id={id}
@@ -202,16 +214,16 @@ function AttributeInput({
   const text = current === null || current === undefined ? "" : String(current);
   if (spec.name === "compareContent") {
     return (
-      <label htmlFor={id} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+      <label htmlFor={id} className="pg-field-stack">
         {name}
-        <textarea id={id} rows={3} value={text} onChange={(event) => onChange(event.target.value)} style={mono} />
+        <textarea id={id} rows={3} value={text} onChange={(event) => onChange(event.target.value)} />
       </label>
     );
   }
   return (
-    <label htmlFor={id} style={{ display: "flex", gap: 6, alignItems: "center" }}>
+    <label htmlFor={id} className="pg-field-control">
       {name}
-      <input id={id} type="text" value={text} onChange={(event) => onChange(event.target.value)} style={{ ...mono, flex: 1 }} />
+      <input id={id} type="text" className="pg-mono" value={text} onChange={(event) => onChange(event.target.value)} />
     </label>
   );
 }
@@ -305,67 +317,68 @@ export function ConfigBuilder() {
 
   return (
     <div className="mdw-builder">
-      <style>{`
-        .mdw-builder { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
-        .mdw-builder-preview { position: sticky; top: 8px; }
-        @media (max-width: 900px) {
-          .mdw-builder { grid-template-columns: minmax(0, 1fr); }
-          .mdw-builder-preview { position: static; }
-        }
-      `}</style>
-      <div>
-        <section aria-labelledby="mdw-builder-attrs" style={{ ...box, marginBottom: 24 }}>
-          <h2 id="mdw-builder-attrs" style={{ marginTop: 0 }}>Seleccioná los atributos de tu control</h2>
-          <p style={{ fontSize: 13, marginTop: 0 }}>
-            Cada cambio se aplica a la vista previa. «Copiar atributos» copia solo lo que difiere del valor por defecto.
-          </p>
-          {SPECS.map((spec) => (
-            <Field
-              key={spec.name}
-              label={
-                <>
-                  {spec.summary} Default: <code style={mono}>{spec.default === null ? "—" : JSON.stringify(spec.default)}</code>
-                </>
-              }
-              note={notes[spec.name]}
-            >
-              <AttributeInput spec={spec} value={attributes[spec.name]} onChange={(v) => setAttribute(spec.name, v)} />
-            </Field>
-          ))}
-          <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-            <fieldset style={{ border: "none", padding: 0, margin: 0, display: "flex", gap: 8 }}>
-              <legend style={{ fontSize: 13, float: "left", marginRight: 6 }}>Formato:</legend>
+      <section aria-labelledby="mdw-builder-attrs" className="pg-card pg-controls mdw-builder-attrs">
+        <h2 id="mdw-builder-attrs">Seleccioná los atributos de tu control</h2>
+        <p className="pg-card-lead">
+          Cada cambio se aplica a la vista previa. «Copiar atributos» copia solo lo que difiere del valor por defecto.
+        </p>
+        {groupAttributes(SPECS).map(([label, specs]) => (
+          <div key={label} className="pg-group" role="group" aria-label={label}>
+            <h3 className="pg-group-title">{label}</h3>
+            {specs.map((spec) => (
+              <Field
+                key={spec.name}
+                label={
+                  <>
+                    {spec.summary} Default: <code>{spec.default === null ? "—" : JSON.stringify(spec.default)}</code>
+                  </>
+                }
+                note={notes[spec.name]}
+              >
+                <AttributeInput spec={spec} value={attributes[spec.name]} onChange={(v) => setAttribute(spec.name, v)} />
+              </Field>
+            ))}
+          </div>
+        ))}
+        <div className="pg-output">
+          <div className="pg-row">
+            <fieldset className="pg-row">
+              <legend className="pg-label" style={{ float: "left", margin: 0 }}>
+                Formato
+              </legend>
               {(["jsx", "object"] as const).map((value) => (
-                <label key={value} style={{ fontSize: 13 }}>
+                <label key={value} className="pg-check">
                   <input
                     type="radio"
                     name="mdw-builder-format"
                     checked={format === value}
                     onChange={() => setState((prev) => ({ ...prev, format: value }))}
-                  />{" "}
+                  />
                   {value === "jsx" ? "JSX" : "Objeto"}
                 </label>
               ))}
             </fieldset>
-            <button type="button" onClick={() => void attributesCopy.copy(snippet)}>
+            <button type="button" className="pg-primary" onClick={() => void attributesCopy.copy(snippet)}>
               Copiar atributos
             </button>
             <CopyFeedback status={attributesCopy.status} text={snippet} />
           </div>
-          <pre aria-label="Atributos para pegar en el host" style={{ ...mono, background: "#f6f7f9", padding: 8, overflow: "auto" }}>
+          <pre aria-label="Atributos para pegar en el host" className="pg-code">
             {snippet}
           </pre>
-        </section>
+        </div>
+      </section>
 
-        <section aria-labelledby="mdw-builder-theme" style={box}>
-          <h2 id="mdw-builder-theme" style={{ marginTop: 0 }}>Theming</h2>
-          <p style={{ fontSize: 13, marginTop: 0 }}>
-            Ajustá el aspecto; el panel de abajo muestra en vivo el CSS final listo para pegar en tu host.{" "}
-            <StylingGuideLink />
-          </p>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", marginBottom: 8 }}>
-            <label>
-              Preset{" "}
+      <section aria-labelledby="mdw-builder-theme" className="pg-card pg-controls mdw-builder-theme">
+        <h2 id="mdw-builder-theme">Theming</h2>
+        <p className="pg-card-lead">
+          Ajustá el aspecto; abajo se ve en vivo el CSS final listo para pegar en tu host. <StylingGuideLink />
+        </p>
+        <div className="pg-group">
+          <h3 className="pg-group-title">Punto de partida</h3>
+          <div className="pg-row">
+            <label className="pg-check">
+              Preset
               <select value={theme.preset} onChange={(event) => selectPreset(event.target.value)}>
                 {THEME_PRESETS.map((preset) => (
                   <option key={preset.id} value={preset.id}>
@@ -378,8 +391,11 @@ export function ConfigBuilder() {
               Restablecer
             </button>
           </div>
-          <fieldset style={{ border: "none", padding: 0, margin: "0 0 8px" }}>
-            <legend style={{ fontSize: 13 }}>Alcance del CSS</legend>
+        </div>
+        <div className="pg-group">
+          <h3 className="pg-group-title">Alcance</h3>
+          <fieldset className="pg-option-list">
+            <legend className="pg-label">Alcance del CSS</legend>
             {(
               [
                 ["control", "Este control (clase en className)"],
@@ -387,8 +403,8 @@ export function ConfigBuilder() {
                 ["page", "Toda la página (:root)"],
               ] as Array<[ThemeScope, string]>
             ).map(([value, label]) => (
-              <label key={value} style={{ display: "block", fontSize: 13 }}>
-                <input type="radio" name="mdw-builder-scope" checked={theme.scope === value} onChange={() => setTheme({ scope: value })} />{" "}
+              <label key={value} className="pg-check">
+                <input type="radio" name="mdw-builder-scope" checked={theme.scope === value} onChange={() => setTheme({ scope: value })} />
                 {label}
               </label>
             ))}
@@ -400,46 +416,52 @@ export function ConfigBuilder() {
             >
               <input
                 aria-label="Nombre de clase"
+                className="pg-mono"
                 value={theme.className}
                 onChange={(event) => setTheme({ className: event.target.value })}
-                style={mono}
               />
             </Field>
           )}
-          <label style={{ display: "block", fontSize: 13 }}>
-            <input type="checkbox" checked={theme.includeAll} onChange={(event) => setTheme({ includeAll: event.target.checked })} />{" "}
-            Incluir todas las variables (no solo las cambiadas)
-          </label>
-          <label style={{ display: "block", fontSize: 13, marginBottom: 8 }}>
-            <input
-              type="checkbox"
-              checked={theme.darkValues !== null}
-              onChange={(event) => setTheme({ darkValues: event.target.checked ? DARK_VALUES : null })}
-            />{" "}
-            Seguir la preferencia del sistema (añade la variante oscura del preset «Oscuro completo»)
-          </label>
+          <div className="pg-option-list">
+            <label className="pg-check">
+              <input type="checkbox" checked={theme.includeAll} onChange={(event) => setTheme({ includeAll: event.target.checked })} />
+              Incluir todas las variables (no solo las cambiadas)
+            </label>
+            <label className="pg-check">
+              <input
+                type="checkbox"
+                checked={theme.darkValues !== null}
+                onChange={(event) => setTheme({ darkValues: event.target.checked ? DARK_VALUES : null })}
+              />
+              Seguir la preferencia del sistema (añade la variante oscura del preset «Oscuro completo»)
+            </label>
+          </div>
+        </div>
 
+        <div className="pg-group pg-tokens">
+          <h3 className="pg-group-title">Variables</h3>
           {groups.map((group) => (
-            <details key={group} style={{ marginBottom: 4 }}>
-              <summary style={{ fontSize: 13, fontWeight: 600 }}>{THEME_TOKEN_GROUP_LABELS[group]}</summary>
+            <details key={group}>
+              <summary>{THEME_TOKEN_GROUP_LABELS[group]}</summary>
               {THEME_TOKENS.filter((token) => token.group === group).map((token) => {
                 const value = drafts[token.name] ?? theme.values[token.name] ?? "";
                 const shown = value === "" ? token.default : value;
                 const hex = /^#[0-9a-fA-F]{6}$/.test(shown);
                 const bad = invalid.has(token.name);
                 return (
-                  <div key={token.name} style={{ display: "flex", gap: 6, alignItems: "center", margin: "4px 0" }}>
-                    <span style={{ ...mono, fontSize: 11, flex: "0 0 45%", wordBreak: "break-all" }} title={token.description}>
+                  <div key={token.name} className="pg-token">
+                    <span className="pg-token-name" title={token.description}>
                       {token.name}
                     </span>
-                    {hex && (
+                    {hex ? (
                       <input
                         type="color"
                         aria-label={`${token.name} (selector de color)`}
                         value={shown}
                         onChange={(event) => setToken(token.name, event.target.value)}
-                        style={{ width: 28, height: 22, padding: 0 }}
                       />
+                    ) : (
+                      <span />
                     )}
                     <input
                       aria-label={token.name}
@@ -447,39 +469,46 @@ export function ConfigBuilder() {
                       placeholder={token.default}
                       value={value}
                       onChange={(event) => setToken(token.name, event.target.value)}
-                      style={{ ...mono, fontSize: 11, flex: 1, borderColor: bad ? "#b42318" : undefined }}
                     />
                   </div>
                 );
               })}
             </details>
           ))}
+        </div>
 
-          <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 12, flexWrap: "wrap" }}>
-            <button type="button" onClick={() => void cssCopy.copy(css)}>
+        <div className="pg-output">
+          <div className="pg-row">
+            <button type="button" className="pg-primary" onClick={() => void cssCopy.copy(css)}>
               Crear CSS
             </button>
             <StylingGuideLink prefix="¿Dudas?" />
             <CopyFeedback status={cssCopy.status} text={css} />
           </div>
-          <pre aria-label="CSS final para tu host" style={{ ...mono, background: "#f6f7f9", padding: 8, overflow: "auto", maxHeight: 320 }}>
+          <pre aria-label="CSS final para tu host" className="pg-code" style={{ maxHeight: 320 }}>
             {css}
           </pre>
-          <button type="button" onClick={startOver} style={{ marginTop: 8 }}>
-            Empezar de nuevo
-          </button>
-        </section>
-      </div>
+          <div>
+            <button type="button" className="pg-ghost" onClick={startOver}>
+              Empezar de nuevo
+            </button>
+          </div>
+        </div>
+      </section>
 
-      <div className="mdw-builder-preview">
-        <h2 style={{ marginTop: 0 }}>Vista previa</h2>
+      <div className="pg-card mdw-builder-preview">
+        <div className="pg-preview-title">
+          <h2 className="pg-card-title">Vista previa</h2>
+          <span className="pg-status">Se actualiza con cada cambio</span>
+        </div>
         <style>{previewCss}</style>
-        <div className={wrapperClass}>
+        <div className={wrapperClass} style={{ marginTop: 12 }}>
           <MarkdownEditor
             key={attributes["resolveImageSrc"] === true ? "resolver" : "plain"}
             initialContent={PREVIEW_CONTENT}
-            width="100%"
             {...previewProps(attributes)}
+            // Sin un ancho elegido, la vista previa ocupa su columna (el default de 700 px la desbordaría).
+            {...(attributes["width"] === undefined ? { width: "100%" } : {})}
             {...(editorClass !== undefined ? { className: editorClass } : {})}
           />
         </div>
