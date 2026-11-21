@@ -8,6 +8,7 @@ import { CodeLanguagePicker } from "./buttons/CodeLanguagePicker";
 import { FloatingPanel } from "./buttons/FloatingPanel";
 import { ExportMenu } from "./buttons/ExportMenu";
 import { Separator } from "./buttons/Separator";
+import { selectionToCodeBlock } from "../markdown/codeBlockSelection";
 import {
   IconCode,
   IconCodeBlock,
@@ -317,7 +318,10 @@ export function Toolbar({
                 | undefined) ?? null
             }
             onSelect={(language) => {
-              if (editor.isActive("codeBlock")) {
+              // Varias líneas seleccionadas: un único bloque de código (spec 027).
+              if (selectionToCodeBlock(language)(editor.state, editor.view.dispatch)) {
+                editor.commands.focus();
+              } else if (editor.isActive("codeBlock")) {
                 editor
                   .chain()
                   .focus()

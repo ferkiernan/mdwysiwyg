@@ -99,6 +99,10 @@ function Editor() {
   disponible para la posición actual del cursor.
 - **Bloques**: bloque de código con resaltado de sintaxis y selector de lenguaje (JSON, SQL,
   TypeScript, JavaScript, Java u "Otro…" para especificar cualquier otro), cita, línea horizontal.
+  Con **varias líneas seleccionadas**, "Bloque de código" las convierte en **un único bloque** con
+  su texto visible, una línea por renglón (títulos, párrafos, ítems de lista y citas; filas de tabla
+  como `celda | celda`; imágenes, diagramas y reglas se descartan). Las líneas no seleccionadas de
+  una lista o cita quedan en su lista/cita, antes y después del bloque. Es un solo paso de deshacer.
 - **Insertar**: imagen (por URL), enlace, tabla (selector visual de tamaño: cuadrícula 10×10,
   convención columnas × filas — "3 × 4" = 3 columnas y 4 filas), HTML embebido.
 - **`</>`**: alterna entre vista renderizada y vista Markdown. Alternar nunca modifica el

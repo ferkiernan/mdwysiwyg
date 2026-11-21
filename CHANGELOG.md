@@ -6,6 +6,13 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
+- **"Bloque de código" on a multi-line selection makes one code block** (spec 027):
+  - The selected lines become a single code block with their visible text, one line per line: headings, paragraphs,
+    list items of any type and level, and quote lines.
+  - Table rows become `cell | cell`. Images, diagrams and rules are dropped.
+  - Unselected lines of a list or quote stay in their list or quote, before and after the block.
+  - Before, each paragraph became its own code block and lists were left out.
+  - Single-line conversion and changing a block's language are unchanged.
 - **Move list items with the keyboard** (spec 026), in bullet, numbered and task lists:
   - Ctrl+Shift+Up / Ctrl+Shift+Down moves the current item (or the selected sibling items) one position, together with
     its children and its checked state.
