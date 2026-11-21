@@ -317,6 +317,16 @@ tablas existentes no cambian; también se puede escribir el ancho a mano en la v
 No disponible con `onlyView`, en los paneles de comparación ni en el historial. Otros
 renderizadores de Markdown ignoran estos anchos.
 
+### Mover ítems de lista
+
+Con el cursor en un ítem de una lista con viñetas, numerada o de tareas, **Ctrl+Mayús+↑** lo
+sube una posición y **Ctrl+Mayús+↓** lo baja (la tecla Ctrl física también en macOS). El ítem se
+mueve con sus hijos y su estado de tarea, intercambiándose con el hermano de al lado: nunca cambia
+de nivel ni de padre (para eso, Tab y Mayús+Tab). Con varios ítems hermanos seleccionados se mueven
+juntos. En el primer o el último lugar no hace nada. Cada movimiento es un solo cambio (`onChange`
+una vez, un Ctrl+Z). Mayús+↑/↓ sigue extendiendo la selección por líneas. No disponible con
+`onlyView`, en los paneles de comparación, en el historial ni en la vista Markdown.
+
 ### Cursor y líneas entre bloques
 
 Un clic en el área libre **a la derecha de una tabla** (a la altura de cualquiera de sus filas),

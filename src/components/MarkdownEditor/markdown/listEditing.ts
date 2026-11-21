@@ -1,6 +1,7 @@
 import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey, TextSelection, type EditorState, type Transaction } from "@tiptap/pm/state";
-import type { Node as PMNode, ResolvedPos } from "@tiptap/pm/model";
+import { Fragment, type Node as PMNode, type ResolvedPos } from "@tiptap/pm/model";
+import { closeHistory } from "@tiptap/pm/history";
 import type { EditorView } from "@tiptap/pm/view";
 
 /**
@@ -197,6 +198,38 @@ export function tripleClickLineSelection(
   return TextSelection.create(doc, from, to);
 }
 
+/**
+ * Mueve el ítem de lista (o los ítems hermanos seleccionados) una posición
+ * arriba (`-1`) o abajo (`1`) entre sus hermanos, con sus hijos, sin cambiar
+ * de nivel (spec 026). Fuera de una lista devuelve `false`; en el primer o el
+ * último lugar devuelve `true` sin cambiar el documento.
+ */
+export function moveListItem(direction: -1 | 1) {
+  return (state: EditorState, dispatch?: (tr: Transaction) => void): boolean => {
+    const { selection } = state;
+    if (!(selection instanceof TextSelection)) return false;
+    const range = selection.$from.blockRange(selection.$to, (node) => isList(node));
+    if (range === null) return false;
+    const list = range.parent;
+    const { startIndex, endIndex } = range;
+    if (direction === -1 ? startIndex === 0 : endIndex >= list.childCount) return true;
+    const block: PMNode[] = [];
+    for (let index = startIndex; index < endIndex; index++) block.push(list.child(index));
+    const neighbour = list.child(direction === -1 ? startIndex - 1 : endIndex);
+    if (dispatch) {
+      const from = direction === -1 ? range.start - neighbour.nodeSize : range.start;
+      const to = direction === -1 ? range.end : range.end + neighbour.nodeSize;
+      const nodes = direction === -1 ? [...block, neighbour] : [neighbour, ...block];
+      const shift = direction * neighbour.nodeSize;
+      // closeHistory: cada movimiento es su propio paso de deshacer aunque se repita rápido.
+      const tr = closeHistory(state.tr).replaceWith(from, to, Fragment.fromArray(nodes));
+      tr.setSelection(TextSelection.create(tr.doc, selection.anchor + shift, selection.head + shift));
+      dispatch(tr.scrollIntoView());
+    }
+    return true;
+  };
+}
+
 export const ListEditing = Extension.create({
   name: "mdwListEditing",
   // Antes que el keymap de listas del StarterKit y que la edición de tablas.
@@ -205,6 +238,11 @@ export const ListEditing = Extension.create({
     return {
       Backspace: () => deleteEmptyListItem(this.editor.state, this.editor.view.dispatch),
       Delete: () => joinNextLineAcrossList(this.editor.state, this.editor.view.dispatch),
+      // Ctrl físico en todas las plataformas (no Mod): Mayús+↑/↓ sigue extendiendo la selección.
+      "Ctrl-Shift-ArrowUp": () =>
+        this.editor.isEditable && moveListItem(-1)(this.editor.state, this.editor.view.dispatch),
+      "Ctrl-Shift-ArrowDown": () =>
+        this.editor.isEditable && moveListItem(1)(this.editor.state, this.editor.view.dispatch),
     };
   },
   addProseMirrorPlugins() {

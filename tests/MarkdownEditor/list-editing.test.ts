@@ -199,6 +199,99 @@ describe("Suprimir al final de una línea (variante C)", () => {
   });
 });
 
+describe("mover un ítem con Ctrl+Mayús+↑/↓ (spec 026)", () => {
+  function move(ed: Editor, key: "ArrowUp" | "ArrowDown"): boolean {
+    const event = new KeyboardEvent("keydown", { key, ctrlKey: true, shiftKey: true, bubbles: true, cancelable: true });
+    return ed.view.someProp("handleKeyDown", (handler) => handler(ed.view, event)) ?? false;
+  }
+
+  it("sube y baja un ítem; el cursor queda en el mismo texto", () => {
+    const ed = make(ul(li("a"), li("b"), li("c")));
+    ed.commands.setTextSelection(find(ed, "b") + 1);
+    move(ed, "ArrowUp");
+    expect(tree(ed.state.doc)).toBe("- b\n- a\n- c");
+    expect(ed.state.selection.$from.parent.textContent).toBe("b");
+    expect(ed.state.selection.$from.parentOffset).toBe(1);
+    move(ed, "ArrowDown");
+    move(ed, "ArrowDown");
+    expect(tree(ed.state.doc)).toBe("- a\n- c\n- b");
+  });
+
+  it("un ítem con hijos se mueve con su subárbol y nadie cambia de nivel", () => {
+    const ed = make(ul(li("otro", ul(li("item 1", ul(li("x"))), li("item 2"))), li("fin")));
+    ed.commands.setTextSelection(find(ed, "item 1"));
+    move(ed, "ArrowDown");
+    expect(tree(ed.state.doc)).toBe("- otro\n  - item 2\n  - item 1\n    - x\n- fin");
+  });
+
+  it("en el primer o el último lugar no cambia nada (no salta a otra lista ni de nivel)", () => {
+    const ed = make(ul(li("otro", ul(li("item 1"), li("item 2"))), li("fin")));
+    const original = tree(ed.state.doc);
+    ed.commands.setTextSelection(find(ed, "item 1"));
+    expect(move(ed, "ArrowUp")).toBe(true);
+    ed.commands.setTextSelection(find(ed, "item 2"));
+    expect(move(ed, "ArrowDown")).toBe(true);
+    expect(tree(ed.state.doc)).toBe(original);
+  });
+
+  it("la tarea conserva su estado marcado y la lista numerada solo cambia el orden", () => {
+    const ed = make(tl(ti("uno"), `<li data-type="taskItem" data-checked="true"><p>dos</p></li>`));
+    ed.commands.setTextSelection(find(ed, "dos"));
+    move(ed, "ArrowUp");
+    expect(ed.state.doc.firstChild?.firstChild?.attrs["checked"]).toBe(true);
+    expect(ed.state.doc.firstChild?.firstChild?.textContent).toBe("dos");
+    const ol = make(`<ol><li><p>a</p></li><li><p>b</p></li></ol>`);
+    ol.commands.setTextSelection(find(ol, "a"));
+    move(ol, "ArrowDown");
+    expect(ol.state.doc.firstChild?.type.name).toBe("orderedList");
+    expect(tree(ol.state.doc)).toBe("- b\n- a");
+  });
+
+  it("varios ítems hermanos seleccionados se mueven juntos", () => {
+    const ed = make(ul(li("a"), li("b"), li("c"), li("d")));
+    ed.commands.setTextSelection({ from: find(ed, "b"), to: find(ed, "c") + 1 });
+    move(ed, "ArrowDown");
+    expect(tree(ed.state.doc)).toBe("- a\n- d\n- b\n- c");
+  });
+
+  it("fuera de una lista y en solo lectura no hace nada; es un solo paso de deshacer", () => {
+    const para = make("<p>texto</p>");
+    para.commands.setTextSelection(1);
+    expect(move(para, "ArrowUp")).toBe(false);
+
+    const ed = make(ul(li("a"), li("b")));
+    ed.commands.setTextSelection(find(ed, "b"));
+    ed.setEditable(false);
+    move(ed, "ArrowUp");
+    expect(tree(ed.state.doc)).toBe("- a\n- b");
+    ed.setEditable(true);
+    move(ed, "ArrowUp");
+    expect(tree(ed.state.doc)).toBe("- b\n- a");
+    ed.commands.undo();
+    expect(tree(ed.state.doc)).toBe("- a\n- b");
+  });
+
+  it("movimientos seguidos se deshacen de a uno", () => {
+    const ed = make(ul(li("a"), li("b"), li("c")));
+    ed.commands.setTextSelection(find(ed, "a"));
+    move(ed, "ArrowDown");
+    move(ed, "ArrowDown");
+    expect(tree(ed.state.doc)).toBe("- b\n- c\n- a");
+    ed.commands.undo();
+    expect(tree(ed.state.doc)).toBe("- b\n- a\n- c");
+    ed.commands.undo();
+    expect(tree(ed.state.doc)).toBe("- a\n- b\n- c");
+  });
+
+  it("Mayús+↑ sin Ctrl no mueve el ítem", () => {
+    const ed = make(ul(li("a"), li("b")));
+    ed.commands.setTextSelection(find(ed, "b"));
+    const event = new KeyboardEvent("keydown", { key: "ArrowUp", shiftKey: true, bubbles: true, cancelable: true });
+    ed.view.someProp("handleKeyDown", (handler) => handler(ed.view, event));
+    expect(tree(ed.state.doc)).toBe("- a\n- b");
+  });
+});
+
 describe("triple clic sobre contenedores (variante A)", () => {
   function containerPos(ed: Editor, type: string, nth = 0): number {
     const found: number[] = [];

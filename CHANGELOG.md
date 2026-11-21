@@ -4,6 +4,16 @@ All notable changes to this project are documented in this file.
 
 ## Unreleased
 
+### Added
+
+- **Move list items with the keyboard** (spec 026), in bullet, numbered and task lists:
+  - Ctrl+Shift+Up / Ctrl+Shift+Down moves the current item (or the selected sibling items) one position, together with
+    its children and its checked state.
+  - Items never change level or parent; at the first or last position nothing happens.
+  - Each move is one change and one undo step.
+  - Shift+Up/Down still extends the selection.
+  - Not available in read-only, compare panes, history or the Markdown view.
+
 ### Fixed
 
 - **Deleting in lists no longer wipes out or re-levels other items** (bug `list-item-delete-cascade`):
