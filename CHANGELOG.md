@@ -2,6 +2,23 @@
 
 All notable changes to this project are documented in this file.
 
+## Unreleased
+
+### Fixed
+
+- **Deleting in lists no longer wipes out or re-levels other items** (bug `list-item-delete-cascade`):
+  - **Triple-click:** a triple-click that landed in the gap between items (or on a line's edge) selected the whole list,
+    the whole task item with its children, or the whole quote, so Backspace deleted all of it. It now selects only the
+    nearest line.
+  - **Backspace in an empty item that has an item above:** it now removes the empty item. The cursor goes to the end
+    of the line above, the items below keep their parent and level, and the removed item's children move to the item
+    above. Before, the empty item was lifted and dragged the items below as its children.
+  - **Delete (Suprimir) at the end of a line, when the next line is across a list boundary:** it now joins that line's
+    text, and the joined item's children move to the receiving item. This covers a parent item and its first child,
+    the last nested item and the next top-level item, a list and a following paragraph, and a paragraph and a
+    following list. Before, it moved the next block to another level, or turned it into a loose paragraph or a list
+    item.
+
 ## 0.9.0
 
 ### Changed
