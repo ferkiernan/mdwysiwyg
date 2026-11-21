@@ -105,6 +105,9 @@ function Editor() {
   una lista o cita quedan en su lista/cita, antes y después del bloque. Es un solo paso de deshacer.
 - **Insertar**: imagen (por URL), enlace, tabla (selector visual de tamaño: cuadrícula 10×10,
   convención columnas × filas — "3 × 4" = 3 columnas y 4 filas), HTML embebido.
+- **Paneles de la barra** (imagen, enlace, HTML, tabla, lenguaje del código, Export): se cierran
+  con Cancelar, Escape, un **clic fuera del panel** (equivale a Cancelar: no aplica nada y el clic
+  sigue haciendo lo suyo, p. ej. ubicar el cursor) o pulsando otra vez el botón que los abrió.
 - **`</>`**: alterna entre vista renderizada y vista Markdown. Alternar nunca modifica el
   contenido, y el cursor se reposiciona en el punto equivalente de la vista destino.
 - **Export** (icono de descarga, alineado al extremo derecho de la barra): copia al portapapeles

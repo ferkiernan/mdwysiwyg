@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import styles from "../../MarkdownEditor.module.css";
 import { copyThemeTokens } from "../../theme/themeTokens";
@@ -10,6 +10,13 @@ export interface FloatingPanelProps {
   align?: "start" | "end";
   /** Enfoca el primer elemento interactivo del contenido al montarse. */
   autoFocus?: boolean;
+  /**
+   * Se invoca al presionar el puntero fuera del panel y de su ancla (spec 028):
+   * el panel se descarta como con Cancelar. El clic no se consume, así que
+   * sigue haciendo lo suyo (ubicar el cursor, pulsar otro botón). El ancla se
+   * excluye para que su propio clic alterne el panel.
+   */
+  onDismiss?: () => void;
   children: ReactNode;
 }
 
@@ -23,9 +30,26 @@ export function FloatingPanel({
   anchor,
   align = "start",
   autoFocus = false,
+  onDismiss,
   children,
 }: FloatingPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const onDismissRef = useRef(onDismiss);
+  onDismissRef.current = onDismiss;
+  const dismissible = onDismiss !== undefined;
+
+  useEffect(() => {
+    if (!dismissible) return;
+    const doc = anchor?.ownerDocument ?? document;
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (panelRef.current?.contains(target) || anchor?.contains(target)) return;
+      onDismissRef.current?.();
+    };
+    doc.addEventListener("pointerdown", handlePointerDown, true);
+    return () => doc.removeEventListener("pointerdown", handlePointerDown, true);
+  }, [dismissible, anchor]);
   const [style, setStyle] = useState<{
     top: number;
     left?: number;

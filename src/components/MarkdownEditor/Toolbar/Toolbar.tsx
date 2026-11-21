@@ -69,6 +69,11 @@ export function Toolbar({
     kind: DialogKind | "table" | "codeLanguage",
     event: MouseEvent<HTMLElement>,
   ) => {
+    // Pulsar de nuevo el botón que abrió el panel lo cierra (spec 028).
+    if (openDialog === kind && anchor === event.currentTarget) {
+      setOpenDialog(null);
+      return;
+    }
     setAnchor(event.currentTarget);
     setOpenDialog(kind);
   };
@@ -295,7 +300,7 @@ export function Toolbar({
       </div>
 
       {openDialog === "table" && editor !== null && (
-        <FloatingPanel anchor={anchor}>
+        <FloatingPanel anchor={anchor} onDismiss={closeDialog}>
           <TableSizePicker
             onSelect={({ cols, rows }) => {
               editor
@@ -310,7 +315,7 @@ export function Toolbar({
         </FloatingPanel>
       )}
       {openDialog === "codeLanguage" && editor !== null && (
-        <FloatingPanel anchor={anchor}>
+        <FloatingPanel anchor={anchor} onDismiss={closeDialog}>
           <CodeLanguagePicker
             currentLanguage={
               (editor.getAttributes("codeBlock")["language"] as
@@ -340,7 +345,7 @@ export function Toolbar({
         openDialog !== "table" &&
         openDialog !== "codeLanguage" &&
         editor !== null && (
-          <FloatingPanel anchor={anchor}>
+          <FloatingPanel anchor={anchor} onDismiss={closeDialog}>
             <InsertDialog
               kind={openDialog}
               editor={editor}

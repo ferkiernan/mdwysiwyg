@@ -39,7 +39,7 @@ export function ExportMenu({ source, sanitize }: ExportMenuProps) {
         <IconDownload />
       </button>
       {open && (
-        <FloatingPanel anchor={buttonRef.current} align="end" autoFocus>
+        <FloatingPanel anchor={buttonRef.current} align="end" autoFocus onDismiss={() => setOpen(false)}>
           <div
             role="menu"
             aria-label="Exportar contenido"

@@ -6,6 +6,11 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
+- **Toolbar mini-dialogs close on an outside click** (spec 028). This covers the image, link, embedded HTML, table
+  size, code language and Export panels:
+  - Pressing the pointer outside the panel closes it like Cancel: nothing is applied and the document does not change.
+  - The click is not swallowed, so it still places the cursor or presses the other button.
+  - Clicking the button that opened the panel now closes it.
 - **"Bloque de código" on a multi-line selection makes one code block** (spec 027):
   - The selected lines become a single code block with their visible text, one line per line: headings, paragraphs,
     list items of any type and level, and quote lines.
