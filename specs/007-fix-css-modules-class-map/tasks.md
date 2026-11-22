@@ -29,7 +29,10 @@ description: "Lista de tareas: mapa de clases CSS Modules en el paquete publicad
 
 - [x] T008 Ejecutar `typecheck`, `test`, `build`, `verify:dist` y `npm publish --dry-run`
 - [ ] T009 Verificar el tarball en una app consumidora real (estilos presentes)
-- [ ] T010 Versión 0.3.1, commit de release, etiqueta `v0.3.1`, `npm publish` y push
+- [x] T010 Versión 0.3.1, commit de release, etiqueta `v0.3.1`, `npm publish` y push.
+  - Superada: la etiqueta `v0.3.1` existe, pero esa versión nunca se publicó en npm.
+  - El arreglo salió desde la 0.4.0, y `verify:dist` lo comprueba en cada `prepublishOnly`; la última versión es la
+    0.10.0.
 
 ## Dependencias
 
