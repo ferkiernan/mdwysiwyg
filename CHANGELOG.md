@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.11.0
+
+### Added
+
+- **`spellCheck` prop** (spec 029, default `true`):
+  - It turns the browser's spell checking on or off in the rendered view. The default keeps today's behavior.
+  - Changes apply live, keeping the content, the selection and the undo history.
+  - The Markdown view never spell-checks.
+  - In compare mode it applies to the editable pane.
+  - It is listed in the playground configurator.
+
 ## 0.10.0
 
 ### Added

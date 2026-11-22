@@ -54,6 +54,7 @@ valores, su default, si se puede cambiar en caliente y cómo se relaciona con la
 | `resizable` | `boolean` | `true` | Permite redimensionar el componente arrastrando su esquina inferior derecha (como un `<textarea>` nativo). Con `false`, el tamaño queda fijo. Se ignora con `autoHeight`. |
 | `autoHeight` | `boolean` | `false` | Alto automático: el componente crece hacia abajo con su contenido, sin barra de desplazamiento vertical interna (ver «Alto automático»). `height` pasa a ser el mínimo y no hay tirador de redimensionar. Se puede cambiar en cualquier momento. |
 | `allowContentZoom` | `boolean` | `false` | Permite al usuario hacer zoom sobre el contenido con Ctrl/Cmd + rueda o Ctrl/Cmd + `+` / `-` / `0`, sin cambiar el tamaño del control ni de la barra (ver «Zoom del contenido»). El nivel se refleja en `--mdw-content-zoom`. |
+| `spellCheck` | `boolean` | `true` | Corrección ortográfica del navegador en la vista renderizada (subraya palabras mal escritas y ofrece sugerencias); `false` la desactiva. La vista Markdown nunca la usa. Se puede cambiar en cualquier momento (ver «Corrección ortográfica»). |
 | `autoHideBar` | `boolean` | `false` | Oculta la barra de herramientas mientras el foco está fuera del componente y la muestra al volver (ver «Ocultar la barra al perder el foco»). `showToolbar={false}` tiene prioridad. Se puede cambiar en cualquier momento. |
 | `onlyViewNotice` | `string` | `"Edición desactivada"` | Texto del aviso mostrado en la barra con `onlyView` activo. Útil para mostrar, por ejemplo, el nombre del archivo. |
 | `documentId` | `string` | — | Identificador de documento de uso libre para la app consumidora. El componente lo acepta sin darle un uso propio. |
@@ -150,6 +151,18 @@ Con `autoHideBar` (por defecto `false`) la barra solo se ve mientras el usuario 
 - `showToolbar={false}` manda (nunca la muestra). La barra de comparación y la del historial no se ocultan: llevan
   decisiones pendientes.
 - Cambiar la prop no toca contenido, cursor ni historial y nunca dispara `onChange`.
+
+### Corrección ortográfica
+
+Con `spellCheck` (por defecto `true`) el navegador marca las palabras mal escritas en la vista renderizada y ofrece
+sus sugerencias; con `spellCheck={false}` no marca nada (útil en documentos técnicos o en otro idioma que el del
+navegador).
+
+- El idioma del diccionario lo decide el navegador (normalmente el de la página o el del sistema); la prop solo la
+  enciende o apaga.
+- La vista Markdown nunca la usa, para no subrayar la sintaxis.
+- En el modo comparación aplica al panel editable; el original es de solo lectura.
+- Cambiarla no recrea el editor ni toca contenido, selección o historial de deshacer, y no dispara `onChange`.
 
 ### Zoom del contenido
 

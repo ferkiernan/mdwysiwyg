@@ -160,6 +160,18 @@ export interface MarkdownEditorProps {
   allowContentZoom?: boolean;
 
   /**
+   * Corrección ortográfica del navegador en la vista renderizada: `true` subraya las palabras mal escritas y ofrece
+   * sugerencias; `false` la desactiva. El idioma del diccionario lo decide el navegador. La vista Markdown nunca la
+   * usa (no subraya la sintaxis). En el modo comparación aplica al panel editable. Se puede cambiar en cualquier
+   * momento sin perder contenido, selección ni historial de deshacer.
+   *
+   * @default true
+   * @example
+   * <MarkdownEditor spellCheck={false} />
+   */
+  spellCheck?: boolean;
+
+  /**
    * Texto del aviso que muestra la barra reducida con `onlyView`. Se puede cambiar en cualquier momento.
    *
    * @default "Edición desactivada"

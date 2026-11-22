@@ -139,6 +139,7 @@ export const MarkdownEditor = forwardRef<
     showToolbar = true,
     autoHideBar = false,
     allowContentZoom = false,
+    spellCheck = true,
     resizable = true,
     autoHeight = false,
     onlyViewNotice,
@@ -152,6 +153,11 @@ export const MarkdownEditor = forwardRef<
   },
   ref,
 ) {
+  // Corrección ortográfica de la vista renderizada (spec 029): la lee la
+  // función `attributes` del editor en cada actualización de la vista.
+  const spellCheckRef = useRef(spellCheck);
+  spellCheckRef.current = spellCheck;
+
   // Contenido que tenía el documento al abrir el modo historial (o `null`):
   // si empieza una comparación con el modo historial abierto, el original es ese
   // contenido y no la versión que se esté mostrando.
@@ -255,11 +261,14 @@ export const MarkdownEditor = forwardRef<
       ),
       editable: !onlyView,
       editorProps: {
-        attributes: {
+        // Función: se reevalúa en cada actualización de la vista, así `spellCheck`
+        // cambia en vivo sin recrear el editor (spec 029).
+        attributes: () => ({
           role: "textbox",
           "aria-multiline": "true",
           "aria-label": "Editor de texto enriquecido",
-        },
+          spellcheck: spellCheckRef.current ? "true" : "false",
+        }),
         handleDOMEvents: {
           // Clic en el área libre tras el último bloque → línea posterior.
           mousedown: handleBlankAreaMouseDown,
@@ -413,6 +422,13 @@ export const MarkdownEditor = forwardRef<
   };
   const closeHistoryRef = useRef(closeHistory);
   closeHistoryRef.current = closeHistory;
+
+  // Cambiar `spellCheck` en vivo: una actualización de la vista sin transacción
+  // vuelve a calcular sus atributos (no toca contenido, selección ni historial).
+  useEffect(() => {
+    if (editor === null || editor.isDestroyed) return;
+    editor.view.updateState(editor.view.state);
+  }, [editor, spellCheck]);
 
   /** Conserva la versión mostrada y cierra el modo historial. */
   const confirmHistory = () => {

@@ -60,6 +60,12 @@
     "summary": "Permite al usuario hacer zoom sobre el contenido (texto, imágenes, tablas, código y diagramas) sin cambiar el tamaño del control ni de la barra: Ctrl/Cmd + rueda sobre el contenido, o Ctrl/Cmd + `+`, `-` y `0` (restab…"
   },
   {
+    "name": "spellCheck",
+    "kind": "switch",
+    "default": true,
+    "summary": "Corrección ortográfica del navegador en la vista renderizada: `true` subraya las palabras mal escritas y ofrece sugerencias; `false` la desactiva."
+  },
+  {
     "name": "onlyViewNotice",
     "kind": "text",
     "default": "Edición desactivada",

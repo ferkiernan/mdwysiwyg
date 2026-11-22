@@ -89,7 +89,7 @@ function previewProps(choices: AttributeChoices): MarkdownEditorProps {
 /** Grupos de atributos por propósito; los que no figuran van a «Otros». */
 export const ATTRIBUTE_GROUPS: Array<[string, string[]]> = [
   ["Tamaño", ["width", "height", "resizable", "autoHeight"]],
-  ["Barra y vista", ["showToolbar", "autoHideBar", "allowContentZoom"]],
+  ["Barra y vista", ["showToolbar", "autoHideBar", "allowContentZoom", "spellCheck"]],
   ["Contenido", ["onChange", "sanitizeEmbeddedHtml", "resolveImageSrc"]],
   ["Solo lectura", ["onlyView", "onlyViewNotice"]],
   ["Comparación", ["mode", "compareOrientation", "compareContent", "compareSyncScroll", "onCompareDecision"]],
